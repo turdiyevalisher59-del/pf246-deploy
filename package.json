@@ -1,0 +1,10 @@
+{
+  "name": "pf246-survey",
+  "version": "2.0.0",
+  "private": true,
+  "description": "PF-246 O'rganish Tizimi — Markaziy bank AYOQSH tekshiruv savolnomasi",
+  "scripts": {
+    "dev": "npx serve public -l 3000",
+    "build": "echo 'Static site — no build needed'"
+  }
+}
