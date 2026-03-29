@@ -3,6 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- PWA Meta Tags -->
+<meta name="application-name" content="PF-246">
+<meta name="theme-color" content="#0c1929">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- iOS (Apple) PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PF-246">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230c1929'/%3E%3Ctext x='256' y='200' text-anchor='middle' font-size='120' font-weight='bold' fill='%23d4a932' font-family='Arial'%3EPF%3C/text%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='140' font-weight='bold' fill='white' font-family='Arial'%3E246%3C/text%3E%3Ctext x='256' y='420' text-anchor='middle' font-size='60' fill='%23d4a932' font-family='Arial'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<!-- Android/Chrome -->
+<meta name="color-scheme" content="dark light">
+<!-- PWA Manifest (inline) -->
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22PF-246%20O'rganish%20Tizimi%22%2C%22short_name%22%3A%22PF-246%22%2C%22description%22%3A%22Markaziy%20bank%20AYOQSH%20tekshiruv%20tizimi%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230c1929%22%2C%22theme_color%22%3A%22%230c1929%22%2C%22categories%22%3A%5B%22business%22%2C%22finance%22%5D%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520rx%3D'100'%2520fill%3D'%25230c1929'%2F%253E%253Ctext%2520x%3D'256'%2520y%3D'200'%2520text-anchor%3D'middle'%2520font-size%3D'120'%2520font-weight%3D'bold'%2520fill%3D'%2523d4a932'%2520font-family%3D'Arial'%253EPF%253C%2Ftext%253E%253Ctext%2520x%3D'256'%2520y%3D'340'%2520text-anchor%3D'middle'%2520font-size%3D'140'%2520font-weight%3D'bold'%2520fill%3D'white'%2520font-family%3D'Arial'%253E246%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+<!-- Splash screen for iOS -->
+<meta name="apple-mobile-web-app-title" content="PF-246">
+<style>
+/* iOS safe area support */
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+/* Prevent pull-to-refresh on mobile */
+html{overscroll-behavior:none}
+/* Install banner */
+#installBanner{display:none;position:fixed;bottom:20px;left:16px;right:16px;z-index:9999;padding:16px 20px;background:linear-gradient(135deg,#0c1929,#1a3a5c);border:2px solid #d4a932;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.4);color:white;font-family:'Plus Jakarta Sans',sans-serif;animation:slideUp .4s ease}
+@keyframes slideUp{from{transform:translateY(100px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
 <title>PF-246 O'rganish Tizimi | Markaziy bank</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -173,15 +197,36 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 </head>
 <body>
 <div id="loginPage" class="page active">
-<div class="login-container"><div class="login-box"><div class="login-header"><div class="login-logo">🏛️</div><h1>PF-246 O'rganish Tizimi</h1><p>O'zbekiston Respublikasi Markaziy banki</p></div><div class="login-body"><div id="loginError" class="login-error">⚠️ Login yoki parol noto'g'ri</div><label class="login-label">Login</label><input id="loginUser" class="login-input" type="text" placeholder="Loginni kiriting"><label class="login-label">Parol</label><input id="loginPass" class="login-input" type="password" placeholder="Parolni kiriting" onkeydown="if(event.key==='Enter')doLogin()"><button class="login-btn" onclick="doLogin()">🔐 Tizimga kirish</button><div style="margin-top:20px;padding:14px;background:var(--gray-50);border-radius:12px;font-size:12px;color:var(--gray-500);line-height:1.6"><strong style="color:var(--blue-700)">ℹ️ Eslatma:</strong> Tizimga kirish faqat Markaziy bank tomonidan tayinlangan tekshiruvchilar uchun.</div></div></div></div>
+<div class="login-container"><div class="login-box"><div class="login-header"><div class="login-logo">🏛️</div><h1>PF-246 O'rganish Tizimi</h1><p>O'zbekiston Respublikasi Markaziy banki</p></div><div class="login-body"><div id="loginError" class="login-error">⚠️ Login yoki parol noto'g'ri</div><label class="login-label">Login</label><input id="loginUser" class="login-input" type="text" placeholder="Loginni kiriting" autocomplete="username"><label class="login-label">Parol</label><div style="position:relative"><input id="loginPass" class="login-input" type="password" placeholder="Parolni kiriting" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password" style="padding-right:50px"><button type="button" onclick="togglePwVis()" id="pwEye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:none;background:transparent;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s" onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background='transparent'">👁️</button></div><button class="login-btn" onclick="doLogin()">🔐 Tizimga kirish</button><div style="margin-top:20px;padding:14px;background:var(--gray-50);border-radius:12px;font-size:12px;color:var(--gray-500);line-height:1.6"><strong style="color:var(--blue-700)">ℹ️ Eslatma:</strong> Tizimga kirish faqat Markaziy bank tomonidan tayinlangan tekshiruvchilar uchun.</div></div></div></div>
 </div>
 <div id="surveyPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">🏛️</div><div class="header-content" style="flex:1"><h1>PF-246 O'rganish Ma'lumotnomasi</h1><p>O'zbekiston Respublikasi Markaziy banki</p></div><div class="header-right"><div class="gps-badge on"><span class="gps-dot on"></span> GPS faol</div><div class="user-badge" id="uBadge">👤 —</div><button class="btn btn-sm btn-outline" onclick="openPw()">🔑</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
+<div class="header"><div class="header-container"><div class="logo-box">🏛️</div><div class="header-content" style="flex:1"><h1>PF-246 O'rganish Ma'lumotnomasi</h1><p>O'zbekiston Respublikasi Markaziy banki</p></div>
+<!-- MODE TOGGLE -->
+<div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="modeToggle">
+<button onclick="switchMode('ayoqsh')" id="modeAyoqsh" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
+<button onclick="switchMode('notarius')" id="modeNotarius" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:transparent;color:var(--gray-400)">📜 Notarius</button>
+</div>
+<div class="header-right"><div class="gps-badge on"><span class="gps-dot on"></span> GPS faol</div><div class="user-badge" id="uBadge">👤 —</div><button class="btn btn-sm btn-outline" onclick="openPw()">🔑</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
 <div class="main-container">
 <div class="stats-grid"><div class="stat-card"><div class="stat-value" id="sA">0</div><div class="stat-label">Javob berildi</div></div><div class="stat-card"><div class="stat-value" id="sT">26</div><div class="stat-label">Jami savollar</div></div><div class="stat-card"><div class="stat-value" id="sP">0%</div><div class="stat-label">Tayyorlik</div></div><div class="stat-card"><div class="stat-value" id="sS">0</div><div class="stat-label">Yuborilgan</div></div></div>
 <div class="disclaimer-card"><div class="disclaimer-header" onclick="toggleDis()"><span style="font-size:20px">📜</span><h3>O'zbekiston Respublikasi Prezidentining 2025 yil 10 dekabrdagi PF-246-sonli Farmoni ijrosini tashkil etish tegishli mas'ullarning bajaradigan vazifalari</h3><span id="disT" class="disclaimer-toggle">▼</span></div><div id="disB" class="disclaimer-body"></div></div>
 <div class="tabs-container" id="secTabs"></div>
-<div class="card"><div class="card-header"><div class="card-icon" id="sI">🏪</div><div class="card-title" id="sTi">AYOQSH ma'lumotlari</div></div><div class="card-body"><div class="question-list" id="qList"></div><div class="nav-buttons" id="nBtns"></div></div></div>
+<div class="card"><div class="card-header"><div class="card-icon" id="sI">🏪</div><div class="card-title" id="sTi">AYOQSH ma'lumotlari</div><div style="margin-left:auto;display:flex;gap:8px"><button onclick="addNewAyoqsh()" id="newAyBtn" style="height:38px;padding:0 16px;border:2px solid #3b82f6;background:#eff6ff;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;color:#1d4ed8;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">+ Yangi AYOQSH</button><button onclick="toggleNoActivity()" id="noActBtn" style="height:38px;padding:0 16px;border:2px solid #fca5a5;background:#fef2f2;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;color:#dc2626;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">🚫 Faoliyat ko'rsatmayapti</button></div></div>
+<!-- NO ACTIVITY quick-submit panel -->
+<div id="noActPanel" style="display:none;padding:20px;background:linear-gradient(135deg,#fef2f2,#fff5f5);border-bottom:2px solid #fca5a5">
+<div style="text-align:center;margin-bottom:16px"><div style="font-size:48px;margin-bottom:8px">🚫</div><div style="font-size:16px;font-weight:800;color:#dc2626">AYOQSH faoliyat ko'rsatmayapti</div><div style="font-size:12px;color:#991b1b;margin-top:4px">Faqat AYOQSH nomi va sababni yozib yuborishingiz mumkin</div></div>
+<div style="max-width:500px;margin:0 auto">
+<label style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">AYOQSH nomi *</label>
+<input id="noActName" class="form-input" placeholder="AYOQSH nomini yozing" style="margin-bottom:12px;border-color:#fca5a5">
+<label style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Sababi / Izoh</label>
+<textarea id="noActReason" class="form-textarea" placeholder="Nima sababdan faoliyat ko'rsatmayapti..." rows="3" style="margin-bottom:12px;border-color:#fca5a5"></textarea>
+<div style="display:flex;gap:10px">
+<button onclick="toggleNoActivity()" class="btn btn-outline" style="flex:1;color:var(--gray-700);border-color:var(--gray-300)">← Ortga</button>
+<button onclick="submitNoActivity()" class="btn btn-danger" style="flex:2;font-size:14px">🚫 Yuborish</button>
+</div>
+</div>
+</div>
+<div class="card-body" id="qCardBody"><div class="question-list" id="qList"></div><div class="nav-buttons" id="nBtns"></div></div></div>
 <div class="submit-bar"><button class="btn btn-gold" onclick="submitS()">📤 Ma'lumotnomani yuborish</button></div>
 <div class="history-section" id="hSec" style="display:none"><div class="history-header"><div class="history-title">📋 Yuborilgan ma'lumotnomalar</div><div id="hCnt" style="font-size:13px;font-weight:700;color:var(--blue-900)">0 ta</div></div><div class="history-list" id="hList"></div></div>
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
@@ -191,7 +236,32 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="main-container">
 <div class="stats-grid"><div class="stat-card"><div class="stat-value" id="at">0</div><div class="stat-label">Jami yuborilgan</div></div><div class="stat-card"><div class="stat-value">22</div><div class="stat-label">Jami foydalanuvchi</div></div><div class="stat-card"><div class="stat-value" id="aa">0</div><div class="stat-label">Faol tekshiruvchi</div></div><div class="stat-card"><div class="stat-value" id="al">0</div><div class="stat-label">Lokatsiya pinglar</div></div></div>
 <div class="tabs-container"><button class="tab-btn active" onclick="setAT(this,'tO')">📊 Umumiy ko'rinish</button><button class="tab-btn" onclick="setAT(this,'tU')">👥 Foydalanuvchilar</button><button class="tab-btn" onclick="setAT(this,'tS')">📋 Ma'lumotnomalar</button><button class="tab-btn" onclick="setAT(this,'tL')">📍 Lokatsiyalar</button><button class="tab-btn" onclick="setAT(this,'tE')">💾 Eksport</button><button class="tab-btn" onclick="setAT(this,'tCfg')">⚙️ Sozlamalar</button></div>
-<div id="tO" class="card"><div class="card-header"><div class="card-icon">📊</div><div class="card-title">Hududlar bo'yicha statistika</div></div><div class="card-body"><div class="admin-grid" id="aG"></div></div></div>
+<div id="tO" class="card">
+<div class="card-header"><div class="card-icon">📊</div><div class="card-title">Umumiy statistika</div><div style="margin-left:auto;font-size:11px;color:var(--gray-400)" id="filterCount"></div></div>
+<div class="card-body">
+<!-- FILTER PANEL -->
+<div style="padding:16px;background:linear-gradient(135deg,#f0f9ff,#eff6ff);border:2px solid #bfdbfe;border-radius:14px;margin-bottom:16px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:18px">🔍</span><span style="font-size:14px;font-weight:800;color:var(--blue-800)">Filtrlar</span><button onclick="clearFilters()" style="margin-left:auto;height:30px;padding:0 12px;border:1px solid var(--gray-300);background:white;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--gray-600)">✕ Tozalash</button></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+<!-- Vakil filter -->
+<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">👤 Biriktirilgan vakil</label><select id="fVakil" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<!-- Hudud filter -->
+<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">📍 Hudud</label><select id="fHudud" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<!-- Faoliyat turi filter -->
+<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">⛽ Faoliyat turi</label><select id="fType" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<!-- Bank (from ans 1.5) filter -->
+<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🏦 Xizmat ko'rsatuvchi bank</label><select id="fBank" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<!-- Text search -->
+<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🔎 Qidiruv</label><input id="fSearch" class="form-input" style="height:40px;font-size:12px" placeholder="AYOQSH nomi, STIR..." oninput="applyFilters()"></div>
+</div>
+</div>
+<!-- FILTER STATS -->
+<div id="filterStats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px"></div>
+<!-- FILTERED RESULTS TABLE -->
+<div id="filterResults"></div>
+<!-- USER CARDS GRID -->
+<div style="margin-top:16px"><div style="font-size:14px;font-weight:800;color:var(--blue-800);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gray-200)">👥 Vakillar bo'yicha</div><div class="admin-grid" id="aG"></div></div>
+</div></div>
 <div id="tU" class="card" style="display:none"><div class="card-header"><div class="card-icon">👥</div><div class="card-title">Foydalanuvchilar ro'yxati</div></div><div class="card-body" id="aUB"></div></div>
 <div id="tS" class="card" style="display:none"><div class="card-header"><div class="card-icon">📋</div><div class="card-title">Barcha ma'lumotnomalar</div></div><div class="card-body" id="aSB"></div></div>
 <div id="tL" class="card" style="display:none"><div class="card-header"><div class="card-icon">📍</div><div class="card-title">Real vaqtda lokatsiyalar</div><div style="margin-left:auto;display:flex;align-items:center;gap:6px"><span class="gps-dot on"></span><span style="font-size:11px;font-weight:700;color:var(--green-600)" id="liveTimer">Yangilanmoqda...</span></div></div><div class="card-body">
@@ -346,30 +416,32 @@ user20:{pw:'User20@2025',role:'user',name:'N.Tursunov',reg:'Chinoz t.',ph:'97-92
 user21:{pw:'User21@2025',role:'user',name:'A.Shomirov',reg:'Yuqorichirchiq t.',ph:'94-945-16-64'},
 user22:{pw:'User22@2025',role:'user',name:'A.Mansurov',reg:"Yangiyo'l t.",ph:'97-720-73-37'},
 };
+var AYOQSH_DB=[{"stir":"202733078","name":"МЧЖ  ИЛГОР","dname":"МЧЖ  ИЛГОР","hudud":"Angren sh.","type":"Benzin"},{"stir":"203089356","name":"`UMID-2` MCHJ","dname":"`UMID-2` MCHJ (1-filial)","hudud":"Angren sh.","type":"Benzin"},{"stir":"203089356","name":"`UMID-2` MCHJ","dname":"`UMID-2` MCHJ (2-filial)","hudud":"Angren sh.","type":"Benzin"},{"stir":"300216703","name":"ЧП `OLTIN VODIY RIVOJ`","dname":"ЧП `OLTIN VODIY RIVOJ`","hudud":"Angren sh.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Angren sh.","type":"Benzin"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (1-filial)","hudud":"Angren sh.","type":"Benzin"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (2-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (3-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (4-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (5-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (6-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (7-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (8-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (9-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (10-filial)","hudud":"Angren sh.","type":"Metan"},{"stir":"305856133","name":"`ASIA  GRAND PETROL` XK","dname":"`ASIA  GRAND PETROL` XK","hudud":"Angren sh.","type":"Benzin"},{"stir":"306377056","name":"`XURSHID-RAYXON-BARAKA` MCHJ","dname":"`XURSHID-RAYXON-BARAKA` MCHJ","hudud":"Angren sh.","type":"Benzin"},{"stir":"306585225","name":"`ANGREN GAZ KOMPRESSOR` MCHJ","dname":"`ANGREN GAZ KOMPRESSOR` MCHJ","hudud":"Angren sh.","type":"АГНКС (газ)"},{"stir":"309643206","name":"`001-OIL` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`001-OIL` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Angren sh.","type":"Benzin"},{"stir":"310105131","name":"`MAX PETROL II` MCHJ","dname":"`MAX PETROL II` MCHJ","hudud":"Angren sh.","type":"Benzin"},{"stir":"310353670","name":"`KOCKO OIL` MCHJ","dname":"`KOCKO OIL` MCHJ","hudud":"Angren sh.","type":"Benzin"},{"stir":"310914264","name":"`TRASSA 24` MCHJ","dname":"`TRASSA 24` MCHJ","hudud":"Angren sh.","type":"АГНКС (газ)"},{"stir":"201557717","name":"УМИД М.Ч.Ж","dname":"УМИД М.Ч.Ж","hudud":"Bekobod t.","type":"Benzin"},{"stir":"204428161","name":"`BOBOJONOV ABDURASUL` XK","dname":"`BOBOJONOV ABDURASUL` XK","hudud":"Bekobod t.","type":"Benzin"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"Bekobod t.","type":"Benzin"},{"stir":"204861076","name":"DADABOEVA BEGOYIM Х.К.","dname":"DADABOEVA BEGOYIM Х.К.","hudud":"Bekobod t.","type":"Benzin"},{"stir":"206810612","name":"`AZIM-JAVLON FAYZ` XK","dname":"`AZIM-JAVLON FAYZ` XK","hudud":"Bekobod t.","type":"Benzin"},{"stir":"301734232","name":"ООО `AVATON-GAZ-AVTO`","dname":"ООО `AVATON-GAZ-AVTO`","hudud":"Bekobod t.","type":"Metan"},{"stir":"306042591","name":"`ZAFAR GAZPROM` MCHJ","dname":"`ZAFAR GAZPROM` MCHJ (1-filial)","hudud":"Bekobod t.","type":"Metan"},{"stir":"306042591","name":"`ZAFAR GAZPROM` MCHJ","dname":"`ZAFAR GAZPROM` MCHJ (2-filial)","hudud":"Bekobod t.","type":"Metan"},{"stir":"308927975","name":"`SHARQ OLMOS` MCHJ","dname":"`SHARQ OLMOS` MCHJ","hudud":"Bekobod t.","type":"Benzin"},{"stir":"309181046","name":"`UMID XAMKOR` MCHJ","dname":"`UMID XAMKOR` MCHJ","hudud":"Bekobod t.","type":"Benzin"},{"stir":"309836194","name":"`MY-WAY 505 ` MCHJ","dname":"`MY-WAY 505 ` MCHJ","hudud":"Bekobod t.","type":"Benzin"},{"stir":"202445530","name":"ODILJON-SERVIS  Х К","dname":"ODILJON-SERVIS  Х К","hudud":"Bekobod sh.","type":"Benzin"},{"stir":"204024182","name":"`FAYZ-GAZ` MCHJ","dname":"`FAYZ-GAZ` MCHJ","hudud":"Bekobod sh.","type":"АГНКС (газ)"},{"stir":"206195072","name":"`BEKOBOD-GAZ-TO'LDIRISH-STANSIYASI` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`BEKOBOD-GAZ-TO'LDIRISH-STANSIYASI` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Bekobod sh.","type":"АГНКС (газ)"},{"stir":"300463223","name":"`TEMUR-BEKOBOD-SERVIS`ХК","dname":"`TEMUR-BEKOBOD-SERVIS`ХК","hudud":"Bekobod sh.","type":"Benzin"},{"stir":"301032315","name":"`FURNISH-SERVIS` MCHJ","dname":"`FURNISH-SERVIS` MCHJ","hudud":"Bekobod sh.","type":"Benzin"},{"stir":"302415034","name":"`BEKOBOD GAZ TARAQQIYOT` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`BEKOBOD GAZ TARAQQIYOT` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Bekobod sh.","type":"Metan"},{"stir":"306972424","name":"ООО `NURAFSHON GAS TRADE`","dname":"ООО `NURAFSHON GAS TRADE`","hudud":"Bekobod sh.","type":"Metan"},{"stir":"309181046","name":"`UMID XAMKOR` MCHJ","dname":"`UMID XAMKOR` MCHJ","hudud":"Bekobod sh.","type":"Benzin"},{"stir":"310694026","name":"`TIME-NEFT` XK","dname":"`TIME-NEFT` XK","hudud":"Bekobod sh.","type":"Benzin"},{"stir":"310995885","name":"`FAYZ 007` MCHJ","dname":"`FAYZ 007` MCHJ","hudud":"Bekobod sh.","type":"Metan"},{"stir":"202381138","name":"ДАВРОН КО ЛТД КТФ","dname":"ДАВРОН КО ЛТД КТФ","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"205747327","name":"ООО `LAERTA-FLER`","dname":"ООО `LAERTA-FLER`","hudud":"Bo'ka t.","type":"Metan"},{"stir":"300564801","name":"`TRAST MITANG` MCHJ","dname":"`TRAST MITANG` MCHJ","hudud":"Bo'ka t.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"301836460","name":"ООО `REMAKS SAVDO SERVIS`","dname":"ООО `REMAKS SAVDO SERVIS`","hudud":"Bo'ka t.","type":"Metan"},{"stir":"301914159","name":"ООО `BOG'I BISOT SAVDO`","dname":"ООО `BOG'I BISOT SAVDO`","hudud":"Bo'ka t.","type":"Metan"},{"stir":"303113290","name":"`TAXI GOLDEN FLY` MCHJ","dname":"`TAXI GOLDEN FLY` MCHJ","hudud":"Bo'ka t.","type":"АГНКС (газ)"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (1-filial)","hudud":"Bo'ka t.","type":"Metan"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (2-filial)","hudud":"Bo'ka t.","type":"Metan"},{"stir":"305896298","name":"`SARDOR AZIZ OIL` XK","dname":"`SARDOR AZIZ OIL` XK","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"309946840","name":"`BILLURA OIL` MCHJ","dname":"`BILLURA OIL` MCHJ","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"311717840","name":"`AUKSIN` MCHJ","dname":"`AUKSIN` MCHJ","hudud":"Bo'ka t.","type":"Benzin"},{"stir":"200605317","name":"`CHINOBOD NEFT BAZASI` MCHJ","dname":"`CHINOBOD NEFT BAZASI` MCHJ","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"200658084","name":"ЧП `RIVOJ-BARAKA`","dname":"ЧП `RIVOJ-BARAKA`","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"300613794","name":"ООО `OZODBOSH GAZ OIL`","dname":"ООО `OZODBOSH GAZ OIL`","hudud":"Bo'stonliq t.","type":"АГНКС (газ)"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"301296651","name":"ООО `AZADBASH-OIL`","dname":"ООО `AZADBASH-OIL`","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"301594874","name":"`REGION GAZ SERVIS` MCHJ","dname":"`REGION GAZ SERVIS` MCHJ","hudud":"Bo'stonliq t.","type":"Metan"},{"stir":"306821571","name":"ООО `MIR FARZANDLAR`","dname":"ООО `MIR FARZANDLAR`","hudud":"Bo'stonliq t.","type":"Metan"},{"stir":"306942635","name":"`FULL OF THE FULL` MCHJ","dname":"`FULL OF THE FULL` MCHJ","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"307563125","name":"MCHJ ZAKIROV PETRO","dname":"MCHJ ZAKIROV PETRO","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"308669695","name":"`TILLA EKO GAZ` MCHJ","dname":"`TILLA EKO GAZ` MCHJ (1-filial)","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"308669695","name":"`TILLA EKO GAZ` MCHJ","dname":"`TILLA EKO GAZ` MCHJ (2-filial)","hudud":"Bo'stonliq t.","type":"Metan"},{"stir":"309289274","name":"`SEG TASCO` MCHJ","dname":"`SEG TASCO` MCHJ","hudud":"Bo'stonliq t.","type":"Metan"},{"stir":"310889408","name":"`UMID FIELD` MCHJ","dname":"`UMID FIELD` MCHJ","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"312160372","name":"`BIGG PETROLEUM` MCHJ","dname":"`BIGG PETROLEUM` MCHJ","hudud":"Bo'stonliq t.","type":"Benzin"},{"stir":"200605317","name":"`CHINOBOD NEFT BAZASI` MCHJ","dname":"`CHINOBOD NEFT BAZASI` MCHJ","hudud":"Zangiota t.","type":"Benzin"},{"stir":"201202826","name":"`KALDERA TRADE` MCHJ","dname":"`KALDERA TRADE` MCHJ","hudud":"Zangiota t.","type":"Benzin"},{"stir":"201293500","name":"ООО `NEFTESERVIS`","dname":"ООО `NEFTESERVIS`","hudud":"Zangiota t.","type":"Benzin"},{"stir":"201308922","name":"`EGALITE` MCHJ","dname":"`EGALITE` MCHJ","hudud":"Zangiota t.","type":"АГНКС (газ)"},{"stir":"203194338","name":"`OHANGARON GAZ TO`LDIRISH SHAHOBCHASI` MCHJ","dname":"`OHANGARON GAZ TO`LDIRISH SHAHOBCHASI` MCHJ","hudud":"Zangiota t.","type":"АГНКС (газ)"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA` (1-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA` (2-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"204755279","name":"`GAZSNAB` MCHJ","dname":"`GAZSNAB` MCHJ","hudud":"Zangiota t.","type":"Metan"},{"stir":"205293664","name":"`GAZ AND MIR OIL` MCHJ QK","dname":"`GAZ AND MIR OIL` MCHJ QK (1-filial)","hudud":"Zangiota t.","type":"Metan"},{"stir":"205293664","name":"`GAZ AND MIR OIL` MCHJ QK","dname":"`GAZ AND MIR OIL` MCHJ QK (2-filial)","hudud":"Zangiota t.","type":"Metan"},{"stir":"205630552","name":"GAZKOMPRESSOR-SERVIS МЧЖ","dname":"GAZKOMPRESSOR-SERVIS МЧЖ","hudud":"Zangiota t.","type":"Metan"},{"stir":"205803329","name":"`SHARQ GLOBAL SERVIS` MCHJ","dname":"`SHARQ GLOBAL SERVIS` MCHJ","hudud":"Zangiota t.","type":"Benzin"},{"stir":"207218469","name":"`EQUAL SUPER GAZ` MCHJ","dname":"`EQUAL SUPER GAZ` MCHJ","hudud":"Zangiota t.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (3-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (4-filial)","hudud":"Zangiota t.","type":"Benzin"},{"stir":"302637691","name":"`GAZ NEFT - AVTO BENZIN` MCHJ","dname":"`GAZ NEFT - AVTO BENZIN` MCHJ","hudud":"Zangiota t.","type":"Metan"},{"stir":"302793856","name":"`OLIMJON BIZNES GROUP` XK","dname":"`OLIMJON BIZNES GROUP` XK","hudud":"Zangiota t.","type":"Benzin"},{"stir":"303048625","name":"ЧП `SAIDAMIR NEFT BUSINESS`","dname":"ЧП `SAIDAMIR NEFT BUSINESS`","hudud":"Zangiota t.","type":"Benzin"},{"stir":"303308284","name":"OZOD GAZ INVEST MCHJ","dname":"OZOD GAZ INVEST MCHJ","hudud":"Zangiota t.","type":"АГНКС (газ)"},{"stir":"303476694","name":"ООО `MEGA OIL BIZNES`","dname":"ООО `MEGA OIL BIZNES`","hudud":"Zangiota t.","type":"Benzin"},{"stir":"308055108","name":"`PRO GAZOIL` MCHJ","dname":"`PRO GAZOIL` MCHJ","hudud":"Zangiota t.","type":"Metan"},{"stir":"310071571","name":"`SIGMA TEAM` MCHJ","dname":"`SIGMA TEAM` MCHJ","hudud":"Zangiota t.","type":"Benzin"},{"stir":"312174860","name":"`PETROLIUM SEVEN GROUP` MCHJ","dname":"`PETROLIUM SEVEN GROUP` MCHJ","hudud":"Zangiota t.","type":"Benzin"},{"stir":"200893902","name":"`DIYDOR` MCHJ","dname":"`DIYDOR` MCHJ (1-filial)","hudud":"Qibray t.","type":"Metan"},{"stir":"200893902","name":"`DIYDOR` MCHJ","dname":"`DIYDOR` MCHJ (2-filial)","hudud":"Qibray t.","type":"Metan"},{"stir":"202518676","name":"`SAIMIR` MCHJ","dname":"`SAIMIR` MCHJ (1-filial)","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"202518676","name":"`SAIMIR` MCHJ","dname":"`SAIMIR` MCHJ (2-filial)","hudud":"Qibray t.","type":"Metan"},{"stir":"206949920","name":"`DAVRON SIFATLI GAZ SERVIS`МЧЖ","dname":"`DAVRON SIFATLI GAZ SERVIS`МЧЖ","hudud":"Qibray t.","type":"Metan"},{"stir":"300613794","name":"ООО `OZODBOSH GAZ OIL`","dname":"ООО `OZODBOSH GAZ OIL`","hudud":"Qibray t.","type":"Benzin"},{"stir":"300804184","name":"`MIRISLOM MIRASULOV` MCHJ","dname":"`MIRISLOM MIRASULOV` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Qibray t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Qibray t.","type":"Benzin"},{"stir":"301073620","name":"`ZIYODA-SHIRIN` MCHJ","dname":"`ZIYODA-SHIRIN` MCHJ","hudud":"Qibray t.","type":"Metan"},{"stir":"301719202","name":"TURDIBOY SAVDO BIZNES  ХК","dname":"TURDIBOY SAVDO BIZNES  ХК","hudud":"Qibray t.","type":"Benzin"},{"stir":"302682227","name":"`ISKANDAR MAFTUNA BUSINESS` MCHJ","dname":"`ISKANDAR MAFTUNA BUSINESS` MCHJ","hudud":"Qibray t.","type":"Metan"},{"stir":"303043054","name":"`TURON FAYZLI KERAMIKA` MCHJ","dname":"`TURON FAYZLI KERAMIKA` MCHJ","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"303108953","name":"`FULLOIL` MCHJ","dname":"`FULLOIL` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"303362932","name":"ООО `SHERZOD BIZNES SERVIS`","dname":"ООО `SHERZOD BIZNES SERVIS`","hudud":"Qibray t.","type":"Benzin"},{"stir":"303431023","name":"`MADINA-MARDONA BIZNES` МЧЖ","dname":"`MADINA-MARDONA BIZNES` МЧЖ","hudud":"Qibray t.","type":"Benzin"},{"stir":"303568359","name":"MCHJ CAPITAL GAS PLUS","dname":"MCHJ CAPITAL GAS PLUS","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"303913356","name":"`DO`RMON BIZNES SAVDO` MCHJ","dname":"`DO`RMON BIZNES SAVDO` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"304253157","name":"ООО `QIBRAY METAN`","dname":"ООО `QIBRAY METAN`","hudud":"Qibray t.","type":"Metan"},{"stir":"304675669","name":"`AUTO LEADING BUSINESS` MCHJ","dname":"`AUTO LEADING BUSINESS` MCHJ (1-filial)","hudud":"Qibray t.","type":"Metan"},{"stir":"304675669","name":"`AUTO LEADING BUSINESS` MCHJ","dname":"`AUTO LEADING BUSINESS` MCHJ (2-filial)","hudud":"Qibray t.","type":"Metan"},{"stir":"304885257","name":"`DJA BEST KAPITAL` MCHJ","dname":"`DJA BEST KAPITAL` MCHJ","hudud":"Qibray t.","type":"Metan"},{"stir":"305572338","name":"`MECHTA SEMYI` MCHJ","dname":"`MECHTA SEMYI` MCHJ (1-filial)","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"305572338","name":"`MECHTA SEMYI` MCHJ","dname":"`MECHTA SEMYI` MCHJ (2-filial)","hudud":"Qibray t.","type":"Benzin"},{"stir":"305853114","name":"`NEO GAS SOLUTIONS` MCHJ","dname":"`NEO GAS SOLUTIONS` MCHJ","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"306492594","name":"ЧП `FARM MEHRIBON INVEST`","dname":"ЧП `FARM MEHRIBON INVEST`","hudud":"Qibray t.","type":"АГНКС (газ)"},{"stir":"310141967","name":"`FUELSIS` MCHJ","dname":"`FUELSIS` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"310142009","name":"`ECO OIL STATION` MCHJ","dname":"`ECO OIL STATION` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"310142070","name":"`ECONOM PETROL` MCHJ","dname":"`ECONOM PETROL` MCHJ","hudud":"Qibray t.","type":"Benzin"},{"stir":"203373067","name":"ЧП `BAXTIYOR`","dname":"ЧП `BAXTIYOR`","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"203731720","name":"`XO`JA` MCHJ","dname":"`XO`JA` MCHJ (1-filial)","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"203731720","name":"`XO`JA` MCHJ","dname":"`XO`JA` MCHJ (2-filial)","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"301283122","name":"`SH-B-K OIL GAZ` MCHJ","dname":"`SH-B-K OIL GAZ` MCHJ","hudud":"Quiyichirchiq t.","type":"Metan"},{"stir":"301756459","name":"`NODIRA DINORA BARAKA` MCHJ","dname":"`NODIRA DINORA BARAKA` MCHJ","hudud":"Quiyichirchiq t.","type":"Metan"},{"stir":"307642264","name":"`JAM GROUP OIL GAZ` MCHJ","dname":"`JAM GROUP OIL GAZ` MCHJ","hudud":"Quiyichirchiq t.","type":"Metan"},{"stir":"308258978","name":"ООО `NODIRA-AMINABONU`","dname":"ООО `NODIRA-AMINABONU`","hudud":"Quiyichirchiq t.","type":"Metan"},{"stir":"311243332","name":"`RAYON OIL` MCHJ","dname":"`RAYON OIL` MCHJ","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"311570496","name":"`PETROLIUM STATIONS` MCHJ","dname":"`PETROLIUM STATIONS` MCHJ","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"312065158","name":"`SARVAR ASAD OIL` MCHJ","dname":"`SARVAR ASAD OIL` MCHJ","hudud":"Quiyichirchiq t.","type":"Benzin"},{"stir":"205293878","name":"MUBARRO-OYL МЧЖ","dname":"MUBARRO-OYL МЧЖ","hudud":"Nurafshon sh.","type":"Benzin"},{"stir":"301065504","name":"`SAFOMAX OIL` MCHJ","dname":"`SAFOMAX OIL` MCHJ","hudud":"Nurafshon sh.","type":"Benzin"},{"stir":"302528036","name":"`TO YTEPA METAN` МЧЖ","dname":"`TO YTEPA METAN` МЧЖ (1-filial)","hudud":"Nurafshon sh.","type":"Metan"},{"stir":"302528036","name":"`TO YTEPA METAN` МЧЖ","dname":"`TO YTEPA METAN` МЧЖ (2-filial)","hudud":"Nurafshon sh.","type":"Metan"},{"stir":"305091042","name":"`AS-AL METAN GAS` MCHJ","dname":"`AS-AL METAN GAS` MCHJ","hudud":"Nurafshon sh.","type":"Metan"},{"stir":"306690705","name":"`NURAFSHON     GAZ      SERVIS` MCHJ","dname":"`NURAFSHON     GAZ      SERVIS` MCHJ","hudud":"Nurafshon sh.","type":"Metan"},{"stir":"306853707","name":"ООО `FORMULA   1`","dname":"ООО `FORMULA   1`","hudud":"Nurafshon sh.","type":"Benzin"},{"stir":"307197754","name":"`JANNATMAKON KUCH YUKSALISH` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`JANNATMAKON KUCH YUKSALISH` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Nurafshon sh.","type":"Benzin"},{"stir":"205110083","name":"`OLIMKENT-AVTOREYS` MCHJ","dname":"`OLIMKENT-AVTOREYS` MCHJ","hudud":"Oqqo'rg'on t.","type":"Metan"},{"stir":"205163484","name":"КУМУШ АЯ Х.С.Ф","dname":"КУМУШ АЯ Х.С.Ф","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"303833424","name":"`SAYYODBEK ZIYO BIZNES` MCHJ","dname":"`SAYYODBEK ZIYO BIZNES` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"304973131","name":"ООО `ALIMKENT OIL`","dname":"ООО `ALIMKENT OIL`","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"304973685","name":"ООО `ABBOSXON OIL BIZNES`","dname":"ООО `ABBOSXON OIL BIZNES`","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"305529340","name":"ООО `ALIMKENT METAN`","dname":"ООО `ALIMKENT METAN`","hudud":"Oqqo'rg'on t.","type":"Metan"},{"stir":"309073267","name":"`NEFTPRODUCT` MCHJ","dname":"`NEFTPRODUCT` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"310636634","name":"`SAYYODBEK DIYOR OIL` MCHJ","dname":"`SAYYODBEK DIYOR OIL` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"310969434","name":"`DUNYO OIL` MCHJ","dname":"`DUNYO OIL` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"311050383","name":"`TEXAKO OIL` MCHJ","dname":"`TEXAKO OIL` MCHJ","hudud":"Oqqo'rg'on t.","type":"АГНКС (газ)"},{"stir":"311827214","name":"`ULUG OIL` MCHJ","dname":"`ULUG OIL` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"311984352","name":"`MINOR LUXE` MCHJ","dname":"`MINOR LUXE` MCHJ","hudud":"Oqqo'rg'on t.","type":"Benzin"},{"stir":"206153837","name":"`GLOBAL INVEST INC ` MCHJ","dname":"`GLOBAL INVEST INC ` MCHJ (1-filial)","hudud":"Olmaliq sh.","type":"АГНКС (газ)"},{"stir":"206153837","name":"`GLOBAL INVEST INC` MCHJ","dname":"`GLOBAL INVEST INC` MCHJ (2-filial)","hudud":"Olmaliq sh.","type":"Metan"},{"stir":"207101132","name":"OLMALIQ ALTO OIL","dname":"OLMALIQ ALTO OIL","hudud":"Olmaliq sh.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Olmaliq sh.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Olmaliq sh.","type":"Benzin"},{"stir":"303036940","name":"`PETROL ENERGY` MCHJ","dname":"`PETROL ENERGY` MCHJ","hudud":"Olmaliq sh.","type":"Benzin"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (1-filial)","hudud":"Olmaliq sh.","type":"Metan"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (2-filial)","hudud":"Olmaliq sh.","type":"Metan"},{"stir":"310450725","name":"`GRAND MAX PETROLIUM` MCHJ","dname":"`GRAND MAX PETROLIUM` MCHJ","hudud":"Olmaliq sh.","type":"Benzin"},{"stir":"201063081","name":"ABDULHAQ XF","dname":"ABDULHAQ XF","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"204064878","name":"`ONLY GAZ` XK","dname":"`ONLY GAZ` XK (1-filial)","hudud":"Ohangaron t.","type":"Metan"},{"stir":"204064878","name":"`ONLY GAZ` XK","dname":"`ONLY GAZ` XK (2-filial)","hudud":"Ohangaron t.","type":"АГНКС (газ)"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"205059304","name":"`GLOBAL-GAS` MCHJ","dname":"`GLOBAL-GAS` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"205382213","name":"MCHJ OSIYO-JANNAT BOG I","dname":"MCHJ OSIYO-JANNAT BOG I","hudud":"Ohangaron t.","type":"Metan"},{"stir":"207102882","name":"`METAN TRANS SERVIS` MCHJ","dname":"`METAN TRANS SERVIS` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"300565508","name":"`BARHAYOT PLUS` MCHJ","dname":"`BARHAYOT PLUS` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"300689907","name":"ООО `OHANGARON-METAN GAZ`","dname":"ООО `OHANGARON-METAN GAZ`","hudud":"Ohangaron t.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"301347760","name":"`MORION GAZ` MCHJ","dname":"`MORION GAZ` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"301976754","name":"`GGM AND JEM` MCHJ","dname":"`GGM AND JEM` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"302450579","name":"`BLAZER MET PLUS ` MCHJ","dname":"`BLAZER MET PLUS ` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"302451560","name":"ACONITE OIL  МЧЖ","dname":"ACONITE OIL  МЧЖ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"302618271","name":"ООО `OHANGARON NUR OIL`","dname":"ООО `OHANGARON NUR OIL`","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"302637691","name":"`GAZ NEFT - AVTO BENZIN` MCHJ","dname":"`GAZ NEFT - AVTO BENZIN` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"302646752","name":"ООО `PURE PETROL`","dname":"ООО `PURE PETROL`","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"302939861","name":"ООО `ANGREN PETROLIUM SERVICE`","dname":"ООО `ANGREN PETROLIUM SERVICE`","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (1-filial)","hudud":"Ohangaron t.","type":"АГНКС (газ)"},{"stir":"303941551","name":"`ANGREN CHARM INVEST` MCHJ QK","dname":"`ANGREN CHARM INVEST` MCHJ QK (2-filial)","hudud":"Ohangaron t.","type":"Metan"},{"stir":"307162370","name":"`AROF  OIL` MCHJ","dname":"`AROF  OIL` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"307553944","name":"`BEST METAN OIL` MCHJ","dname":"`BEST METAN OIL` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"308206875","name":"`MJ GAZ-OIL` MCHJ","dname":"`MJ GAZ-OIL` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"309077009","name":"`MEGA GAZ-PROGRESS BIZNES` MCHJ","dname":"`MEGA GAZ-PROGRESS BIZNES` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"309289274","name":"`SEG TASCO` MCHJ","dname":"`SEG TASCO` MCHJ","hudud":"Ohangaron t.","type":"Benzin"},{"stir":"311329374","name":"`MORE LABOR` MCHJ","dname":"`MORE LABOR` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"312434061","name":"`PETROLIUM PRODUCT` MCHJ","dname":"`PETROLIUM PRODUCT` MCHJ","hudud":"Ohangaron t.","type":"Metan"},{"stir":"205483198","name":"ООО `DIF GAZ SERVIS`","dname":"ООО `DIF GAZ SERVIS`","hudud":"Ohangaron sh.","type":"Metan"},{"stir":"205760050","name":"OHANGARON-AVTOKOMPRESSOR МЧЖ","dname":"OHANGARON-AVTOKOMPRESSOR МЧЖ","hudud":"Ohangaron sh.","type":"Metan"},{"stir":"300565508","name":"`BARHAYOT PLUS` MCHJ","dname":"`BARHAYOT PLUS` MCHJ (1-filial)","hudud":"Ohangaron sh.","type":"Metan"},{"stir":"300565508","name":"`BARHAYOT PLUS` MCHJ","dname":"`BARHAYOT PLUS` MCHJ (2-filial)","hudud":"Ohangaron sh.","type":"Metan"},{"stir":"303473540","name":"`BESHARIQ GAZ SERVIS` MCHJ","dname":"`BESHARIQ GAZ SERVIS` MCHJ","hudud":"Ohangaron sh.","type":"АГНКС (газ)"},{"stir":"305683215","name":"`GOLDEN GAZ OIL` MCHJ","dname":"`GOLDEN GAZ OIL` MCHJ","hudud":"Ohangaron sh.","type":"АГНКС (газ)"},{"stir":"306729004","name":"UNIVERSAL MEGA AVTO OIL MCHJ","dname":"UNIVERSAL MEGA AVTO OIL MCHJ","hudud":"Ohangaron sh.","type":"Metan"},{"stir":"309270924","name":"`AUTONEST` MCHJ","dname":"`AUTONEST` MCHJ","hudud":"Ohangaron sh.","type":"Benzin"},{"stir":"309750248","name":"`SERVIS TORG` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`SERVIS TORG` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Ohangaron sh.","type":"Benzin"},{"stir":"200572233","name":"`PARKENT` FX","dname":"`PARKENT` FX","hudud":"Parkent t.","type":"АГНКС (газ)"},{"stir":"203844650","name":"`БАХОДИР КУЧКОР УГЛИ` ХФ","dname":"`БАХОДИР КУЧКОР УГЛИ` ХФ","hudud":"Parkent t.","type":"Benzin"},{"stir":"205306559","name":"ООО `TEMUR SARBON`","dname":"ООО `TEMUR SARBON`","hudud":"Parkent t.","type":"Metan"},{"stir":"205755508","name":"ООО `PARVOZ GAZ SERVIS`","dname":"ООО `PARVOZ GAZ SERVIS`","hudud":"Parkent t.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Parkent t.","type":"Benzin"},{"stir":"302121852","name":"`NUKUS METAN TRANS SERVIS` MCHJ","dname":"`NUKUS METAN TRANS SERVIS` MCHJ","hudud":"Parkent t.","type":"АГНКС (газ)"},{"stir":"304032645","name":"ООО `PERFECT PETROL`","dname":"ООО `PERFECT PETROL`","hudud":"Parkent t.","type":"Benzin"},{"stir":"304382124","name":"ЧП `PREMIUM PETROL SERVICE`","dname":"ЧП `PREMIUM PETROL SERVICE`","hudud":"Parkent t.","type":"Metan"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Parkent t.","type":"Metan"},{"stir":"308950008","name":"`GULBOG' GROUP` XK","dname":"`GULBOG' GROUP` XK (1-filial)","hudud":"Parkent t.","type":"Benzin"},{"stir":"308950008","name":"`GULBOG' GROUP` XK","dname":"`GULBOG' GROUP` XK (2-filial)","hudud":"Parkent t.","type":"Benzin"},{"stir":"310309960","name":"`NAFTA OIL PARKENT` MCHJ","dname":"`NAFTA OIL PARKENT` MCHJ","hudud":"Parkent t.","type":"Benzin"},{"stir":"311721465","name":"`PARKENTFX` XK","dname":"`PARKENTFX` XK","hudud":"Parkent t.","type":"Benzin"},{"stir":"202736785","name":"ЧП `RADJAMATOV JAMSHID`","dname":"ЧП `RADJAMATOV JAMSHID`","hudud":"Piskent t.","type":"Benzin"},{"stir":"204133823","name":"ООО `AMET INVEST`","dname":"ООО `AMET INVEST`","hudud":"Piskent t.","type":"Metan"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"Piskent t.","type":"Benzin"},{"stir":"300585958","name":"NURMUXAMMAD PETROL MCHJ","dname":"NURMUXAMMAD PETROL MCHJ","hudud":"Piskent t.","type":"Benzin"},{"stir":"300626984","name":"BEKOBOD-GAZ-PROPAN  МЧЖ","dname":"BEKOBOD-GAZ-PROPAN  МЧЖ","hudud":"Piskent t.","type":"Metan"},{"stir":"302215323","name":"AGRO GAZLASHTIRISH SERVIS МЧЖ","dname":"AGRO GAZLASHTIRISH SERVIS МЧЖ","hudud":"Piskent t.","type":"Metan"},{"stir":"302770157","name":"`DIL OZOD SERVIS` МЧЖ","dname":"`DIL OZOD SERVIS` МЧЖ","hudud":"Piskent t.","type":"Benzin"},{"stir":"302810343","name":"`YOQUBBEK SIFAT SERVIS` MCHJ","dname":"`YOQUBBEK SIFAT SERVIS` MCHJ","hudud":"Piskent t.","type":"Metan"},{"stir":"303122874","name":"`ISMOILOV OZODBEK` Х/К","dname":"`ISMOILOV OZODBEK` Х/К","hudud":"Piskent t.","type":"Benzin"},{"stir":"303466819","name":"`PETROL PROGRESS OIL` MCHJ","dname":"`PETROL PROGRESS OIL` MCHJ","hudud":"Piskent t.","type":"Benzin"},{"stir":"303832584","name":"`UMR BOQIY OIL` MCHJ","dname":"`UMR BOQIY OIL` MCHJ (1-filial)","hudud":"Piskent t.","type":"Benzin"},{"stir":"303832584","name":"`UMR BOQIY OIL` MCHJ","dname":"`UMR BOQIY OIL` MCHJ (2-filial)","hudud":"Piskent t.","type":"Benzin"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (1-filial)","hudud":"Piskent t.","type":"Metan"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (2-filial)","hudud":"Piskent t.","type":"Metan"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT (3-filial)","hudud":"Piskent t.","type":"Metan"},{"stir":"307002410","name":"ООО `ALMAZ-MAX OIL`","dname":"ООО `ALMAZ-MAX OIL`","hudud":"Piskent t.","type":"Benzin"},{"stir":"307055908","name":"`INVEST CAPITAL MAX` MCHJ","dname":"`INVEST CAPITAL MAX` MCHJ","hudud":"Piskent t.","type":"Metan"},{"stir":"307642264","name":"`JAM GROUP OIL GAZ` MCHJ","dname":"`JAM GROUP OIL GAZ` MCHJ","hudud":"Piskent t.","type":"Benzin"},{"stir":"311786535","name":"`ECO OIL AVTO` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`ECO OIL AVTO` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Piskent t.","type":"Benzin"},{"stir":"200575126","name":"`MIRZIYOD` MCHJ","dname":"`MIRZIYOD` MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"200900780","name":"MA MURAHONIM ООО","dname":"MA MURAHONIM ООО","hudud":"Toshkent t.","type":"Benzin"},{"stir":"202767447","name":"`SHER SARDOR` MCHJ","dname":"`SHER SARDOR` MCHJ","hudud":"Toshkent t.","type":"Metan"},{"stir":"205012901","name":"ООО `RB-PETROL KLASSIK`","dname":"ООО `RB-PETROL KLASSIK`","hudud":"Toshkent t.","type":"Metan"},{"stir":"206989967","name":"OBOD KAPITAL MCHJ","dname":"OBOD KAPITAL MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"207193558","name":"`BEST PETROLEUM` MCHJ","dname":"`BEST PETROLEUM` MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"300585958","name":"NURMUXAMMAD PETROL MCHJ","dname":"NURMUXAMMAD PETROL MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"300888532","name":"ООО `BEKS TEXNOLOGI GROUP`","dname":"ООО `BEKS TEXNOLOGI GROUP`","hudud":"Toshkent t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Toshkent t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Toshkent t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (3-filial)","hudud":"Toshkent t.","type":"Benzin"},{"stir":"302636930","name":"`YUNUSOBOD METAN SERVIS` MCHJ","dname":"`YUNUSOBOD METAN SERVIS` MCHJ (1-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"302636930","name":"`YUNUSOBOD METAN SERVIS` MCHJ","dname":"`YUNUSOBOD METAN SERVIS` MCHJ (2-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"303034524","name":"ООО `LIDER GAZ BIZNES`","dname":"ООО `LIDER GAZ BIZNES`","hudud":"Toshkent t.","type":"Metan"},{"stir":"303415438","name":"ООО `CLEAN GAS SERVICE`","dname":"ООО `CLEAN GAS SERVICE` (1-filial)","hudud":"Toshkent t.","type":"Benzin"},{"stir":"303415438","name":"ООО `CLEAN GAS SERVICE`","dname":"ООО `CLEAN GAS SERVICE` (2-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"303459232","name":"`EKO GAZ SERVIS` MCHJ","dname":"`EKO GAZ SERVIS` MCHJ (1-filial)","hudud":"Toshkent t.","type":"АГНКС (газ)"},{"stir":"303459232","name":"`EKO GAZ SERVIS` MCHJ","dname":"`EKO GAZ SERVIS` MCHJ (2-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"305515145","name":"`HUBLOT GAS` MCHJ","dname":"`HUBLOT GAS` MCHJ (1-filial)","hudud":"Toshkent t.","type":"АГНКС (газ)"},{"stir":"305515145","name":"`HUBLOT GAS` MCHJ","dname":"`HUBLOT GAS` MCHJ (2-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"306825850","name":"ООО `NATURAL GAZ AVTO`","dname":"ООО `NATURAL GAZ AVTO`","hudud":"Toshkent t.","type":"Metan"},{"stir":"307404685","name":"`MADINA-MAVLON-FAYZ-BARAKA` MCHJ","dname":"`MADINA-MAVLON-FAYZ-BARAKA` MCHJ (1-filial)","hudud":"Toshkent t.","type":"Metan"},{"stir":"307404685","name":"`MADINA-MAVLON-FAYZ-BARAKA` MCHJ","dname":"`MADINA-MAVLON-FAYZ-BARAKA` MCHJ (2-filial)","hudud":"Toshkent t.","type":"Benzin"},{"stir":"307994594","name":"`METAN GAZ TURKISTON` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`METAN GAZ TURKISTON` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Toshkent t.","type":"Benzin"},{"stir":"309392116","name":"`GAZ OIL ORIENT` MCHJ","dname":"`GAZ OIL ORIENT` MCHJ","hudud":"Toshkent t.","type":"Metan"},{"stir":"310641068","name":"`ALIM- MAXX` MCHJ","dname":"`ALIM- MAXX` MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"312530275","name":"`MAXPETRO` MCHJ","dname":"`MAXPETRO` MCHJ","hudud":"Toshkent t.","type":"Benzin"},{"stir":"201862630","name":"ROVATAK OYL  МЧЖ","dname":"ROVATAK OYL  МЧЖ","hudud":"O'rtachirchiq t.","type":"Metan"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"205833323","name":"`MILANGAZ INVEST` MCHJ","dname":"`MILANGAZ INVEST` MCHJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"302637691","name":"`GAZ NEFT - AVTO BENZIN` MCHJ","dname":"`GAZ NEFT - AVTO BENZIN` MCHJ (1-filial)","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"302637691","name":"`GAZ NEFT - AVTO BENZIN` MCHJ","dname":"`GAZ NEFT - AVTO BENZIN` MCHJ (2-filial)","hudud":"O'rtachirchiq t.","type":"Metan"},{"stir":"302952017","name":"`BLACK GOLD PETROL` MCHJ","dname":"`BLACK GOLD PETROL` MCHJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"304987715","name":"`STAR   OIL` MCHJ","dname":"`STAR   OIL` MCHJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"305922240","name":"ИП ООО`TATNEFT -AZS-TASHKENT`","dname":"ИП ООО`TATNEFT -AZS-TASHKENT`","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"306672172","name":"`AVTOMOBILLAR GAZ EHTIYOJI SERVISI` MCHJ","dname":"`AVTOMOBILLAR GAZ EHTIYOJI SERVISI` MCHJ (1-filial)","hudud":"O'rtachirchiq t.","type":"АГНКС (газ)"},{"stir":"306672172","name":"`AVTOMOBILLAR GAZ EHTIYOJI SERVISI` MCHJ","dname":"`AVTOMOBILLAR GAZ EHTIYOJI SERVISI` MCHJ (2-filial)","hudud":"O'rtachirchiq t.","type":"Metan"},{"stir":"307138921","name":"`NURAFSHON  GOLD OIL` MChJ","dname":"`NURAFSHON  GOLD OIL` MChJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"308741994","name":"`BEST OIL NURAFSHON` MCHJ","dname":"`BEST OIL NURAFSHON` MCHJ (1-filial)","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"308741994","name":"`BEST OIL NURAFSHON` MCHJ","dname":"`BEST OIL NURAFSHON` MCHJ (2-filial)","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"308746078","name":"`BILOL LOGISTIK OIL` MCHJ","dname":"`BILOL LOGISTIK OIL` MCHJ","hudud":"O'rtachirchiq t.","type":"Benzin"},{"stir":"201202826","name":"`KALDERA TRADE` MCHJ","dname":"`KALDERA TRADE` MCHJ","hudud":"Chinoz t.","type":"Benzin"},{"stir":"203391909","name":"`ALIF` MCHJ","dname":"`ALIF` MCHJ (1-filial)","hudud":"Chinoz t.","type":"АГНКС (газ)"},{"stir":"203391909","name":"`ALIF` MCHJ","dname":"`ALIF` MCHJ (2-filial)","hudud":"Chinoz t.","type":"Benzin"},{"stir":"204640010","name":"ООО `KUCHLIK NEFT BAZA`","dname":"ООО `KUCHLIK NEFT BAZA`","hudud":"Chinoz t.","type":"Benzin"},{"stir":"204741573","name":"MCHJ REGOTMAS-AZIA","dname":"MCHJ REGOTMAS-AZIA","hudud":"Chinoz t.","type":"Benzin"},{"stir":"205296160","name":"`CHINOZ SO-HIL` Х.К","dname":"`CHINOZ SO-HIL` Х.К","hudud":"Chinoz t.","type":"Benzin"},{"stir":"300136637","name":"`SARBON FAYZ BARAKA` XK","dname":"`SARBON FAYZ BARAKA` XK","hudud":"Chinoz t.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Chinoz t.","type":"Benzin"},{"stir":"301715406","name":"ООО `ZEBO BIZNES KLASS`","dname":"ООО `ZEBO BIZNES KLASS`","hudud":"Chinoz t.","type":"Metan"},{"stir":"304904342","name":"`AUTO MACHINE GAS` MCHJ","dname":"`AUTO MACHINE GAS` MCHJ","hudud":"Chinoz t.","type":"Metan"},{"stir":"305182958","name":"MIDEA TRANS WAY MCHJ","dname":"MIDEA TRANS WAY MCHJ","hudud":"Chinoz t.","type":"Benzin"},{"stir":"307804393","name":"`ELITE METAN GAZ` MCHJ","dname":"`ELITE METAN GAZ` MCHJ","hudud":"Chinoz t.","type":"АГНКС (газ)"},{"stir":"308934169","name":"CHINOZ GAZ MCHJ","dname":"CHINOZ GAZ MCHJ (1-filial)","hudud":"Chinoz t.","type":"Metan"},{"stir":"308934169","name":"CHINOZ GAZ MCHJ","dname":"CHINOZ GAZ MCHJ (2-filial)","hudud":"Chinoz t.","type":"Metan"},{"stir":"309289274","name":"`SEG TASCO` MCHJ","dname":"`SEG TASCO` MCHJ","hudud":"Chinoz t.","type":"Benzin"},{"stir":"309336792","name":"`IN-PETROL` MCHJ","dname":"`IN-PETROL` MCHJ (1-filial)","hudud":"Chinoz t.","type":"Benzin"},{"stir":"309336792","name":"`IN-PETROL` MCHJ","dname":"`IN-PETROL` MCHJ (2-filial)","hudud":"Chinoz t.","type":"Benzin"},{"stir":"311543821","name":"`CHINMAX OIL` MCHJ","dname":"`CHINMAX OIL` MCHJ","hudud":"Chinoz t.","type":"Metan"},{"stir":"200942064","name":"`CHIRCHIQ GAZ TO`LDIRISH STANTSIYASI` MCHJ","dname":"`CHIRCHIQ GAZ TO`LDIRISH STANTSIYASI` MCHJ","hudud":"Chirchiq sh.","type":"АГНКС (газ)"},{"stir":"203001140","name":"`SALIMOVA MUKARRAM` MCHJ","dname":"`SALIMOVA MUKARRAM` MCHJ (1-filial)","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"203001140","name":"`SALIMOVA MUKARRAM` MCHJ","dname":"`SALIMOVA MUKARRAM` MCHJ (2-filial)","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"204377661","name":"`CHIRCHIQ GAZ SERVIS` MCHJ","dname":"`CHIRCHIQ GAZ SERVIS` MCHJ","hudud":"Chirchiq sh.","type":"Metan"},{"stir":"204797930","name":"ООО `SHIRINA-PETROL`","dname":"ООО `SHIRINA-PETROL`","hudud":"Chirchiq sh.","type":"Metan"},{"stir":"205150407","name":"`BEK LUX OIL` MCHJ","dname":"`BEK LUX OIL` MCHJ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"206058542","name":"NIGIN RUS SERVIS  МЧЖ","dname":"NIGIN RUS SERVIS  МЧЖ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"207137087","name":"ООО `CONCRETE PROFI BUSINESS`","dname":"ООО `CONCRETE PROFI BUSINESS`","hudud":"Chirchiq sh.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"301465243","name":"`MAX TRANS OIL` MCHJ","dname":"`MAX TRANS OIL` MCHJ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"303265601","name":"ООО `DURDONA OMAD PLYUS`","dname":"ООО `DURDONA OMAD PLYUS`","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"303442642","name":"`KELAJAK PETROL OIL` MCHJ","dname":"`KELAJAK PETROL OIL` MCHJ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Chirchiq sh.","type":"Metan"},{"stir":"304926118","name":"ООО `ZULKAR`","dname":"ООО `ZULKAR`","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"308556924","name":"`FAYZ METAN-OIL` MCHJ","dname":"`FAYZ METAN-OIL` MCHJ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"311556679","name":"`BIGG OIL` MCHJ","dname":"`BIGG OIL` MCHJ","hudud":"Chirchiq sh.","type":"Benzin"},{"stir":"201549077","name":"`PARKENT` MCHJ","dname":"`PARKENT` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"203730699","name":"ООО `PAVLON PETROL`","dname":"ООО `PAVLON PETROL`","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"204096584","name":"ООО `PARVOZ INVEST`","dname":"ООО `PARVOZ INVEST`","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"204144896","name":"`BARS COMPANI` MCHJ","dname":"`BARS COMPANI` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"205927427","name":"`NILUFAR PETROL` MCHJ","dname":"`NILUFAR PETROL` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"206624939","name":"`SHOSHMA QUYOSH` MCHJ","dname":"`SHOSHMA QUYOSH` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"207095766","name":"`ZANGORI GAZ SERVIS` MCHJ","dname":"`ZANGORI GAZ SERVIS` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"301752488","name":"`OQQO`RG`ON EKOGAZ` MCHJ","dname":"`OQQO`RG`ON EKOGAZ` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"301893068","name":"ООО `SATTOR MURODILLO EKO`","dname":"ООО `SATTOR MURODILLO EKO`","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"303028104","name":"ООО `PARKENT RAVNAQ YUKSALISH BIZNES`","dname":"ООО `PARKENT RAVNAQ YUKSALISH BIZNES`","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"303428603","name":"`UNIVERSAL SERVIS OIL` MCHJ","dname":"`UNIVERSAL SERVIS OIL` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"304831940","name":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`NAMANGAN-ISTIQLOL BOG`I` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"306778980","name":"ООО `FRONZEN GAS`","dname":"ООО `FRONZEN GAS`","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"307178872","name":"`METAN-GAZ KO`KSAROY` MCHJ","dname":"`METAN-GAZ KO`KSAROY` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"307211261","name":"`METAN GAZ ISTIQBOL` MCHJ","dname":"`METAN GAZ ISTIQBOL` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"307358079","name":"`ABDULLABEK IMKON MAKS` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`ABDULLABEK IMKON MAKS` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"307831614","name":"ООО `IB - PETROL`","dname":"ООО `IB - PETROL`","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"308083080","name":"`ASIA REGION OIL GROUP` MCHJ","dname":"`ASIA REGION OIL GROUP` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"308531536","name":"`SUPER GOOD OIL AVANGART` MCHJ","dname":"`SUPER GOOD OIL AVANGART` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"308864256","name":"MCHJ FUEL FOR CARS","dname":"MCHJ FUEL FOR CARS","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"310438825","name":"`SHOSHGAZ SERVIS` MCHJ","dname":"`SHOSHGAZ SERVIS` MCHJ","hudud":"Yuqorichirchiq t.","type":"АГНКС (газ)"},{"stir":"310812922","name":"`ENERGY POINT` MCHJ","dname":"`ENERGY POINT` MCHJ","hudud":"Yuqorichirchiq t.","type":"Benzin"},{"stir":"311845517","name":"`AYBAS OIL` MCHJ","dname":"`AYBAS OIL` MCHJ","hudud":"Yuqorichirchiq t.","type":"Metan"},{"stir":"202375904","name":"N.F.S.AVTO-OIL Х Ф","dname":"N.F.S.AVTO-OIL Х Ф","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"206223155","name":"MEGA MAGISTRAL OIL MCHJ","dname":"MEGA MAGISTRAL OIL MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"206223155","name":"MEGA MAGISTRAL OIL MCHJ","dname":"MEGA MAGISTRAL OIL MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"206223155","name":"MEGA MAGISTRAL OIL MCHJ","dname":"MEGA MAGISTRAL OIL MCHJ (3-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"206977111","name":"`OQSHOM OIL` MCHJ","dname":"`OQSHOM OIL` MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"206977111","name":"`OQSHOM OIL` MCHJ","dname":"`OQSHOM OIL` MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"300864111","name":"`PETROMETAN ` MCHJ","dname":"`PETROMETAN ` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"301604282","name":"`PROGRESS GAZ PETROLEUM` MCHJ","dname":"`PROGRESS GAZ PETROLEUM` MCHJ","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"303017473","name":"`ASIA PEGAS PETROLIUM` MCHJ","dname":"`ASIA PEGAS PETROLIUM` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"303613563","name":"`MUSTAFO-DILINUR` MCHJ","dname":"`MUSTAFO-DILINUR` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"303914917","name":"`KARVON METAN SERVIS` MCHJ","dname":"`KARVON METAN SERVIS` MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"303914917","name":"`KARVON METAN SERVIS` MCHJ","dname":"`KARVON METAN SERVIS` MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"303937001","name":"`PREMIUM OIL` МЧЖ","dname":"`PREMIUM OIL` МЧЖ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"304156364","name":"`EXPRESS DAROMAD` MCHJ","dname":"`EXPRESS DAROMAD` MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"304156364","name":"`EXPRESS DAROMAD` MCHJ","dname":"`EXPRESS DAROMAD` MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"304446264","name":"`LUKOIL UZNEFTEPRODUKT` MCHJ XK","dname":"`LUKOIL UZNEFTEPRODUKT` MCHJ XK (1-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"304446264","name":"`LUKOIL UZNEFTEPRODUKT` MCHJ XK","dname":"`LUKOIL UZNEFTEPRODUKT` MCHJ XK (2-filial)","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"304596782","name":"`GULNORA AVTO LYUKS SERVIS` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`GULNORA AVTO LYUKS SERVIS` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"304968191","name":"ООО `MAX OIL`","dname":"ООО `MAX OIL`","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"305250650","name":"`DILSHODA-SHAH` MCHJ","dname":"`DILSHODA-SHAH` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"305783502","name":"`GAZ AND MIR OIL LTD` MCHJ","dname":"`GAZ AND MIR OIL LTD` MCHJ","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"305905404","name":"ООО `FARZONA OIL`","dname":"ООО `FARZONA OIL`","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"306192485","name":"ООО `SAMARA SFAT METAN SERVIS`","dname":"ООО `SAMARA SFAT METAN SERVIS`","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"306736534","name":"`DELTA  COMPRESSOR` MCHJ","dname":"`DELTA  COMPRESSOR` MCHJ","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"306918584","name":"ООО `NEW  METAN  SEVICE`","dname":"ООО `NEW  METAN  SEVICE`","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"307608296","name":"`SMART  PROGRES  BUSSINES` MCHJ","dname":"`SMART  PROGRES  BUSSINES` MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"307608296","name":"`SMART  PROGRES  BUSSINES` MCHJ","dname":"`SMART  PROGRES  BUSSINES` MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"308556354","name":"`BLACK GOLD ENERGY` MCHJ","dname":"`BLACK GOLD ENERGY` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"308752142","name":"`PREMIUM GAZ OIL` MCHJ","dname":"`PREMIUM GAZ OIL` MCHJ","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"309096490","name":"`GAZ-OIL TREND` MCHJ","dname":"`GAZ-OIL TREND` MCHJ (1-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"309096490","name":"`GAZ-OIL TREND` MCHJ","dname":"`GAZ-OIL TREND` MCHJ (2-filial)","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"309184635","name":"`AVTO OIL-BIZNES` MAS'ULIYATI CHEKLANGAN JAMIYAT","dname":"`AVTO OIL-BIZNES` MAS'ULIYATI CHEKLANGAN JAMIYAT","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"309255736","name":"`MEGA OIL-SIFAT` MCHJ","dname":"`MEGA OIL-SIFAT` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"309297272","name":"`GEPARD AVTO OIL` MCHJ","dname":"`GEPARD AVTO OIL` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"310934367","name":"`RUBIN GAZ OIL` MCHJ","dname":"`RUBIN GAZ OIL` MCHJ","hudud":"Yangiyo'l t.","type":"Metan"},{"stir":"311642398","name":"`GAZ OIL TREND CHAMANZOR` MCHJ","dname":"`GAZ OIL TREND CHAMANZOR` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"311714924","name":"`STAR-O I L` MCHJ","dname":"`STAR-O I L` MCHJ","hudud":"Yangiyo'l t.","type":"Benzin"},{"stir":"204608887","name":"UNIMEX МЧЖ","dname":"UNIMEX МЧЖ","hudud":"Yangiyo'l sh.","type":"Benzin"},{"stir":"205059304","name":"`GLOBAL-GAS` MCHJ","dname":"`GLOBAL-GAS` MCHJ (1-filial)","hudud":"Yangiyo'l sh.","type":"Benzin"},{"stir":"205059304","name":"`GLOBAL-GAS` MCHJ","dname":"`GLOBAL-GAS` MCHJ (2-filial)","hudud":"Yangiyo'l sh.","type":"Metan"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (1-filial)","hudud":"Yangiyo'l sh.","type":"Benzin"},{"stir":"300970850","name":"`UNG PETRO` MCHJ","dname":"`UNG PETRO` MCHJ (2-filial)","hudud":"Yangiyo'l sh.","type":"Benzin"},{"stir":"306401209","name":"DEVELOPMENT ENERGY GROUP MCHJ","dname":"DEVELOPMENT ENERGY GROUP MCHJ","hudud":"Yangiyo'l sh.","type":"Benzin"},{"stir":"310430496","name":"`GOOD-GAZ` MCHJ","dname":"`GOOD-GAZ` MCHJ","hudud":"Yangiyo'l sh.","type":"Benzin"}];
+var NOTARIUS_DB=[{"inn":"506527994","name":"SHAXMAYEV DJAXANGIR TULKUNOVICH","tuman":"Bekobod t.","idora":"Toshkent viloyati, Bekobod tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"AGROBANK\" ATB","dbank":"\"AGROBANK\" ATB","bolim":"Agrobank Bekobod filiali","sh":1,"ya":0},{"inn":"482861815","name":"KARIMOV SARDOR SHAMSHIDINOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"\"ASAKABANK\" AJ","bolim":"Asakabank Yunusobod BXM","sh":1,"ya":0},{"inn":"454047083","name":"SAYDAMENOVA DILNOZA XASANOVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"\"BIZNESNI RIVOJLANTIRISh BANKI\" ATB","bolim":"BRB Yangiyo'l BXM","sh":1,"ya":0},{"inn":"492867359","name":"SHARIPOV FARRUX ABDIXALILOVICH","tuman":"Ohangaron t.","idora":"Toshkent viloyati Ohangaron tumanidagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"BIZNESNI RIVOJLANTIRISh BANKI\" ATB","dbank":"\"BIZNESNI RIVOJLANTIRISh BANKI\" ATB","bolim":"BRB Ohangaron BXM","sh":0,"ya":0},{"inn":"446438597","name":"MUSAKOVA ZULFIYA USMANOVNA","tuman":"Toshkent t.","idora":"Toshkent viloyati, Toshkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"MIKROKREDITBANK\" AT BANKI","dbank":"\"MIKROKREDITBANK\" AT BANKI","bolim":"MKB Keles BXO","sh":1,"ya":0},{"inn":"447118259","name":"NARBAYEV AKMAL ABDURAXMANOVICH","tuman":"Parkent t.","idora":"Toshkent viloyati, Parkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"MIKROKREDITBANK\" AT BANKI","dbank":"\"MIKROKREDITBANK\" AT BANKI","bolim":"MKB Parkent BXM","sh":0,"ya":0},{"inn":"486467755","name":"TILAVOV RAUFJON RASHITOVICH","tuman":"Parkent t.","idora":"Toshkent viloyati, Parkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"MIKROKREDITBANK\" AT BANKI","dbank":"\"MIKROKREDITBANK\" AT BANKI","bolim":"MKB Parkent BXM","sh":0,"ya":0},{"inn":"578340131","name":"SAIDAXMEDOVA SARDORA XAMIDULLAYEVNA","tuman":"Angren sh.","idora":"Toshkent viloyati Angren shahridagi xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"\"TIF MILLIY BANKI\" AJ","bolim":"Milliy bank Angren BXM","sh":1,"ya":1},{"inn":"457205747","name":"XALILOVA MOXICHEXRA ERGASHOVNA","tuman":"Bo'stonliq t.","idora":"Toshkent viloyati, Bo'stonliq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"\"TIF MILLIY BANKI\" AJ","bolim":"Milliy bank G'azalkent BXM","sh":0,"ya":0},{"inn":"447465857","name":"MAMIROVA MUXAYYOXON URAZALIYEVNA","tuman":"O'rtachirchiq t.","idora":"Toshkent viloyati, O'rtachirchiq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"TIF MILLIY BANKI\" AJ","dbank":"\"TIF MILLIY BANKI\" AJ","bolim":"Milliy bank Nurafshon BXM","sh":0,"ya":0},{"inn":"580691203","name":"MUXTOROV O‘TKIRJON RUSTAM O‘G‘LI","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":1,"ya":0},{"inn":"456604006","name":"DJALILOV UMIDJON TURSUNOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":1,"ya":1},{"inn":"487969834","name":"SAMARXODJAYEVA LOLA ABDUKARIMOVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":0,"ya":0},{"inn":"451438929","name":"MADAMINOVA NIGORA KUCHKAROVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":1,"ya":0},{"inn":"552400427","name":"SATTAROV SHOXZOD NURALI O‘G‘LI","tuman":"Ohangaron sh.","idora":"Toshkent viloyati Ohangaron shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":0,"ya":0},{"inn":"448255610","name":"SAIDBOBOYEV TOHIR ABDUKARIMOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"TURONBANK\" AT BANKI","dbank":"\"TURONBANK\" AT BANKI","bolim":"Turonbank Zangiota BXM","sh":1,"ya":0},{"inn":"612139110","name":"NIYAZOV UMID IRISMATOVICH","tuman":"Angren sh.","idora":"Toshkent viloyati, Angren shaxrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","dbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","bolim":"O'zSQB Angren BXM","sh":0,"ya":0},{"inn":"496488907","name":"MIRAXMEDOVA NARGIZA MUXAMMADJONOVNA","tuman":"Angren sh.","idora":"Toshkent viloyati, Angren shaxrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","dbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","bolim":"O'zSQB Angren BXM","sh":0,"ya":0},{"inn":"614199653","name":"BAYMAKOV ABDURASHID ALLABERDIYEVICH","tuman":"Angren sh.","idora":"Toshkent viloyati, Angren shaxrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","dbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","bolim":"O'zSQB Angren BXM","sh":1,"ya":0},{"inn":"447519717","name":"ABDUSALYAMOVA GULNOZA BAXODIROVNA","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"\"UZSANOATKURILIShBANKI\" AT BANKI","bolim":"O'zSQB Qibray BXM","sh":1,"ya":0},{"inn":"494313832","name":"UTEPBERGENOV TAJADDIN ABLAYEVICH","tuman":"Angren sh.","idora":"Toshkent viloyati, Angren shaxrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Angren BXM","sh":0,"ya":0},{"inn":"515122158","name":"DJURAYEV SHERALI RUZIBOYEVICH","tuman":"Bekobod sh.","idora":"Toshkent viloyati Bekobod shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bekobod BXM","sh":0,"ya":0},{"inn":"536015801","name":"NORMATOVA XULKAR O‘KTAM QIZI","tuman":"Bekobod sh.","idora":"Toshkent viloyati Bekobod shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bekobod BXM","sh":0,"ya":0},{"inn":"457790282","name":"SALME ELDAR OLEGOVICH","tuman":"Bekobod sh.","idora":"Toshkent viloyati Bekobod shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bekobod BXM","sh":1,"ya":0},{"inn":"516820769","name":"MAMATKARIMOV ZIYADULLA ABDUXALILOVICH","tuman":"Bekobod sh.","idora":"Toshkent viloyati Bekobod shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bekobod BXM","sh":1,"ya":0},{"inn":"451939881","name":"YOQUBOVA SHAXNOZA XAKIMOVNA","tuman":"Bo'ka t.","idora":"Toshkent viloyati, Bo'ka tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'ka BXM","sh":0,"ya":0},{"inn":"484945684","name":"ISXAKOVA NARGIZA BAXODIROVNA","tuman":"Bo'ka t.","idora":"Toshkent viloyati, Bo'ka tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'ka BXM","sh":0,"ya":0},{"inn":"448916429","name":"DUYSENOVA ZEMZEGUL ANARKULOVNA","tuman":"Bo'stonliq t.","idora":"Toshkent viloyati, Bo'stonliq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'stonliq BXM","sh":0,"ya":0},{"inn":"524753824","name":"XALILOVA GULSARA SIRAJIDDINOVNA","tuman":"Bo'stonliq t.","idora":"Toshkent viloyati, Bo'stonliq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'stonliq BXM","sh":1,"ya":0},{"inn":"448916579","name":"XAYRULINA SEVARA ISMATOVNA","tuman":"Bo'stonliq t.","idora":"Toshkent viloyati, Bo'stonliq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'stonliq BXM","sh":1,"ya":0},{"inn":"522760027","name":"VOXIDOVA MASHHURA SHODMONOVNA","tuman":"Bo'stonliq t.","idora":"Toshkent viloyati, Bo'stonliq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Bo'stonliq BXM","sh":0,"ya":0},{"inn":"514086149","name":"DJAPPAROV ZOIR SHARIPOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"GARANT BANK\" AJ","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":0},{"inn":"507564893","name":"XUSAINOV JO‘RAQUL XOLMUROTOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":0},{"inn":"478741126","name":"PULATOV IZZATILLA XABIBULLAYEVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":1},{"inn":"449057784","name":"IKRAMOVA NAZOKAT SULTANOVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":0,"ya":1},{"inn":"486007187","name":"NASIROVA DILFUZA FATXULLAYEVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":0},{"inn":"500825683","name":"BOISXO‘JAYEV ABDUVOSITXO‘JA ABDUVOSIQXO‘JA O‘G‘LI","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":1},{"inn":"486087484","name":"RAXMANOV ERMUMIN MIRZAYEVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":1},{"inn":"431885408","name":"YULDASHEVA ZILOLA ALOVUTDINOVNA","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":0},{"inn":"600260744","name":"YUSUPOV SHUXRAT AZIZOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":1},{"inn":"488140505","name":"TURDIYEV RUSTAM RASHIDOVICH","tuman":"Zangiota t.","idora":"Toshkent viloyati, Zangiota tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Zangiota BXM","sh":1,"ya":1},{"inn":"522015896","name":"SABIROVA NARGIZA ALIMDJANOVNA","tuman":"Toshkent t.","idora":"Toshkent viloyati, Toshkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"DAVR-BANK\" XAT BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Keles BXM","sh":1,"ya":0},{"inn":"486714581","name":"OBIDJONOVA RA’NO OBIDJONOVNA","tuman":"Toshkent t.","idora":"Toshkent viloyati, Toshkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"KAPITALBANK\" AT BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Keles BXM","sh":1,"ya":0},{"inn":"492945142","name":"MANSUROVA GUZAL SALAXIDDINOVNA","tuman":"Toshkent t.","idora":"Toshkent viloyati, Toshkent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Keles BXM","sh":0,"ya":0},{"inn":"497731604","name":"ASKAROV DONIYORXO‘JA ISMAILOVICH","tuman":"Qibray t.","idora":"Toshkent viloyati Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":1,"ya":0},{"inn":"483703384","name":"TURABEKOV SHERZOD SHAVKATOVICH","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":1,"ya":0},{"inn":"448316240","name":"XUSAINOVA GUZAL MIRISAMOVNA","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":0,"ya":0},{"inn":"496370667","name":"UMAROV ABDUKODIR ABDURASHIDOVICH","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":1,"ya":0},{"inn":"496956822","name":"MARDIYEV XASAN XALMIRZAYEVICH","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":1,"ya":0},{"inn":"472853125","name":"ABDURAXIMOVA MATLYUBA KARIMOVNA","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":1,"ya":0},{"inn":"491354207","name":"MAJITOVA SHAHNOZA MURATXONOVNA","tuman":"Qibray t.","idora":"Toshkent viloyati, Qibray tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Qibray BXM","sh":0,"ya":1},{"inn":"462585227","name":"SOTVOLDIYEV REJAVALI ROJIYEVICH","tuman":"Quyichirchiq t.","idora":"Toshkent viloyati, Quyichirchik tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Q-chirchiq BXM","sh":1,"ya":0},{"inn":"533069523","name":"MIRZAMAMEDOV AZIM XOLMATOVICH","tuman":"Nurafshon sh.","idora":"Toshkent viloyati Nurofshon shahridagi xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Nurafshon BXM","sh":0,"ya":0},{"inn":"496512211","name":"TURGUNOV ZAFAR BAXTIYOROVICH","tuman":"Nurafshon sh.","idora":"Toshkent viloyati Nurofshon shahridagi xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Nurafshon BXM","sh":0,"ya":0},{"inn":"500552486","name":"KARIMOVA ADIBAXON SAIDOVNA","tuman":"O'rtachirchiq t.","idora":"Toshkent viloyati, O'rtachirchiq tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Nurafshon BXM","sh":0,"ya":0},{"inn":"458202022","name":"MUXAMEDJANOVA SHOXIDA MUXAMEDJANOVNA","tuman":"Oqqo'rg'on t.","idora":"Toshkent viloyati, Oqqo'rg'on tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Oqqo'rg'on BXM","sh":0,"ya":0},{"inn":"564239549","name":"NORQULOV JASUR ABDUSHOKIR O‘G‘LI","tuman":"Oqqo'rg'on t.","idora":"Toshkent viloyati, Oqqo'rg'on tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Oqqo'rg'on BXM","sh":1,"ya":0},{"inn":"444189213","name":"TURDIMETOV ANVAR XUSNITDINOVICH","tuman":"Olmaliq sh.","idora":"Toshkent viloyati Olmaliq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Olmaliq BXM","sh":0,"ya":0},{"inn":"500696917","name":"TURG‘UNOVA FERUZA NURIDINOVNA","tuman":"Olmaliq sh.","idora":"Toshkent viloyati Olmaliq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Olmaliq BXM","sh":0,"ya":0},{"inn":"440684431","name":"MAXMUDOVA ZEBINISA ARIPJANOVNA","tuman":"Olmaliq sh.","idora":"Toshkent viloyati Olmaliq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Olmaliq BXM","sh":0,"ya":0},{"inn":"506167335","name":"BEKMUROTOVA CHAROS SALIMBOYEVNA","tuman":"Olmaliq sh.","idora":"Toshkent viloyati Olmaliq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Olmaliq BXM","sh":0,"ya":0},{"inn":"478989315","name":"MANSUROVA UMIDA SAXIBJONOVNA","tuman":"Ohangaron sh.","idora":"Toshkent viloyati Ohangaron shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Ohangaron BXM","sh":0,"ya":0},{"inn":"577285288","name":"ISLOMBEKOV SHUXRATBEK FATXULLAYEVICH","tuman":"Pskent t.","idora":"Toshkent viloyati, Piskent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Piskent BXM","sh":1,"ya":0},{"inn":"478297948","name":"ZIYADULLAYEV SHERZOD NURULLAYEVICH","tuman":"Pskent t.","idora":"Toshkent viloyati, Piskent tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Piskent BXM","sh":1,"ya":0},{"inn":"515782682","name":"XATAMOVA GULIRUX FARXADOVNA","tuman":"Chinoz t.","idora":"Toshkent viloyati, Chinoz tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chinoz BXM","sh":0,"ya":0},{"inn":"498981428","name":"XUDAYBERDIYEV XABIBULLA IBAYDILLAYEVICH","tuman":"Chinoz t.","idora":"Toshkent viloyati, Chinoz tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"ChEKI \"HAMKORBANK\" AT BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chinoz BXM","sh":0,"ya":0},{"inn":"478459357","name":"RAXMANOV BAXTIYOR ERGASHVAYEVICH","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"500266969","name":"GANIYEVA XILOLA G‘AYRAT QIZI","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":0,"ya":0},{"inn":"458481040","name":"ZUFAROVA MUKARAM XASHIMOVNA","tuman":"Chirchiq sh.","idora":"Toshkent viloyati, Chirchiq shahrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"501045704","name":"BOZAROV OYBEK SOLIJONOVICH","tuman":"Chirchiq sh.","idora":"Toshkent viloyati, Chirchiq shahrida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"496538732","name":"CHUMARINA RIMMA ASVATOVNA","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"500953501","name":"UMAROVA PARVEZA OMANILLAYEVNA","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":0,"ya":0},{"inn":"506510794","name":"MARDIYEV XUSAN XALMIRZAYEVICH","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"484416581","name":"NURMATOVA NILUFAR SAYFIDINOVNA","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"516874725","name":"USMONOV DILSHOD USMON O‘G‘LI","tuman":"Chirchiq sh.","idora":"Toshkent viloyati Chirchiq shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Chirchiq BXM","sh":1,"ya":0},{"inn":"443837696","name":"ZAKIROVA KUNDUZXON AZATBEKOVNA","tuman":"Yuqorichirchiq t.","idora":"Toshkent viloyati, Yuqorichirchik tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yu-chirchiq BXM","sh":0,"ya":0},{"inn":"486068721","name":"XODJAYEV DILSHOD BAXTIYOROVICH","tuman":"Yuqorichirchiq t.","idora":"Toshkent viloyati, Yuqorichirchik tumanida xususiy amaliyot bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yu-chirchiq BXM","sh":1,"ya":0},{"inn":"503231194","name":"SABIROV A’ZAM DAVRONOVICH","tuman":"Yangiyo'l t.","idora":"Toshkent viloyati Yangiyo'l tumanidagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"\"IPOTEKA-BANK\" ATI BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yangiyo'l BXM","sh":1,"ya":0},{"inn":"604410926","name":"MIROLIMOV SHUXRAT MIRSOATOVICH","tuman":"Yangiyo'l sh.","idora":"Toshkent viloyati Yangiyo'l shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yangiyo'l BXM","sh":1,"ya":0},{"inn":"477900964","name":"UMAROV XURSHID ISOYEVICH","tuman":"Yangiyo'l sh.","idora":"Toshkent viloyati Yangiyo'l shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yangiyo'l BXM","sh":1,"ya":0},{"inn":"485488310","name":"KURBANOVA RAZIYA MAMIROVNA","tuman":"Yangiyo'l t.","idora":"Toshkent viloyati Yangiyo'l tumanidagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yangiyo'l BXM","sh":0,"ya":1},{"inn":"496322908","name":"SHAMIRZAYEVA SAYYORA ZUKUROVNA","tuman":"Yangiyo'l sh.","idora":"Toshkent viloyati Yangiyo'l shahridagi xususiy notarial faoliyat bilan shug'ullanuvchi notarius","xbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","dbank":"AKTsIYaDORLIK TIJORAT XALK BANKI","bolim":"Xalq banki Yangiyo'l BXM","sh":0,"ya":0}];
 const Q=[
-{id:'1.1',s:'ayoqsh',t:'AYOQSH nomi',ty:'text',ph:'AYOQSH nomini yozing'},
-{id:'1.2',s:'ayoqsh',t:'AYOQSH STIR raqami',ty:'text',ph:'STIR raqamini yozing'},
-{id:'1.3',s:'ayoqsh',t:'AYOQSH manzili',ty:'text',ph:"To'liq manzilni yozing"},
-{id:'1.4',s:'ayoqsh',t:"AYOQSHga xizmat ko'rsatuvchi bank nomi va filiali",ty:'text',ph:'Bank nomi va filialini yozing'},
+{id:'1.0',s:'ayoqsh',t:'AYOQSH STIR (INN) raqami',ty:'stir',ph:'STIR raqamini kiriting'},
+{id:'1.1',s:'ayoqsh',t:'AYOQSH nomi',ty:'auto',ph:'STIR kiritilganda avtomatik to\'ladi'},
+{id:'1.2',s:'ayoqsh',t:'AYOQSH joylashgan hudud',ty:'auto',ph:'STIR kiritilganda avtomatik to\'ladi'},
+{id:'1.3',s:'ayoqsh',t:'AYOQSH manzili (MFY)',ty:'text',ph:"MFY va to'liq manzilni yozing"},
+{id:'1.4',s:'ayoqsh',t:"Faoliyat turi",ty:'multicheck',ph:'',opts:['Benzin','Metan','Propan','Elektr']},
+{id:'1.5',s:'ayoqsh',t:"AYOQSHga xizmat ko'rsatuvchi bank nomi va filiali",ty:'text',ph:'Bank nomi va filialini yozing'},
 {id:'2.1',s:'xodim',t:"AYOQSHga biriktirilgan bank xodimining F.I.O",ty:'text',ph:'Xodim F.I.O'},
 {id:'2.2',s:'xodim',t:"AYOQSHga biriktirilgan xodimning banki",ty:'text',ph:'Bank nomi'},
-{id:'2.3',s:'xodim',t:"AYOQSHga biriktirilgan xodimning telefon raqami",ty:'text',ph:'Telefon raqami'},
+{id:'2.3',s:'xodim',t:"AYOQSHga biriktirilgan xodimning telefon raqami",ty:'phone',ph:'+998 (XX) XXX-XX-XX'},
 {id:'2.4',s:'xodim',t:"Bank xodimining bilim va ko'nikmasi",ty:'select',opts:['Yaxshi','Qoniqarli','Qoniqarsiz']},
 {id:'3',s:'infra',t:"AYOQSHda bannerning mavjudligi",ty:'yesno'},
 {id:'4',s:'infra',t:"AYOQSHda mavjud QR-kodlar",ty:'qrlist',ph:''},
 {id:'5.1',s:'agent',t:"Agentlik shartnomasi mavjudligi",ty:'yesno'},
 {id:'5.2',s:'agent',t:'"Paynet" AJ agenti dasturi mavjudligi',ty:'yesno'},
 {id:'5.3',s:'agent',t:'"Paynet" AJ agenti dasturi ishchi holati',ty:'select',opts:['Ishlayapti','Ishlamayapti',"Vaqti-vaqti bilan uziladi"]},
-{id:'6.1',s:'karta',t:'Tarqatilgan "Paynet ATTO" kartalari soni',ty:'number',ph:'Sonini yozing'},
-{id:'6.2',s:'karta',t:'Qoldiq "Paynet ATTO" kartalari soni',ty:'number',ph:'Qoldiq soni'},
-{id:'7.1',s:'karta',t:'Tarqatilgan "MOMENT" kartalari soni',ty:'number',ph:'Sonini yozing'},
-{id:'7.2',s:'karta',t:'Qoldiq "MOMENT" kartalari soni',ty:'number',ph:'Qoldiq soni'},
-{id:'8',s:'nosozlik',t:"Naqd to'lovlarni naqdsiz aylanmaga o'tkazishda ehtimoliy holatlar yuzaga kelganda bartaraf qilish imkoniyatlari",ty:'textarea',ph:'Batafsil yozing...'},
-{id:'9.1',s:'terminal',t:'"Humo" terminali soni',ty:'terminal',ph:'Soni'},
-{id:'9.2',s:'terminal',t:'"Uzcard" terminali soni',ty:'terminal',ph:'Soni'},
+{id:'6.1',s:'karta',t:'AYOQSHga berilgan "Paynet ATTO" kartalari soni',ty:'number',ph:'Sonini yozing'},
+{id:'6.2',s:'karta',t:'AYOQSH tomonidan tarqatilgan "Paynet ATTO" kartalari soni',ty:'number',ph:'Sonini yozing'},
+{id:'8',s:'nosozlik',t:"Naqd to'lovlarni naqdsiz aylanmaga o'tkazishda ehtimoliy holatlar yuzaga kelganda bartaraf qilish imkoniyatlari",ty:'multicheck',ph:'',opts:['Bank xodimiga bank kartasi berilgan','AYOQSH operatoriga bank kartasi berilgan','Boshqa holat (izoh yoziladi)']},
+{id:'9.1',s:'terminal',t:'"Humo" kartalarini qabul qiluvchi terminal soni',ty:'terminal',ph:'Soni'},
+{id:'9.2',s:'terminal',t:'"Uzcard" kartalarini qabul qiluvchi terminal soni',ty:'terminal',ph:'Soni'},
 {id:'9.3',s:'terminal',t:'"Universal" terminal soni',ty:'terminal',ph:'Soni'},
-{id:'10.1',s:'bankomat',t:"Bankomat o'rnatgan bank nomi (naqd pul to'ldirish imkoniyati bor)",ty:'text',ph:'Bank nomini yozing'},
-{id:'10.2',s:'bankomat',t:"Infokioskalar soni va nomi (Paynet va boshqalar)",ty:'text',ph:'Soni va nomini yozing'},
+{id:'10.1',s:'bankomat',t:"Bankomat o'rnatgan bank nomi (naqd pul to'ldirish imkoniyati bor, 100 metr radiusda joylashgan)",ty:'text',ph:'Bank nomini yozing'},
+{id:'10.2',s:'bankomat',t:"Infokioskalar soni va nomi (naqd pul to'ldirish imkoniyati bor, 100 metr radiusda joylashgan)",ty:'multicheck',ph:'',opts:['Paynet','Oson','Multipay','Boshqa (nomi yoziladi)'],counted:true},
 {id:'11',s:'boshqa',t:'"Ishonch telefoni" ro\'yxati mavjudligi',ty:'yesno'},
 {id:'12',s:'boshqa',t:"Qo'shimcha izoh va tushuntirishlar",ty:'textarea',ph:"Qo'shimcha ma'lumotlar..."},
 ];
@@ -382,6 +454,41 @@ const DIS=[
 {title:"I. AYOQSHlarga biriktirilgan tijorat bank xodimlarining vazifalari",tasks:["\"Paynet\" AJ agenti dasturining kun davomida ishchi holatini o'rganadi","AYOQSH operatorlariga \"Paynet\" AJ agenti dasturini ishlatishni o'rgatadi","\"Paynet ATTO\" yoki \"MOMENT\" bank kartasi afzalliklari haqida aholiga tushuntirish beradi","Bank kartasi yo'q xaridorga \"Paynet ATTO\" yoki \"MOMENT\" kartasini taklif qiladi","Xaridorlarning mavjud bank kartalarini to'ldirishga ko'maklashadi","QR-kod orqali to'lovlar qulayliklari bo'yicha tushuntirish beradi","\"Paynet\" dasturi ishlamay qolganda shaxsiy kartadan to'lovda yordam ko'rsatish","Aholining kayfiyatini o'rganib, ishchi guruhga kunlik ma'lumot taqdim etadi"]},
 {title:"II. Viloyat tijorat banklari rahbarlari va o'rinbosarlarining vazifalari",tasks:["Mas'ul xodimlarini \"Paynet\" AJ dasturini ishlatish bo'yicha o'qitish","Biriktirilgan xodimlarning AYOQSHda doimiy faoliyat yuritishini nazorat qiladi","Xodimlarning shaxsiy bank kartasini doimiy to'ldirib borishda yordam berish","QR-kod, bannerlar va to'lov terminallari ishchi holatini ko'rib chiqadi","AYOQSHlardagi muammolarni aniqlab, bartaraf etish choralarini ko'radi","\"Eskrou\" hisobraqamlar ochilishi va dasturiy ta'minot holatini o'rganadi","Notariuslar yuborgan fuqarolarga xizmat sifati va navbatlarni ko'rib chiqadi"]},
 {title:"III. Viloyat Markaziy bankidan hududlarga biriktirilgan mas'ullar vazifalari",tasks:["Biriktirilgan hududga chiqib, bank xodimi bilim va ko'nikmalarini o'rganadi","\"Paynet\" AJ agentlik shartnomasi va dastur ishchi holatini ko'rib chiqadi","Bank kartalari mavjudligi, tarqatilgani va qoldig'ini ko'rib chiqadi","Ehtimoliy holatlar uchun yaratib berilgan imkoniyatlarni o'rganadi","Bannerlar, QR-kodlar, terminallar va infokioskalar holatini o'rganadi","\"Eskrou\" hisobraqamlar va dasturiy ta'minot tizimini o'rganadi","Notariuslar yuborgan fuqarolarga xizmat sifatini ko'rib chiqadi","Mavjud muammolarni ko'rib chiqib, ishchi guruhga ma'lumot taqdim etadi"]},
+];
+// ═══ NOTARIUS SECTIONS & QUESTIONS ═══
+var SEC_A,Q_A; // Store AYOQSH originals
+var curMode='ayoqsh'; // 'ayoqsh' or 'notarius'
+const SEC_N=[
+{k:'not_info',l:"Notarius ma'lumotlari",i:'📜',media:true},{k:'not_bank',l:'Bank xizmati',i:'🏦',media:true},
+{k:'not_xizmat',l:'Xizmat sifati',i:'⭐',media:true},{k:'not_eskrou',l:'Eskrou va navbat',i:'📋',media:true},{k:'not_boshqa',l:'Boshqa',i:'📝',media:false},
+];
+const Q_N=[
+// 1. Notarius ma'lumotlari
+{id:'n1.0',s:'not_info',t:'Notarius ismi sharifini tanlang',ty:'notname',ph:'Ism yoki familiyani yozib qidiring...'},
+{id:'n1.1',s:'not_info',t:'Notarius F.I.O',ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n1.2',s:'not_info',t:'Joylashgan hudud (tuman/shahar)',ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n1.3',s:'not_info',t:'Notarial idora nomi',ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n1.4',s:'not_info',t:'Notarius manzili (MFY)',ty:'text',ph:"MFY va to'liq manzilni yozing"},
+{id:'n1.5',s:'not_info',t:'Ish kunlari',ty:'multicheck',ph:'',opts:['Dushanba-Juma','Shanba','Yakshanba']},
+// 2. Bank xizmati
+{id:'n2.1',s:'not_bank',t:"Xizmat ko'rsatuvchi bank",ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n2.2',s:'not_bank',t:'Yaqin joylashgan davlat banki nomi',ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n2.3',s:'not_bank',t:"Davlat banki bo'limi nomi",ty:'auto',ph:'Tanlanganda avtomatik'},
+{id:'n2.4',s:'not_bank',t:'Notarius yuborgan fuqarolarga xizmat sifati',ty:'select',ph:'',opts:["A'lo",'Yaxshi','Qoniqarli','Qoniqarsiz']},
+{id:'n2.5',s:'not_bank',t:'Kassalar oldida navbat holati',ty:'select',ph:'',opts:["Navbat yo'q",'Kam','O\'rtacha','Katta']},
+// 3. Xizmat sifati
+{id:'n3.1',s:'not_xizmat',t:"Ko'chmas mulk oldi-sotdi shartnomasi bo'yicha eskrou hisobraqam ochilishi",ty:'yesno',ph:''},
+{id:'n3.2',s:'not_xizmat',t:"Transport vositalari oldi-sotdi bo'yicha eskrou hisobraqam ochilishi",ty:'yesno',ph:''},
+{id:'n3.3',s:'not_xizmat',t:"Dasturiy ta'minot tizimi ishchi holatda",ty:'yesno',ph:''},
+{id:'n3.4',s:'not_xizmat',t:'Bugun murojaat qilgan fuqarolar soni',ty:'number',ph:'Sonini yozing'},
+// 4. Eskrou va navbat
+{id:'n4.1',s:'not_eskrou',t:"Eskrou hisobraqamlar soni (ko'chmas mulk)",ty:'number',ph:'Sonini yozing'},
+{id:'n4.2',s:'not_eskrou',t:'Eskrou hisobraqamlar soni (transport)',ty:'number',ph:'Sonini yozing'},
+{id:'n4.3',s:'not_eskrou',t:'Navbat tartibiga rioya qilish',ty:'yesno',ph:''},
+{id:'n4.4',s:'not_eskrou',t:"Fuqarolar uchun o'tirish joylari mavjudmi",ty:'yesno',ph:''},
+// 5. Boshqa
+{id:'n5.1',s:'not_boshqa',t:'Aniqlangan muammolar va takliflar',ty:'textarea',ph:'Muammolar va takliflarni yozing'},
+{id:'n5.2',s:'not_boshqa',t:'Umumiy baho (1-10)',ty:'number',ph:'1 dan 10 gacha'},
 ];
 const LOCS=[
 {lat:41.31156,lng:69.27961,hud:'Zangiota t.',addr:"Toshkent-Termiz yo'li, 14-km",place:'Tatneft AZS',pt:'⛽'},
@@ -464,7 +571,7 @@ function updateAdminMap(){
       +'<div style="font-size:12px;font-weight:600;color:#1e293b;margin-bottom:3px">'+(l.pt||'📍')+' '+(l.place||"Noma'lum")+'</div>'
       +'<div style="font-size:11px;color:#475569;margin-bottom:3px">📍 '+(l.hud||'')+' — '+(l.addr||'')+'</div>'
       +'<div style="font-size:10px;color:#94a3b8;margin-bottom:4px">🕐 '+new Date(l.ts).toLocaleString('uz')+'</div>'
-      +'<div style="font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block;font-weight:700;'+(l.act==='submit'?'background:#fee2e2;color:#dc2626':'background:#dbeafe;color:#1d4ed8')+'">'+(l.act==='submit'?'📤 Yuborish':l.act==='heartbeat'?'💓 Jonli ping':'📱 Ochish')+'</div>'
+      +'<div style="font-size:10px;padding:3px 8px;border-radius:6px;display:inline-block;font-weight:700;'+(l.act==='submit'?'background:#fee2e2;color:#dc2626':'background:#dbeafe;color:#1d4ed8')+'">'+(l.act==='submit'?'📤 Yuborish':l.act==='heartbeat'?'💓 Jonli ping':l.act==='no_activity'?'🚫 Faoliyatsiz':'📱 Ochish')+'</div>'
       +'</div>';
     marker.bindPopup(popupHtml);
     adminMarkers.push(marker);
@@ -479,15 +586,167 @@ function updateAdminMap(){
   if(tEl)tEl.textContent=new Date().toLocaleTimeString('uz')+' — '+Object.keys(latest).length+' ta user';
 }
 function doLogin(){const u=document.getElementById('loginUser').value.toLowerCase().trim(),p=document.getElementById('loginPass').value,e=document.getElementById('loginError');if(!U[u]||U[u].pw!==p){e.classList.add('show');return}e.classList.remove('show');cu={un:u,...U[u]};localStorage.setItem('pf246',JSON.stringify(cu));cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}
+function togglePwVis(){var inp=document.getElementById('loginPass');var eye=document.getElementById('pwEye');if(inp.type==='password'){inp.type='text';eye.textContent='🙈'}else{inp.type='password';eye.textContent='👁️'}}
 function doLogout(){stopPings();stopAdminRefresh();cu=null;localStorage.removeItem('pf246');ans={};media={};showP('loginPage')}
 function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
-function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
+function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted}});buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
+// ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
+function switchMode(mode){
+  if(curMode===mode)return;
+  curMode=mode;
+  ans={};media={};
+  // Update toggle buttons
+  var btnA=document.getElementById('modeAyoqsh');
+  var btnN=document.getElementById('modeNotarius');
+  if(mode==='ayoqsh'){
+    btnA.style.background='#d4a932';btnA.style.color='white';
+    btnN.style.background='transparent';btnN.style.color='var(--gray-400)';
+    SEC.length=0;SEC_A.forEach(function(s){SEC.push(s)});
+    Q.length=0;Q_A.forEach(function(q){Q.push(q)});
+    aS='ayoqsh';
+  } else {
+    btnN.style.background='#d4a932';btnN.style.color='white';
+    btnA.style.background='transparent';btnA.style.color='var(--gray-400)';
+    SEC.length=0;SEC_N.forEach(function(s){SEC.push(s)});
+    Q.length=0;Q_N.forEach(function(q){Q.push(q)});
+    aS='not_info';
+  }
+  buildT();renderQ();updS();
+  // Update header button text
+  var nb=document.getElementById('newAyBtn');
+  if(nb)nb.textContent=mode==='notarius'?'+ Yangi notarius':'+ Yangi AYOQSH';
+  toast(mode==='ayoqsh'?'⛽ AYOQSH rejimi':'📜 Notarius rejimi');
+}
+// ═══ HUDUD MATCHING — filter databases by user's region ═══
+var HUDUD_MAP={
+  'Angren sh.':['ANGREN ShAHAR','Angren sh.','Angren shahаr'],
+  'Bekobod sh.':['BEKOBOD ShAHAR','Bekobod sh.'],
+  'Bekobod t.':['BEKOBOD TUMANI','Bekobod t.'],
+  "Bo'ka t.":["BO'KA TUMANI","Bo'ka t."],
+  "Bo'stonliq t.":["BO'STONLIQ TUMANI","Bo'stonliq t."],
+  'Chinoz t.':['ChINOZ TUMANI','Chinoz t.'],
+  'Chirchiq sh.':['ChIRChIQ ShAHAR','Chirchiq sh.'],
+  'Nurafshon sh.':['NURAFShON ShAHAR','Nurafshon sh.'],
+  "O'rtachirchiq t.":["O'RTA ChIRChIQ TUMANI","O'rtachirchiq t."],
+  'Ohangaron sh.':['OHANGARON ShAHAR','Ohangaron sh.'],
+  'Ohangaron t.':['OHANGARON TUMANI','Ohangaron t.'],
+  'Olmaliq sh.':['OLMALIQ ShAHAR','Olmaliq sh.'],
+  "Oqqo'rg'on t.":["OQQO'RG'ON TUMANI","Oqqo'rg'on t."],
+  'Parkent t.':['PARKENT TUMANI','Parkent t.'],
+  'Piskent t.':['PISKENT TUMANI','Piskent t.','Pskent t.'],
+  'Qibray t.':['QIBRAY TUMANI','Qibray t.'],
+  'Quiyichirchiq t.':['QUYI ChIRChIQ TUMANI','Quiyichirchiq t.','Quyichirchiq t.'],
+  'Toshkent t.':['TOShKENT TUMANI','Toshkent t.'],
+  "Yangiyo'l sh.":["YaNGIYO'L ShAHAR","Yangiyo'l sh."],
+  "Yangiyo'l t.":["YaNGIYO'L TUMANI","Yangiyo'l t."],
+  'Yuqorichirchiq t.':['YuQORI ChIRChIQ TUMANI','Yuqorichirchiq t.'],
+  'Zangiota t.':['ZANGIOTA TUMANI','Zangiota t.'],
+};
+function matchHudud(userReg, dbHudud){
+  if(!userReg||!dbHudud)return false;
+  // Direct match
+  if(userReg===dbHudud)return true;
+  // Use mapping table
+  var aliases=HUDUD_MAP[userReg];
+  if(aliases&&aliases.indexOf(dbHudud)!==-1)return true;
+  // Fallback: normalize and compare first word
+  var u=userReg.toLowerCase().replace(/\s*(sh\.|t\.)$/,'').trim();
+  var d=dbHudud.toLowerCase().replace(/\s*(shahаr|shahar|tumani)$/,'').trim();
+  return u===d;
+}
+function getFilteredAyoqsh(){
+  if(!cu||cu.role==='admin')return AYOQSH_DB;
+  return AYOQSH_DB.filter(function(a){return matchHudud(cu.reg, a.hudud)});
+}
+function getFilteredNotarius(){
+  if(!cu||cu.role==='admin')return NOTARIUS_DB;
+  return NOTARIUS_DB.filter(function(a){return matchHudud(cu.reg, a.tuman)});
+}
+// ═══ NOTARIUS NAME LOOKUP ═══
+function onNotNameInput(val){
+  ans['n1.0']=val;
+  // Exact match check
+  var match=NOTARIUS_DB.find(function(a){return a.name===val});
+  if(match){
+    ans['_not_found']=true;
+    ans['n1.1']=match.name;
+    ans['n1.2']=match.tuman;
+    ans['n1.3']=match.idora;
+    ans['n2.1']=match.xbank;
+    ans['n2.2']=match.dbank;
+    ans['n2.3']=match.bolim;
+  } else {
+    ans['_not_found']=false;
+  }
+  renderQ();buildT();updS();
+}
+function selectNotarius(name){
+  onNotNameInput(name);
+}
 function buildDis(){document.getElementById('disB').innerHTML=DIS.map(s=>'<div class="task-section"><h4>'+s.title+'</h4>'+s.tasks.map(t=>'<div class="task-item">'+t+'</div>').join('')+'</div>').join('')}
 function toggleDis(){document.getElementById('disB').classList.toggle('open');document.getElementById('disT').classList.toggle('open')}
 function buildT(){document.getElementById('secTabs').innerHTML=SEC.map(s=>{const qs=Q.filter(q=>q.s===s.k),a=qs.filter(q=>{if(q.ty==='terminal')return(ans[q.id]!=null&&ans[q.id]!=='')&&(ans[q.id+'_h']!=null&&ans[q.id+'_h']!=='');return ans[q.id]!=null&&ans[q.id]!==''}).length;return '<button class="tab-btn '+(aS===s.k?'active':'')+'" onclick="swS(\''+s.k+'\')">'+s.i+' '+s.l+' <span class="tab-badge">'+a+'/'+qs.length+'</span>'+((media[s.k]||[]).length?'<span class="tab-badge" style="background:rgba(59,130,246,.25)">📸'+(media[s.k]||[]).length+'</span>':'')+'</button>'}).join('')}
 function swS(k){aS=k;buildT();renderQ()}
-function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').textContent=s.i;document.getElementById('sTi').textContent=s.l;const qs=Q.filter(q=>q.s===aS);let h='';qs.forEach(q=>{const v=ans[q.id]||'',ok=v!=='';h+='<div class="question-card '+(ok?'answered':'')+'"><div class="question-header"><div class="question-num">'+q.id+'</div><div class="question-text">'+q.t+'</div></div>';if(q.ty==='text')h+='<input class="form-input" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';else if(q.ty==='number')h+='<input class="form-input" type="number" min="0" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';else if(q.ty==='textarea')h+='<textarea class="form-textarea" placeholder="'+(q.ph||'')+'" rows="3" oninput="setA(\''+q.id+'\',this.value)">'+v+'</textarea>';else if(q.ty==='yesno')h+='<div class="answer-row"><button class="answer-btn '+(v==='ha'?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\'ha\');renderQ()">✅ Ha</button><button class="answer-btn '+(v==='yoq'?'active-no':'')+'" onclick="setA(\''+q.id+'\',\'yoq\');renderQ()">❌ Yo\'q</button></div>';else if(q.ty==='select')h+='<div class="answer-row">'+q.opts.map(o=>'<button class="answer-btn '+(v===o?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\''+o+'\');renderQ()">'+o+'</button>').join('')+'</div>';
+function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').textContent=s.i;document.getElementById('sTi').textContent=s.l;const qs=Q.filter(q=>q.s===aS);let h='';qs.forEach(q=>{const v=ans[q.id]||'',ok=v!=='';h+='<div class="question-card '+(ok?'answered':'')+'"><div class="question-header"><div class="question-num">'+q.id+'</div><div class="question-text">'+q.t+'</div></div>';if(q.ty==='text')h+='<input class="form-input" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';
+    else if(q.ty==='phone'){
+      // Phone with fixed +998 prefix and auto-formatting
+      h+='<div style="display:flex;align-items:center;gap:0;border:2px solid var(--gray-200);border-radius:12px;overflow:hidden;transition:border-color .2s" onfocusin="this.style.borderColor=\'var(--blue-500)\'" onfocusout="this.style.borderColor=\'var(--gray-200)\'">';
+      h+='<div style="padding:0 14px;height:48px;display:flex;align-items:center;background:var(--gray-100);font-size:15px;font-weight:700;color:var(--blue-800);border-right:2px solid var(--gray-200);white-space:nowrap">+998</div>';
+      h+='<input type="tel" placeholder="(XX) XXX-XX-XX" value="'+(v||'').replace('+998','').replace(/^\s+/,'')+'" oninput="onPhoneInput(\''+q.id+'\',this)" style="flex:1;height:48px;border:none;outline:none;padding:0 14px;font-size:16px;font-weight:600;letter-spacing:.5px;font-family:inherit;background:transparent">';
+      h+='</div>';
+    }
+    else if(q.ty==='stir'){
+      var found=ans['_stir_found'];
+      var filteredCount=getFilteredAyoqsh().length;
+      h+='<div style="font-size:10px;color:var(--blue-500);margin-bottom:6px;font-weight:600">📍 '+cu.reg+' — '+filteredCount+' ta AYOQSH bazada</div>';
+      h+='<div style="position:relative">';
+      h+='<input id="stirInput" class="form-input" type="tel" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="stirType(this.value)" style="font-size:16px;font-weight:700;letter-spacing:1px;padding-right:100px">';
+      h+='<div id="stirBadge"></div>';
+      h+='</div>';
+      h+='<div id="stirDrop"></div>';
+    }
+    else if(q.ty==='auto'){
+      var safeVal=(v||'').replace(/"/g,'&quot;');
+      h+='<input class="form-input" placeholder="'+(q.ph||'')+'" value="'+safeVal+'" readonly style="background:#f0fdf4;border-color:#86efac;color:var(--green-600);font-weight:600;cursor:not-allowed">';
+      if(!v)h+='<div style="font-size:10px;color:var(--gray-400);margin-top:4px">'+q.ph+'</div>';
+    }
+    else if(q.ty==='notname'){
+      // Notarius select dropdown — filtered by user's hudud
+      var nfound=ans['_not_found'];
+      var filteredNot=getFilteredNotarius();
+      h+='<div style="font-size:10px;color:var(--blue-500);margin-bottom:6px;font-weight:600">📍 '+cu.reg+' — '+filteredNot.length+' ta notarius bazada</div>';
+      h+='<select class="form-input" style="height:50px;font-size:14px;font-weight:600;cursor:pointer" onchange="selectNotarius(this.value)">';
+      h+='<option value="">— Notariusni tanlang —</option>';
+      // Group by tuman — filtered by user's hudud
+      var filteredNot=getFilteredNotarius();
+      var tumans={};
+      filteredNot.forEach(function(n){if(!tumans[n.tuman])tumans[n.tuman]=[];tumans[n.tuman].push(n)});
+      Object.keys(tumans).sort().forEach(function(t){
+        h+='<optgroup label="📍 '+t+'">';
+        tumans[t].forEach(function(n){
+          var badges='';
+          if(n.sh)badges+=' [Sh]';
+          if(n.ya)badges+=' [Ya]';
+          h+='<option value="'+n.name.replace(/"/g,'&quot;')+'" '+(v===n.name?'selected':'')+'>'+n.name+badges+'</option>';
+        });
+        h+='</optgroup>';
+      });
+      h+='</select>';
+      // Show badges after selection
+      if(v&&nfound){
+        var nmatch=NOTARIUS_DB.find(function(a){return a.name===v});
+        if(nmatch){
+          h+='<div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">';
+          h+='<span style="font-size:12px;font-weight:700;padding:5px 14px;border-radius:8px;background:#dcfce7;color:#16a34a">✅ '+nmatch.name+'</span>';
+          h+='<span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:#eff6ff;color:#1d4ed8">📍 '+nmatch.tuman+'</span>';
+          if(nmatch.sh)h+='<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:#dbeafe;color:#1d4ed8">📅 Shanba ishlaydi</span>';
+          if(nmatch.ya)h+='<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:#fae8ff;color:#a21caf">📅 Yakshanba ishlaydi</span>';
+          h+='</div>';
+        }
+      }
+    }
+    else if(q.ty==='number')h+='<input class="form-input" type="number" min="0" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';else if(q.ty==='textarea')h+='<textarea class="form-textarea" placeholder="'+(q.ph||'')+'" rows="3" oninput="setA(\''+q.id+'\',this.value)">'+v+'</textarea>';else if(q.ty==='yesno')h+='<div class="answer-row"><button class="answer-btn '+(v==='ha'?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\'ha\');renderQ()">✅ Ha</button><button class="answer-btn '+(v==='yoq'?'active-no':'')+'" onclick="setA(\''+q.id+'\',\'yoq\');renderQ()">❌ Yo\'q</button></div>';else if(q.ty==='select')h+='<div class="answer-row">'+q.opts.map(o=>'<button class="answer-btn '+(v===o?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\''+o+'\');renderQ()">'+o+'</button>').join('')+'</div>';
     else if(q.ty==='terminal'){
       var vh=ans[q.id+'_h']||'';
       h+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><label style="font-size:12px;font-weight:700;color:var(--gray-600);min-width:40px">Soni:</label><input class="form-input" type="number" min="0" style="width:120px;flex:none" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)"></div>';
@@ -497,6 +756,39 @@ function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').t
       h+='<button class="answer-btn '+(vh==='Ishlamayapti'?'active-no':'')+'" onclick="setA(\''+q.id+'_h\',\'Ishlamayapti\');renderQ()" style="gap:6px">❌ Ishlamayapti</button>';
       h+='<button class="answer-btn '+(vh==='Uzilish bor'?'active-no':'')+'" style="border-color:'+(vh==='Uzilish bor'?'#f59e0b':'var(--gray-200)')+';background:'+(vh==='Uzilish bor'?'linear-gradient(135deg,#f59e0b,#d97706)':'var(--white)')+';color:'+(vh==='Uzilish bor'?'white':'var(--gray-600)')+';box-shadow:'+(vh==='Uzilish bor'?'0 4px 12px rgba(245,158,11,.3)':'none')+'" onclick="setA(\''+q.id+'_h\',\'Uzilish bor\');renderQ()">⚠️ Uzilish bor</button>';
       h+='</div>';
+    }
+    else if(q.ty==='multicheck'){
+      var selected=[];try{selected=JSON.parse(v||'[]')}catch(e){if(v)selected=[v]}
+      h+='<div style="display:flex;gap:10px;flex-wrap:wrap">';
+      (q.opts||[]).forEach(function(opt){
+        var isOn=selected.indexOf(opt)!==-1;
+        h+='<label style="display:flex;align-items:center;gap:8px;padding:12px 20px;border:2px solid '+(isOn?'#22c55e':'var(--gray-200)')+';background:'+(isOn?'linear-gradient(135deg,#dcfce7,#f0fdf4)':'white')+';border-radius:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:'+(isOn?'700':'500')+';color:'+(isOn?'#16a34a':'var(--gray-600)')+'" onclick="toggleMultiCheck(\''+q.id+'\',\''+opt.replace(/'/g,"\\'")+'\')">';
+        h+='<div style="width:24px;height:24px;border:2px solid '+(isOn?'#22c55e':'var(--gray-300)')+';border-radius:6px;background:'+(isOn?'#22c55e':'white')+';display:flex;align-items:center;justify-content:center;transition:all .2s">';
+        if(isOn)h+='<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        h+='</div>';
+        h+=opt+'</label>';
+      });
+      h+='</div>';
+      // Show count inputs if question has counted:true
+      if(q.counted&&selected.length){
+        h+='<div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">';
+        selected.forEach(function(opt){
+          var cntKey=q.id+'_cnt_'+opt.replace(/[^a-zA-Z]/g,'');
+          var cntVal=ans[cntKey]||'';
+          h+='<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px">';
+          h+='<span style="font-size:12px;font-weight:700;color:#16a34a;flex:1">'+opt+'</span>';
+          h+='<input class="form-input" type="number" min="0" placeholder="Soni" value="'+cntVal+'" oninput="setA(\''+cntKey+'\',this.value)" style="width:80px;height:34px;font-size:13px;font-weight:700;text-align:center;flex:none">';
+          h+='<span style="font-size:11px;color:var(--gray-400)">ta</span></div>';
+        });
+        h+='</div>';
+      }
+      // Show text input if "Boshqa" or "izoh" option is selected
+      var hasBoshqa=selected.some(function(s){return s.toLowerCase().indexOf('boshqa')!==-1||s.toLowerCase().indexOf('izoh')!==-1});
+      if(hasBoshqa){
+        var noteVal=ans[q.id+'_note']||'';
+        h+='<div style="margin-top:10px"><input class="form-input" placeholder="Izoh yoki nomini yozing..." value="'+noteVal.replace(/"/g,'&quot;')+'" oninput="setA(\''+q.id+'_note\',this.value)" style="border-color:#f59e0b;background:#fffbeb"></div>';
+      }
+      if(selected.length)h+='<div style="margin-top:6px;font-size:11px;font-weight:600;color:var(--green-600)">Tanlangan: '+selected.join(', ')+(ans[q.id+'_note']?' — '+ans[q.id+'_note']:'')+'</div>';
     }
     else if(q.ty==='qrlist'){
       // Dynamic QR-kod list
@@ -549,6 +841,124 @@ function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').t
   // ── END media section ──
   document.getElementById('qList').innerHTML=h;const i=SEC.findIndex(x=>x.k===aS);let n='';if(i>0)n+='<button class="btn btn-outline" style="color:var(--blue-700);border-color:var(--blue-500)" onclick="swS(\''+SEC[i-1].k+'\')">← Oldingi</button>';n+='<div style="flex:1"></div>';if(i<SEC.length-1)n+='<button class="btn btn-primary" onclick="swS(\''+SEC[i+1].k+'\')">Keyingi →</button>';else n+='<button class="btn btn-gold" onclick="submitS()">📤 Yuborish</button>';document.getElementById('nBtns').innerHTML=n}
 function setA(id,v){ans[id]=v;buildT();updS()}
+// ── Phone number auto-formatter: +998 (XX) XXX-XX-XX ──
+function onPhoneInput(qid,el){
+  var raw=el.value.replace(/\D/g,''); // only digits
+  if(raw.length>9)raw=raw.substring(0,9);
+  var formatted='';
+  if(raw.length>0)formatted='('+raw.substring(0,2);
+  if(raw.length>=2)formatted+=') ';
+  if(raw.length>2)formatted+=raw.substring(2,5);
+  if(raw.length>5)formatted+='-'+raw.substring(5,7);
+  if(raw.length>7)formatted+='-'+raw.substring(7,9);
+  el.value=formatted;
+  ans[qid]='+998 '+formatted;
+  buildT();updS();
+}
+// ── STIR auto-fill from AYOQSH database ──
+// ── STIR input — updates badge & dropdown WITHOUT re-rendering input ──
+function stirType(val){
+  ans['1.0']=val;
+  ans['_newAyoqsh']=false;
+  var filtered=getFilteredAyoqsh();
+  var matches=filtered.filter(function(a){return a.stir===val});
+  if(matches.length===1){
+    ans['_stir_found']=true;
+    ans['1.1']=matches[0].dname||matches[0].name;
+    ans['1.2']=matches[0].hudud;
+    ans['1.4']=JSON.stringify([matches[0].type]);
+  } else if(matches.length>1){
+    ans['_stir_found']='multi';ans['_stir_matches']=matches.length;
+  } else {
+    ans['_stir_found']=false;
+    if(!ans['_newAyoqsh']){ans['1.1']='';ans['1.2']='';ans['1.4']='';}
+  }
+  buildT();updS();
+  // Update badge (no re-render!)
+  var bEl=document.getElementById('stirBadge');
+  if(bEl){
+    if(val.length>=5&&ans['_stir_found']===true)bEl.innerHTML='<div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;background:#dcfce7;color:#16a34a">✅ Topildi</div>';
+    else if(val.length>=5&&ans['_stir_found']==='multi')bEl.innerHTML='<div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;background:#dbeafe;color:#1d4ed8">📋 '+matches.length+' ta filial</div>';
+    else if(val.length>=5)bEl.innerHTML='<div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;background:#fef9c3;color:#a16207">⚠️ Bazada yo\'q</div>';
+    else bEl.innerHTML='';
+  }
+  // Update dropdown (no re-render!)
+  var dEl=document.getElementById('stirDrop');
+  if(!dEl)return;
+  var dh='';
+  if(ans['_stir_found']==='multi'){
+    dh+='<div style="border:2px solid #3b82f6;border-radius:10px;margin-top:8px;overflow:hidden;background:white">';
+    dh+='<div style="padding:8px 14px;background:#eff6ff;font-size:12px;font-weight:700;color:#1d4ed8">📋 '+matches.length+' ta filial — birini tanlang:</div>';
+    matches.forEach(function(m,idx){
+      dh+='<div onclick="selectFilial('+idx+')" style="padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);font-size:13px;display:flex;align-items:center;gap:10px">';
+      dh+='<div style="width:30px;height:30px;background:linear-gradient(135deg,var(--blue-600),var(--blue-800));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800">'+(idx+1)+'</div>';
+      dh+='<div><div style="font-weight:700;color:var(--blue-800)">'+(m.dname||m.name)+'</div><div style="font-size:11px;color:var(--gray-500)">'+m.hudud+' | '+m.type+'</div></div></div>';
+    });
+    dh+='</div>';
+  } else if(val.length>=3&&!ans['_stir_found']){
+    var sug=filtered.filter(function(a){return a.stir.indexOf(val)===0}).slice(0,5);
+    if(sug.length){
+      dh+='<div style="border:2px solid var(--blue-400);border-radius:10px;margin-top:6px;overflow:hidden;background:white">';
+      sug.forEach(function(m){
+        dh+='<div onclick="pickStir(\''+m.stir+'\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--gray-100);font-size:12px">';
+        dh+='<div style="font-weight:700;color:var(--blue-800)">'+(m.dname||m.name)+'</div>';
+        dh+='<div style="color:var(--gray-500);margin-top:2px">STIR: '+m.stir+' | '+m.hudud+'</div></div>';
+      });
+      dh+='</div>';
+    }
+    if(val.length>=5){
+      dh+='<button onclick="setNewAyoqsh(\''+val+'\')" style="margin-top:8px;width:100%;height:40px;border:2px dashed var(--gold-400);background:#fffbeb;border-radius:10px;font-size:12px;font-weight:700;color:var(--gold-600);cursor:pointer;font-family:inherit">+ Yangi AYOQSH sifatida qo\'shish</button>';
+    }
+  }
+  dEl.innerHTML=dh;
+}
+function pickStir(stir){
+  ans['_newAyoqsh']=false;
+  var el=document.getElementById('stirInput');
+  if(el)el.value=stir;
+  stirType(stir);
+  // Now do full re-render to show auto-filled fields
+  setTimeout(function(){renderQ();buildT();updS()},100);
+}
+function onStirInput(val){stirType(val)}
+function selectFilial(idx){
+  var filtered=getFilteredAyoqsh();
+  var matches=filtered.filter(function(a){return a.stir===ans['1.0']});
+  if(matches[idx]){
+    var m=matches[idx];
+    ans['_stir_found']=true;
+    ans['1.1']=m.dname||m.name;
+    ans['1.2']=m.hudud;
+    ans['1.4']=JSON.stringify([m.type]);
+    renderQ();buildT();updS();
+    toast('✅ '+(m.dname||m.name)+' tanlandi');
+  }
+}
+function selectStir(stir){
+  ans['_newAyoqsh']=false;
+  onStirInput(stir);
+}
+function setNewAyoqsh(stir){
+  ans['_stir_found']=false;
+  ans['_newAyoqsh']=true;
+  if(stir)ans['1.0']=stir;
+  ans['1.1']='';ans['1.2']='';ans['1.3']='';ans['1.4']='';
+  renderQ();
+  toast("🆕 Yangi AYOQSH — barcha maydonlarni qo'lda to'ldiring");
+}
+function addNewAyoqsh(){
+  ans['_stir_found']=false;
+  ans['_manual_ayoqsh']=true;
+  ans['_newAyoqsh']=true;
+  ans['1.0']='';ans['1.1']='';ans['1.2']='';ans['1.3']='';ans['1.4']='';ans['1.5']='';
+  // Make all AYOQSH fields editable
+  Q.forEach(function(q){
+    if(q.s==='ayoqsh'&&(q.id==='1.1'||q.id==='1.2'))q.ty='text';
+    // 1.3 stays as multicheck — user selects manually
+  });
+  aS='ayoqsh';buildT();renderQ();updS();
+  toast("+ Yangi AYOQSH — barcha maydonlarni qo'lda to'ldiring");
+}
 // ── QR-kod dynamic list functions ──
 function addQR(qid){
   var items=[];try{items=JSON.parse(ans[qid]||'[]')}catch(e){items=[]}
@@ -567,6 +977,52 @@ function updQR(qid,idx,field,val){
   if(items[idx])items[idx][field]=val;
   ans[qid]=JSON.stringify(items);
   buildT();updS();
+}
+// ── Multi-checkbox toggle ──
+function toggleMultiCheck(qid,opt){
+  var selected=[];try{selected=JSON.parse(ans[qid]||'[]')}catch(e){if(ans[qid])selected=[ans[qid]]}
+  var idx=selected.indexOf(opt);
+  if(idx===-1)selected.push(opt); else selected.splice(idx,1);
+  ans[qid]=selected.length?JSON.stringify(selected):'';
+  renderQ();buildT();updS();
+}
+// ── "Faoliyat ko'rsatmayapti" quick submit ──
+var noActMode=false;
+function toggleNoActivity(){
+  noActMode=!noActMode;
+  document.getElementById('noActPanel').style.display=noActMode?'block':'none';
+  document.getElementById('qCardBody').style.display=noActMode?'none':'';
+  document.getElementById('noActBtn').style.background=noActMode?'#dc2626':'#fef2f2';
+  document.getElementById('noActBtn').style.color=noActMode?'white':'#dc2626';
+  document.getElementById('noActBtn').innerHTML=noActMode?'✅ Oddiy rejimga qaytish':'🚫 Faoliyat ko\'rsatmayapti';
+  // Hide/show tabs and submit bar
+  document.getElementById('secTabs').style.display=noActMode?'none':'';
+  document.querySelector('.submit-bar').style.display=noActMode?'none':'';
+}
+function submitNoActivity(){
+  var name=document.getElementById('noActName').value.trim();
+  if(!name){toast('AYOQSH nomini kiriting!','error');return}
+  var reason=document.getElementById('noActReason').value.trim();
+  if(!gpsLoc){toast('GPS lokatsiya aniqlanmadi!','error');return}
+  toast('Lokatsiya aniqlanmoqda...');
+  reverseGeo(gpsLoc.lat,gpsLoc.lng,function(geo){
+    var sub={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,ayN:name,
+      ans:{'1.1':name,'status':'Faoliyat ko\'rsatmayapti','reason':reason},
+      mediaCount:0,noActivity:true,
+      at:new Date().toISOString(),
+      loc:{lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
+        hud:geo.district||geo.city||cu.reg,addr:geo.road||'',place:geo.name||geo.suburb||'',pt:geo.type||'📍'}};
+    subs.push(sub);
+    locs.push({id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
+      hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'no_activity',ts:new Date().toISOString()});
+    sc++;
+    // Reset
+    document.getElementById('noActName').value='';
+    document.getElementById('noActReason').value='';
+    toggleNoActivity(); // go back to normal mode
+    updS();renderH();
+    toast('🚫 "'+name+'" — faoliyat ko\'rsatmayapti deb yuborildi!');
+  });
 }
 // ── Media capture functions ──
 function onCapture(event,secKey,type){
@@ -616,7 +1072,14 @@ function delMedia(secKey,idx){
   toast('🗑️ Media o\'chirildi','error');
 }
 function updS(){const t=Q.length,a=Q.filter(q=>{if(q.ty==='terminal')return(ans[q.id]!=null&&ans[q.id]!=='')&&(ans[q.id+'_h']!=null&&ans[q.id+'_h']!=='');return ans[q.id]!=null&&ans[q.id]!==''}).length;document.getElementById('sA').textContent=a;document.getElementById('sT').textContent=t;document.getElementById('sP').textContent=Math.round(a/t*100)+'%';document.getElementById('sS').textContent=sc}
-function submitS(){if(!ans['1.1']||!ans['1.1'].trim()){toast('AYOQSH nomini kiriting!','error');swS('ayoqsh');return}openReview()}
+function submitS(){
+  if(curMode==='notarius'){
+    if(!ans['n1.1']||!ans['n1.1'].trim()){toast('Notarius nomini kiriting!','error');swS('not_info');return}
+  } else {
+    if(!ans['1.1']||!ans['1.1'].trim()){if(!ans['1.0']){toast('STIR raqamini kiriting!','error');}else{toast('AYOQSH nomi topilmadi!','error');}swS('ayoqsh');return}
+  }
+  openReview()
+}
 function openReview(){
   // Count stats
   var total=Q.length,filled=Q.filter(q=>{if(q.ty==='terminal')return(ans[q.id]!=null&&ans[q.id]!=='')&&(ans[q.id+'_h']!=null&&ans[q.id+'_h']!=='');return ans[q.id]!=null&&ans[q.id]!==''}).length,empty=total-filled;
@@ -668,6 +1131,11 @@ function openReview(){
           displayVal=items.length+' ta tashkilot, '+totalQR+' QR-kod';
         }
       }
+      else if(q.ty==='multicheck'){
+        var sel=[];try{sel=JSON.parse(v||'[]')}catch(e){if(v)sel=[v]}
+        isEmpty=!sel.length;
+        displayVal=sel.length?sel.join(', '):'';
+      }
       h+='<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;margin-bottom:4px;border-radius:8px;background:'+(isEmpty?'#fef2f2':'var(--gray-50)')+';border:1px solid '+(isEmpty?'#fca5a5':'var(--gray-200)')+';cursor:pointer;transition:all .15s" onclick="closeRev();swS(\''+q.s+'\')" onmouseover="this.style.borderColor=\'var(--blue-400)\'" onmouseout="this.style.borderColor=\''+(isEmpty?'#fca5a5':'var(--gray-200)')+'\'">';
       h+='<span style="font-size:11px;font-weight:700;color:var(--blue-600);min-width:32px;padding-top:1px">'+q.id+'</span>';
       h+='<span style="font-size:12px;color:var(--gray-600);flex:1">'+q.t+'</span>';
@@ -686,13 +1154,13 @@ function openReview(){
 function closeRev(){document.getElementById('revModal').classList.remove('active')}
 // Store last submitted data for PDF after submit
 var lastSubmitAns=null,lastSubmitName='';
-function finalSubmit(){var savedAns={...ans};var savedName=ans['1.1']||'';var savedMedia={...media};closeRev();
+function finalSubmit(){var savedAns={...ans};var savedName=curMode==='notarius'?(ans['n1.1']||''):(ans['1.1']||'');var savedMedia={...media};closeRev();
   var totalMedia=0;Object.values(media).forEach(function(arr){totalMedia+=arr.length});
   // Use REAL GPS location
   if(!gpsLoc){toast('⚠️ GPS lokatsiya aniqlanmadi. Iltimos GPS yoqing!','error');return}
   toast('📍 Lokatsiya aniqlanmoqda...');
   reverseGeo(gpsLoc.lat,gpsLoc.lng,function(geo){
-    var sub={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,ayN:savedAns['1.1'],ans:{...savedAns},mediaCount:totalMedia,at:new Date().toISOString(),
+    var sub={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,ayN:savedName,mode:curMode,ans:{...savedAns},mediaCount:totalMedia,at:new Date().toISOString(),
       loc:{lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
         hud:geo.district||geo.city||cu.reg,
         addr:geo.road||geo.display||'',
@@ -700,7 +1168,12 @@ function finalSubmit(){var savedAns={...ans};var savedName=ans['1.1']||'';var sa
         pt:geo.type||'📍'}};
     subs.push(sub);
     locs.push({id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'submit',ts:new Date().toISOString()});
-    sc++;ans={};media={};aS='ayoqsh';buildT();renderQ();updS();renderH();
+    sc++;ans={};media={};aS='ayoqsh';
+    // Reset auto fields back to 'auto' type (in case they were changed to 'text' for new AYOQSH)
+    Q.forEach(function(q){if((q.id==='1.1'||q.id==='1.2')&&q.s==='ayoqsh')q.ty='auto'});
+    // 1.3 always stays multicheck
+    delete ans['_stir_found'];delete ans['_newAyoqsh'];
+    buildT();renderQ();updS();renderH();
     lastSubmitAns=savedAns;lastSubmitName=savedName;
     showSuccessModal(savedName+' ('+totalMedia+' ta media)');
   });
@@ -805,6 +1278,10 @@ function _buildPDF(){
         var items=[];try{items=JSON.parse(v||'[]')}catch(e){items=[]}
         if(items.length){v=items.map(function(it,idx){return(idx+1)+'. '+(it.name||'-')+' ('+( it.count||0)+' ta)'}).join('; ')} else {v=''}
       }
+      else if(q.ty==='multicheck'){
+        var sel=[];try{sel=JSON.parse(v||'[]')}catch(e){if(v)sel=[v]}
+        v=sel.length?sel.join(', '):'';
+      }
       var status=v===''?"Bo'sh":'';
       rows.push([q.id,q.t,v||'--',status]);
     });
@@ -902,10 +1379,163 @@ document.getElementById('aG').innerHTML=gridH;
 document.getElementById('aUB').innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Login</th><th style="padding:10px 14px;text-align:left">Ism</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">Telefon</th><th style="padding:10px 14px;text-align:center">Yuborilgan</th><th style="padding:10px 14px;text-align:center">Holat</th></tr></thead><tbody>'+uk.map((u,i)=>{const c=subs.filter(s=>s.un===u).length,ll=locs.filter(l=>l.un===u).pop();return '<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 14px">'+(i+1)+'</td><td style="padding:10px 14px;font-weight:600">'+u+'</td><td style="padding:10px 14px">'+U[u].name+'</td><td style="padding:10px 14px;font-size:11px">'+U[u].reg+'</td><td style="padding:10px 14px;font-size:11px;color:var(--blue-600);font-weight:600">'+U[u].ph+'</td><td style="padding:10px 14px;text-align:center"><span style="font-weight:800;font-size:15px;color:'+(c>0?'var(--green-500)':'var(--gray-400)')+'">'+c+'</span></td><td style="padding:10px 14px;text-align:center"><span class="gps-dot '+(ll?'on':'off')+'"></span></td></tr>'}).join('')+'</tbody></table></div>';
 document.getElementById('aSB').innerHTML=!subs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali ma\'lumotnoma yuborilmagan</div>':'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Tekshiruvchi</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">AYOQSH</th><th style="padding:10px 14px;text-align:left">Vaqt</th><th style="padding:10px 14px;text-align:center">📍</th><th style="padding:10px 14px;text-align:center">🗑️</th></tr></thead><tbody>'+subs.slice().reverse().map((s,i)=>'<tr style="border-bottom:1px solid var(--gray-100)" id="row_'+s.id+'"><td style="padding:10px 14px">'+(subs.length-i)+'</td><td style="padding:10px 14px;font-weight:600">'+s.uN+'</td><td style="padding:10px 14px;font-size:11px">'+s.reg+'</td><td style="padding:10px 14px;font-weight:600;color:var(--blue-700)">'+s.ayN+'</td><td style="padding:10px 14px;font-size:11px;color:var(--gray-500)">'+new Date(s.at).toLocaleString('uz')+'</td><td style="padding:10px 14px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td><td style="padding:10px 14px;text-align:center"><button onclick="confirmDel(\''+s.id+'\',\''+s.ayN.replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border:2px solid var(--gray-200);background:var(--gray-50);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'#fee2e2\';this.style.borderColor=\'#fca5a5\'" onmouseout="this.style.background=\'var(--gray-50)\';this.style.borderColor=\'var(--gray-200)\'">🗑️</button></td></tr>').join('')+'</tbody></table></div>';
 // ENHANCED LOCATIONS with address info
-document.getElementById('aLL').innerHTML=!locs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali lokatsiya ma\'lumoti mavjud emas</div>':locs.slice().reverse().map(l=>'<div class="loc-item"><div class="loc-time">'+new Date(l.ts).toLocaleString('uz')+'</div><div class="loc-user">'+l.uN+'</div><div class="loc-details"><div class="loc-address">'+(l.pt||'📍')+' '+(l.place||"Noma'lum joy")+'</div><div class="loc-sub">📍 '+(l.hud||l.reg||'')+' — '+(l.addr||'')+'</div><div class="loc-coords">'+l.lat.toFixed(5)+', '+l.lng.toFixed(5)+(l.acc?' (±'+l.acc+'m)':'')+'</div></div><div class="loc-right"><div class="loc-badge '+(l.act==='submit'?'submit':'open')+'">'+(l.act==='submit'?'📤 Yuborish':'📱 Ochish')+'</div><a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="font-size:18px;text-decoration:none">🗺️</a></div></div>').join('');
+document.getElementById('aLL').innerHTML=!locs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali lokatsiya ma\'lumoti mavjud emas</div>':locs.slice().reverse().map(l=>'<div class="loc-item"><div class="loc-time">'+new Date(l.ts).toLocaleString('uz')+'</div><div class="loc-user">'+l.uN+'</div><div class="loc-details"><div class="loc-address">'+(l.pt||'📍')+' '+(l.place||"Noma'lum joy")+'</div><div class="loc-sub">📍 '+(l.hud||l.reg||'')+' — '+(l.addr||'')+'</div><div class="loc-coords">'+l.lat.toFixed(5)+', '+l.lng.toFixed(5)+(l.acc?' (±'+l.acc+'m)':'')+'</div></div><div class="loc-right"><div class="loc-badge '+(l.act==='submit'||l.act==='no_activity'?'submit':'open')+'">'+(l.act==='submit'?'📤 Yuborish':l.act==='no_activity'?'🚫 Faoliyatsiz':l.act==='heartbeat'?'💓 Ping':'📱 Ochish')+'</div><a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="font-size:18px;text-decoration:none">🗺️</a></div></div>').join('');
 // Export summary panel
 var eS=document.getElementById('exportSummary');
-if(eS){var actC=new Set(subs.map(s=>s.un)).size;eS.innerHTML='<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center"><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Jami ma\'lumotnoma</div><div style="font-size:28px;font-weight:800;color:var(--blue-700)">'+subs.length+'</div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Faol tekshiruvchi</div><div style="font-size:28px;font-weight:800;color:var(--green-500)">'+actC+' <span style="font-size:14px;color:var(--gray-400)">/ 22</span></div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Lokatsiya ping</div><div style="font-size:28px;font-weight:800;color:var(--gold-500)">'+locs.length+'</div></div><div style="flex:1"></div><div style="font-size:11px;color:var(--gray-400)">Hisobot sanasi: '+new Date().toLocaleString('uz')+'</div></div>'}}
+if(eS){var actC=new Set(subs.map(s=>s.un)).size;eS.innerHTML='<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center"><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Jami ma\'lumotnoma</div><div style="font-size:28px;font-weight:800;color:var(--blue-700)">'+subs.length+'</div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Faol tekshiruvchi</div><div style="font-size:28px;font-weight:800;color:var(--green-500)">'+actC+' <span style="font-size:14px;color:var(--gray-400)">/ 22</span></div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Lokatsiya ping</div><div style="font-size:28px;font-weight:800;color:var(--gold-500)">'+locs.length+'</div></div><div style="flex:1"></div><div style="font-size:11px;color:var(--gray-400)">Hisobot sanasi: '+new Date().toLocaleString('uz')+'</div></div>'}
+// Populate filters
+populateFilters();
+applyFilters();
+}
+// ══════════════════════════════════════════
+// FILTER SYSTEM
+// ══════════════════════════════════════════
+function populateFilters(){
+  // Vakil filter
+  var vakilSel=document.getElementById('fVakil');
+  if(!vakilSel)return;
+  var curV=vakilSel.value;
+  var uk=Object.keys(U).filter(function(k){return U[k].role==='user'});
+  vakilSel.innerHTML='<option value="">Barchasi ('+uk.length+')</option>'+uk.map(function(u){return '<option value="'+u+'">'+U[u].name+' — '+U[u].reg+'</option>'}).join('');
+  vakilSel.value=curV;
+
+  // Hudud filter — from submissions and AYOQSH_DB
+  var hududSel=document.getElementById('fHudud');
+  var curH=hududSel.value;
+  var hududs=new Set();
+  subs.forEach(function(s){if(s.ans&&s.ans['1.2'])hududs.add(s.ans['1.2']);if(s.loc&&s.loc.hud)hududs.add(s.loc.hud)});
+  if(typeof AYOQSH_DB!=='undefined')AYOQSH_DB.forEach(function(a){if(a.hudud)hududs.add(a.hudud)});
+  var hArr=Array.from(hududs).sort();
+  hududSel.innerHTML='<option value="">Barchasi ('+hArr.length+')</option>'+hArr.map(function(h){return '<option value="'+h+'">'+h+'</option>'}).join('');
+  hududSel.value=curH;
+
+  // Faoliyat turi filter
+  var typeSel=document.getElementById('fType');
+  var curT=typeSel.value;
+  var types=new Set();
+  subs.forEach(function(s){if(s.ans&&s.ans['1.4'])types.add(s.ans['1.4'])});
+  if(typeof AYOQSH_DB!=='undefined')AYOQSH_DB.forEach(function(a){if(a.type)types.add(a.type)});
+  var tArr=Array.from(types).sort();
+  typeSel.innerHTML='<option value="">Barchasi</option>'+tArr.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
+  typeSel.value=curT;
+
+  // Bank filter — from submissions
+  var bankSel=document.getElementById('fBank');
+  var curB=bankSel.value;
+  var banks=new Set();
+  subs.forEach(function(s){if(s.ans&&s.ans['1.5']&&s.ans['1.5'].trim())banks.add(s.ans['1.5'].trim())});
+  var bArr=Array.from(banks).sort();
+  bankSel.innerHTML='<option value="">Barchasi</option>'+bArr.map(function(b){return '<option value="'+b+'">'+b+'</option>'}).join('');
+  bankSel.value=curB;
+}
+
+function applyFilters(){
+  var fV=document.getElementById('fVakil')?.value||'';
+  var fH=document.getElementById('fHudud')?.value||'';
+  var fT=document.getElementById('fType')?.value||'';
+  var fB=document.getElementById('fBank')?.value||'';
+  var fS=(document.getElementById('fSearch')?.value||'').toLowerCase().trim();
+
+  // Filter submissions
+  var filtered=subs.filter(function(s){
+    if(fV&&s.un!==fV)return false;
+    if(fH){
+      var sHud=(s.ans&&s.ans['1.2'])||'';
+      var locHud=(s.loc&&s.loc.hud)||'';
+      if(sHud.indexOf(fH)===-1&&locHud.indexOf(fH)===-1)return false;
+    }
+    if(fT){var sType=(s.ans&&s.ans['1.4'])||'';if(sType!==fT)return false}
+    if(fB){var sBank=(s.ans&&s.ans['1.5'])||'';if(sBank.indexOf(fB)===-1)return false}
+    if(fS){
+      var haystack=JSON.stringify(s).toLowerCase();
+      if(haystack.indexOf(fS)===-1)return false;
+    }
+    return true;
+  });
+
+  var anyFilter=fV||fH||fT||fB||fS;
+
+  // Filter stats
+  var statsEl=document.getElementById('filterStats');
+  if(statsEl){
+    if(anyFilter){
+      // Count breakdowns
+      var byType={},byHudud={},byVakil={};
+      filtered.forEach(function(s){
+        var t=(s.ans&&s.ans['1.4'])||'Noaniq';byType[t]=(byType[t]||0)+1;
+        var h=(s.ans&&s.ans['1.2'])||(s.loc&&s.loc.hud)||'Noaniq';byHudud[h]=(byHudud[h]||0)+1;
+        byVakil[s.uN]=(byVakil[s.uN]||0)+1;
+      });
+      var noAct=filtered.filter(function(s){return s.noActivity}).length;
+      var active=filtered.length-noAct;
+      statsEl.innerHTML=
+        '<div style="padding:10px 16px;background:#dcfce7;border-radius:10px;font-size:13px;font-weight:700;color:#16a34a">✅ Faol: '+active+'</div>'+
+        '<div style="padding:10px 16px;background:#fee2e2;border-radius:10px;font-size:13px;font-weight:700;color:#dc2626">🚫 Faoliyatsiz: '+noAct+'</div>'+
+        '<div style="padding:10px 16px;background:#dbeafe;border-radius:10px;font-size:13px;font-weight:700;color:#1d4ed8">📊 Jami: '+filtered.length+' / '+subs.length+'</div>'+
+        Object.entries(byType).map(function(e){return '<div style="padding:8px 12px;background:#fef9c3;border-radius:8px;font-size:11px;font-weight:700;color:#a16207">⛽ '+e[0]+': '+e[1]+'</div>'}).join('');
+    } else {
+      statsEl.innerHTML='';
+    }
+  }
+
+  // Update count
+  var cntEl=document.getElementById('filterCount');
+  if(cntEl)cntEl.textContent=anyFilter?('Filtr: '+filtered.length+' / '+subs.length):'';
+
+  // Render filtered results table
+  var resEl=document.getElementById('filterResults');
+  if(!resEl)return;
+
+  if(!anyFilter){
+    resEl.innerHTML='';
+    return;
+  }
+
+  if(!filtered.length){
+    resEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">🔍 Filtr bo\'yicha natija topilmadi</div>';
+    return;
+  }
+
+  var h='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  h+='<thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)">';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">№</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">AYOQSH</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">STIR</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Hudud</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Turi</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Vakil</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Bank</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Holat</th>';
+  h+='<th style="padding:10px;text-align:left;font-weight:700">Sana</th>';
+  h+='<th style="padding:10px;text-align:center;font-weight:700">📍</th>';
+  h+='</tr></thead><tbody>';
+  filtered.forEach(function(s,i){
+    var isNA=s.noActivity;
+    h+='<tr style="border-bottom:1px solid var(--gray-100);background:'+(isNA?'#fef2f2':'white')+'">';
+    h+='<td style="padding:10px">'+(i+1)+'</td>';
+    h+='<td style="padding:10px;font-weight:700;color:var(--blue-800)">'+s.ayN+'</td>';
+    h+='<td style="padding:10px;font-size:11px;color:var(--gray-500)">'+(s.ans&&s.ans['1.0']||'-')+'</td>';
+    h+='<td style="padding:10px;font-size:11px">'+(s.ans&&s.ans['1.2']||(s.loc&&s.loc.hud)||'-')+'</td>';
+    h+='<td style="padding:10px;font-size:11px">'+(s.ans&&s.ans['1.4']||'-')+'</td>';
+    h+='<td style="padding:10px;font-size:11px;font-weight:600">'+s.uN+'</td>';
+    h+='<td style="padding:10px;font-size:11px">'+(s.ans&&s.ans['1.5']||'-')+'</td>';
+    h+='<td style="padding:10px"><span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;'+(isNA?'background:#fee2e2;color:#dc2626':'background:#dcfce7;color:#16a34a')+'">'+(isNA?'🚫 Faoliyatsiz':'✅ Faol')+'</span></td>';
+    h+='<td style="padding:10px;font-size:11px;color:var(--gray-400)">'+new Date(s.at).toLocaleString('uz')+'</td>';
+    h+='<td style="padding:10px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  resEl.innerHTML=h;
+}
+
+function clearFilters(){
+  document.getElementById('fVakil').value='';
+  document.getElementById('fHudud').value='';
+  document.getElementById('fType').value='';
+  document.getElementById('fBank').value='';
+  document.getElementById('fSearch').value='';
+  applyFilters();
+}
 function setAT(b,id){document.querySelectorAll('#adminPage .tabs-container .tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');['tO','tU','tS','tL','tE','tCfg'].forEach(x=>document.getElementById(x).style.display=x===id?'':'none');
   if(id==='tL'){setTimeout(function(){initAdminMap();updateAdminMap()},200)}
   if(id==='tCfg'){loadCfgUI()}
@@ -921,7 +1551,7 @@ function getDefaultCfg(){
     subtitle:'',
     loginNote:'Tizimga kirish faqat Markaziy bank tomonidan tayinlangan tekshiruvchilar uchun.',
     sections:SEC.map(function(s){return {k:s.k,l:s.l,i:s.i,media:true}}),
-    questions:Q.map(function(q){return {id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph||'',opts:q.opts||[]}}),
+    questions:Q.map(function(q){return {id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph||'',opts:q.opts||[],counted:q.counted}}),
     users:Object.keys(U).filter(function(k){return U[k].role==='user'}).map(function(k){return {un:k,name:U[k].name,reg:U[k].reg,ph:U[k].ph}})
   };
 }
@@ -974,7 +1604,7 @@ function applyCfg(){
   var lp=document.querySelector('#loginPage .login-header p');if(lp)lp.textContent=CFG.org;
   // Update SEC and Q arrays from CFG
   SEC.length=0;CFG.sections.forEach(function(s){SEC.push({k:s.k,l:s.l,i:s.i,media:s.media!==false})});
-  Q.length=0;CFG.questions.forEach(function(q){Q.push({id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts||[]})});
+  Q.length=0;CFG.questions.forEach(function(q){Q.push({id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts||[],counted:q.counted})});
   // Update user data
   CFG.users.forEach(function(u){if(U[u.un]){U[u.un].name=u.name;U[u.un].reg=u.reg;U[u.un].ph=u.ph}});
   // Re-render if user page is active
@@ -1012,7 +1642,7 @@ function renderCfgQuestions(){
   var qs=CFG.questions.filter(function(q){return q.s===secKey});
   document.getElementById('cfgQuestions').innerHTML=qs.length?qs.map(function(q){
     var gi=CFG.questions.indexOf(q);
-    return '<div style="display:flex;gap:6px;align-items:flex-start;padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:var(--blue-600);min-width:36px;padding-top:8px">'+q.id+'</span><div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px"><input id="cfgQ_'+gi+'" value="'+(q.t||'').replace(/"/g,'&quot;')+'" class="form-input" style="height:36px;font-size:12px" placeholder="Savol matni"><div style="display:flex;gap:4px"><select id="cfgQTy_'+gi+'" class="form-input" style="height:32px;font-size:11px;width:120px"><option value="text"'+(q.ty==='text'?' selected':'')+'>Matn</option><option value="number"'+(q.ty==='number'?' selected':'')+'>Son</option><option value="yesno"'+(q.ty==='yesno'?' selected':'')+'>Ha/Yo\'q</option><option value="select"'+(q.ty==='select'?' selected':'')+'>Tanlash</option><option value="textarea"'+(q.ty==='textarea'?' selected':'')+'>Katta matn</option><option value="terminal"'+(q.ty==='terminal'?' selected':'')+'>Terminal</option><option value="qrlist"'+(q.ty==='qrlist'?' selected':'')+'>Dinamik ro\'yxat</option></select><input id="cfgQPh_'+gi+'" value="'+(q.ph||'').replace(/"/g,'&quot;')+'" class="form-input" style="height:32px;font-size:11px;flex:1" placeholder="Placeholder..."></div></div><button onclick="delQuestion('+gi+')" style="width:28px;height:28px;border:none;background:#fee2e2;border-radius:6px;cursor:pointer;font-size:11px;color:#dc2626;margin-top:4px">✕</button></div>';
+    return '<div style="display:flex;gap:6px;align-items:flex-start;padding:10px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;color:var(--blue-600);min-width:36px;padding-top:8px">'+q.id+'</span><div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px"><input id="cfgQ_'+gi+'" value="'+(q.t||'').replace(/"/g,'&quot;')+'" class="form-input" style="height:36px;font-size:12px" placeholder="Savol matni"><div style="display:flex;gap:4px"><select id="cfgQTy_'+gi+'" class="form-input" style="height:32px;font-size:11px;width:120px"><option value="text"'+(q.ty==='text'?' selected':'')+'>Matn</option><option value="number"'+(q.ty==='number'?' selected':'')+'>Son</option><option value="yesno"'+(q.ty==='yesno'?' selected':'')+'>Ha/Yo\'q</option><option value="select"'+(q.ty==='select'?' selected':'')+'>Tanlash</option><option value="textarea"'+(q.ty==='textarea'?' selected':'')+'>Katta matn</option><option value="terminal"'+(q.ty==='terminal'?' selected':'')+'>Terminal</option><option value="qrlist"'+(q.ty==='qrlist'?' selected':'')+'>Dinamik ro\'yxat</option><option value="multicheck"'+(q.ty==='multicheck'?' selected':'')+'>Ko\'p tanlash</option></select><input id="cfgQPh_'+gi+'" value="'+(q.ph||'').replace(/"/g,'&quot;')+'" class="form-input" style="height:32px;font-size:11px;flex:1" placeholder="Placeholder..."></div></div><button onclick="delQuestion('+gi+')" style="width:28px;height:28px;border:none;background:#fee2e2;border-radius:6px;cursor:pointer;font-size:11px;color:#dc2626;margin-top:4px">✕</button></div>';
   }).join(''):'<div style="text-align:center;padding:20px;color:var(--gray-400);font-size:13px">Bu bo\'limda savollar yo\'q</div>';
 }
 function addQuestion(){
@@ -1235,6 +1865,87 @@ function fallbackCopy(text){
   try{document.execCommand('copy');toast('📋 Hisobot nusxalandi!')}catch(e){toast('Nusxalashda xatolik','error')}
   document.body.removeChild(ta);
 }
+</script>
+<!-- PWA Install Banner -->
+<div id="installBanner">
+<div style="display:flex;align-items:center;gap:14px">
+<div style="width:50px;height:50px;background:linear-gradient(135deg,#d4a932,#b8941f);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🏛️</div>
+<div style="flex:1">
+<div style="font-size:15px;font-weight:800">PF-246 ilovasini o'rnatish</div>
+<div style="font-size:11px;color:#94a3b8;margin-top:2px">Bosh ekranga qo'shib, ilova sifatida ishlating</div>
+</div>
+<button onclick="installPWA()" style="height:40px;padding:0 20px;background:linear-gradient(135deg,#d4a932,#b8941f);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">O'rnatish</button>
+<button onclick="dismissInstall()" style="width:32px;height:32px;background:transparent;border:1px solid #475569;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+</div>
+<!-- iOS instructions -->
+<div id="iosInstall" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.1);border-radius:10px;font-size:12px;color:#cbd5e1;line-height:1.6">
+📱 <strong>iPhone/iPad:</strong> Pastdagi <span style="font-size:16px">⬆️</span> tugmasini bosing → <strong>"Bosh ekranga qo'shish"</strong> ni tanlang
+</div>
+</div>
+
+<script>
+// ═══ PWA: Service Worker + Install Prompt ═══
+// Register service worker for offline support
+if('serviceWorker' in navigator){
+  // Inline service worker using blob
+  var swCode='self.addEventListener("install",function(e){self.skipWaiting()});self.addEventListener("activate",function(e){e.waitUntil(clients.claim())});self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return caches.match(e.request)}))})';
+  var swBlob=new Blob([swCode],{type:'application/javascript'});
+  var swUrl=URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(function(){});
+}
+
+// Install prompt for Android (Chrome)
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  showInstallBanner();
+});
+
+function showInstallBanner(){
+  // Don't show if already installed or dismissed
+  if(window.matchMedia('(display-mode: standalone)').matches)return;
+  if(localStorage.getItem('pf246_install_dismissed'))return;
+  var banner=document.getElementById('installBanner');
+  if(banner)banner.style.display='block';
+  // Detect iOS
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isIOS&&!window.navigator.standalone){
+    banner.style.display='block';
+    document.getElementById('iosInstall').style.display='block';
+  }
+}
+
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r){
+      if(r.outcome==='accepted')toast('✅ Ilova o\'rnatildi!');
+      deferredPrompt=null;
+      document.getElementById('installBanner').style.display='none';
+    });
+  }
+}
+
+function dismissInstall(){
+  document.getElementById('installBanner').style.display='none';
+  localStorage.setItem('pf246_install_dismissed','1');
+}
+
+// Show install banner for iOS after 3 seconds
+setTimeout(function(){
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isStandalone=window.navigator.standalone;
+  if(isIOS&&!isStandalone&&!localStorage.getItem('pf246_install_dismissed')){
+    showInstallBanner();
+  }
+},3000);
+
+// Detect if installed
+window.addEventListener('appinstalled',function(){
+  document.getElementById('installBanner').style.display='none';
+  toast('✅ PF-246 ilova sifatida o\'rnatildi!');
+});
 </script>
 </body>
 </html>
