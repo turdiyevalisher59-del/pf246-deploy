@@ -33,6 +33,7 @@ html{overscroll-behavior:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--blue-900:#0c1929;--blue-800:#122a46;--blue-700:#1a3a5c;--blue-600:#1e4976;--blue-500:#2563eb;--gold-500:#d4a932;--gold-400:#e8c252;--gold-600:#b8941f;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;--white:#fff;--green-500:#22c55e;--green-600:#16a34a;--red-500:#ef4444;--red-600:#dc2626;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -232,7 +233,14 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring</p></div><div class="header-right"><div class="gps-badge on"><span class="gps-dot on"></span> Avto-yangilash</div><button class="btn btn-sm btn-outline" onclick="loadAd()">🔄 Yangilash</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring</p></div>
+<!-- Admin Mode Toggle -->
+<div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
+<button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
+<button onclick="setAdminMode('notarius')" id="admModeN" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:transparent;color:var(--gray-400)">📜 Notarius</button>
+<button onclick="setAdminMode('all')" id="admModeAll" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:transparent;color:var(--gray-400)">📊 Barchasi</button>
+</div>
+<div class="header-right"><div class="gps-badge on"><span class="gps-dot on"></span> Avto-yangilash</div><button class="btn btn-sm btn-outline" onclick="loadAd()">🔄 Yangilash</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
 <div class="main-container">
 <div class="stats-grid"><div class="stat-card"><div class="stat-value" id="at">0</div><div class="stat-label">Jami yuborilgan</div></div><div class="stat-card"><div class="stat-value">22</div><div class="stat-label">Jami foydalanuvchi</div></div><div class="stat-card"><div class="stat-value" id="aa">0</div><div class="stat-label">Faol tekshiruvchi</div></div><div class="stat-card"><div class="stat-value" id="al">0</div><div class="stat-label">Lokatsiya pinglar</div></div></div>
 <div class="tabs-container"><button class="tab-btn active" onclick="setAT(this,'tO')">📊 Umumiy ko'rinish</button><button class="tab-btn" onclick="setAT(this,'tU')">👥 Foydalanuvchilar</button><button class="tab-btn" onclick="setAT(this,'tS')">📋 Ma'lumotnomalar</button><button class="tab-btn" onclick="setAT(this,'tL')">📍 Lokatsiyalar</button><button class="tab-btn" onclick="setAT(this,'tE')">💾 Eksport</button><button class="tab-btn" onclick="setAT(this,'tCfg')">⚙️ Sozlamalar</button></div>
@@ -248,9 +256,9 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <!-- Hudud filter -->
 <div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">📍 Hudud</label><select id="fHudud" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
 <!-- Faoliyat turi filter -->
-<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">⛽ Faoliyat turi</label><select id="fType" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<div id="fTypeWrap"><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">⛽ Faoliyat turi</label><select id="fType" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
 <!-- Bank (from ans 1.5) filter -->
-<div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🏦 Xizmat ko'rsatuvchi bank</label><select id="fBank" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
+<div id="fBankWrap"><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🏦 Xizmat ko'rsatuvchi bank</label><select id="fBank" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
 <!-- Text search -->
 <div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🔎 Qidiruv</label><input id="fSearch" class="form-input" style="height:40px;font-size:12px" placeholder="AYOQSH nomi, STIR..." oninput="applyFilters()"></div>
 </div>
@@ -391,6 +399,60 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div id="delModal" class="modal-overlay"><div class="modal-box" style="max-width:400px"><div class="modal-header" style="background:linear-gradient(135deg,#dc2626,#b91c1c)"><div class="modal-title">🗑️ O'chirishni tasdiqlang</div><button class="modal-close" onclick="closeDel()">✕</button></div><div class="modal-body" style="text-align:center"><div style="font-size:48px;margin-bottom:16px">⚠️</div><div style="font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:8px">Haqiqatan ham o'chirmoqchimisiz?</div><div id="delName" style="font-size:14px;color:var(--blue-700);font-weight:600;padding:10px 16px;background:var(--gray-50);border-radius:10px;margin-bottom:16px;border:1px solid var(--gray-200)"></div><div style="font-size:12px;color:var(--red-500);margin-bottom:20px;font-weight:600">⚠️ Bu amalni qaytarib bo'lmaydi!</div><div style="display:flex;gap:10px"><button class="btn btn-outline" style="flex:1;color:var(--gray-700);border-color:var(--gray-300)" onclick="closeDel()">Bekor qilish</button><button class="btn btn-danger" style="flex:1" onclick="execDel()">🗑️ O'chirish</button></div></div></div></div>
 <div id="toastE" class="toast"></div>
 <script>
+// ═══ SUPABASE CONNECTION ═══
+const SUPA_URL='https://ttgzgfbmppiilyfcbmhg.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z3pnZmJtcHBpaWx5ZmNibWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MTQyODksImV4cCI6MjA5MDM5MDI4OX0.9zOhmggEAq0-nqa4nc2NHQKD-8oowJwD-IFQV9VFZ5A';
+const SB=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+// ═══ SUPABASE HELPERS ═══
+async function sbInsertSub(sub){
+  try{
+    await SB.from('submissions').insert({
+      id:sub.id,un:sub.un,u_name:sub.uN,reg:sub.reg,ay_name:sub.ayN,
+      mode:sub.mode||'ayoqsh',answers:sub.ans||{},media_count:sub.mediaCount||0,
+      no_activity:sub.noActivity||false,
+      loc_lat:sub.loc?.lat,loc_lng:sub.loc?.lng,loc_acc:sub.loc?.acc,
+      loc_hud:sub.loc?.hud,loc_addr:sub.loc?.addr,loc_place:sub.loc?.place,loc_pt:sub.loc?.pt
+    });
+  }catch(e){console.log('SB insert sub error',e)}
+}
+async function sbInsertLoc(loc){
+  try{
+    await SB.from('locations').insert({
+      id:loc.id,un:loc.un,u_name:loc.uN,reg:loc.reg,
+      lat:loc.lat,lng:loc.lng,acc:loc.acc,
+      hud:loc.hud,addr:loc.addr,place:loc.place,pt:loc.pt,
+      action:loc.act
+    });
+  }catch(e){console.log('SB insert loc error',e)}
+}
+async function sbLoadSubs(){
+  try{
+    var{data}=await SB.from('submissions').select('*').order('created_at',{ascending:false});
+    if(!data)return[];
+    return data.map(function(r){return{
+      id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,
+      mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,noActivity:r.no_activity,
+      at:r.created_at,
+      loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null
+    }});
+  }catch(e){console.log('SB load subs error',e);return[]}
+}
+async function sbLoadLocs(){
+  try{
+    var{data}=await SB.from('locations').select('*').order('created_at',{ascending:false}).limit(500);
+    if(!data)return[];
+    return data.map(function(r){return{
+      id:r.id,un:r.un,uN:r.u_name,reg:r.reg,
+      lat:r.lat,lng:r.lng,acc:r.acc,
+      hud:r.hud,addr:r.addr,place:r.place,pt:r.pt,
+      act:r.action,ts:r.created_at
+    }});
+  }catch(e){console.log('SB load locs error',e);return[]}
+}
+async function sbDeleteSub(id){
+  try{await SB.from('submissions').delete().eq('id',id)}catch(e){console.log('SB delete error',e)}
+}
 const U={
 admin:{pw:'Admin@2025',role:'admin',name:"Jo'rayev Anvar Abdumurotovich",reg:'Barchasi',ph:'93-600-77-22'},
 user01:{pw:'User01@2025',role:'user',name:"O'.Matboboyev",reg:'Angren sh.',ph:'77-777-28-44'},
@@ -524,7 +586,7 @@ function stopPings(){if(pingInterval){clearInterval(pingInterval);pingInterval=n
 function sendPing(action){
   if(!gpsLoc||!cu||cu.role!=='user')return;
   reverseGeo(gpsLoc.lat,gpsLoc.lng,function(geo){
-    locs.push({
+    var loc={
       id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,
       lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
       hud:geo.district||geo.city||cu.reg,
@@ -532,7 +594,9 @@ function sendPing(action){
       place:geo.name||geo.suburb||'',
       pt:geo.type||'📍',
       act:action,ts:new Date().toISOString()
-    });
+    };
+    locs.push(loc);
+    sbInsertLoc(loc); // Save to Supabase
   });
 }
 // ══════ ADMIN: Live map ══════
@@ -590,7 +654,10 @@ function togglePwVis(){var inp=document.getElementById('loginPass');var eye=docu
 function doLogout(){stopPings();stopAdminRefresh();cu=null;localStorage.removeItem('pf246');ans={};media={};showP('loginPage')}
 function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
-function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted}});buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
+async function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted}});
+// Load user's own submissions from Supabase
+try{var{data}=await SB.from('submissions').select('*').eq('un',cu.un).order('created_at',{ascending:false});if(data&&data.length){subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});sc=subs.length}}catch(e){console.log('SB user load error',e)}
+buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
 // ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
 function switchMode(mode){
   if(curMode===mode)return;
@@ -1013,8 +1080,11 @@ function submitNoActivity(){
       loc:{lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
         hud:geo.district||geo.city||cu.reg,addr:geo.road||'',place:geo.name||geo.suburb||'',pt:geo.type||'📍'}};
     subs.push(sub);
-    locs.push({id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
-      hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'no_activity',ts:new Date().toISOString()});
+    sbInsertSub(sub); // Save to Supabase
+    var locNA={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
+      hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'no_activity',ts:new Date().toISOString()};
+    locs.push(locNA);
+    sbInsertLoc(locNA); // Save to Supabase
     sc++;
     // Reset
     document.getElementById('noActName').value='';
@@ -1167,7 +1237,10 @@ function finalSubmit(){var savedAns={...ans};var savedName=curMode==='notarius'?
         place:geo.name||geo.suburb||'',
         pt:geo.type||'📍'}};
     subs.push(sub);
-    locs.push({id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'submit',ts:new Date().toISOString()});
+    sbInsertSub(sub); // Save to Supabase
+    var locEntry={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'submit',ts:new Date().toISOString()};
+    locs.push(locEntry);
+    sbInsertLoc(locEntry); // Save to Supabase
     sc++;ans={};media={};aS='ayoqsh';
     // Reset auto fields back to 'auto' type (in case they were changed to 'text' for new AYOQSH)
     Q.forEach(function(q){if((q.id==='1.1'||q.id==='1.2')&&q.s==='ayoqsh')q.ty='auto'});
@@ -1307,10 +1380,23 @@ function _buildPDF(){
   doc.save(fn);
   toast('PDF muvaffaqiyatli yuklandi!');
 }
-function renderH(){const my=subs.filter(s=>s.un===cu?.un);if(!my.length){document.getElementById('hSec').style.display='none';return}document.getElementById('hSec').style.display='';document.getElementById('hCnt').textContent=my.length+' ta';document.getElementById('hList').innerHTML=my.slice().reverse().map(h=>'<div class="history-item" onclick="loadS(\''+h.id+'\')"><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--blue-800);margin-bottom:3px">🏪 '+h.ayN+'</div><div style="font-size:11px;color:var(--gray-500)">📅 '+new Date(h.at).toLocaleString('uz')+' '+(h.loc?'📍 '+h.loc.hud+' — '+h.loc.place:'')+'</div></div><div style="font-size:11px;font-weight:600;color:var(--green-500)">✅</div></div>').join('')}
+function renderH(){const my=subs.filter(s=>s.un===cu?.un);if(!my.length){document.getElementById('hSec').style.display='none';return}document.getElementById('hSec').style.display='';document.getElementById('hCnt').textContent=my.length+' ta';document.getElementById('hList').innerHTML=my.slice().reverse().map(h=>'<div class="history-item" onclick="loadS(\''+h.id+'\')"><div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--blue-800);margin-bottom:3px">'+((h.mode||'ayoqsh')==='notarius'?'📜':'🏪')+' '+h.ayN+'</div><div style="font-size:11px;color:var(--gray-500)">📅 '+new Date(h.at).toLocaleString('uz')+' '+(h.loc?'📍 '+h.loc.hud+' — '+h.loc.place:'')+'</div></div><div style="font-size:11px;font-weight:600;color:var(--green-500)">✅</div></div>').join('')}
 function loadS(id){const s=subs.find(x=>x.id===id);if(!s)return;ans={...s.ans};aS='ayoqsh';buildT();renderQ();updS();toast(s.ayN+" ma'lumotnomasi yuklandi")}
-function loadAd(){
-document.getElementById('at').textContent=subs.length;document.getElementById('aa').textContent=new Set(subs.map(s=>s.un)).size;document.getElementById('al').textContent=locs.length;
+async function loadAd(){
+// Load from Supabase
+try{
+  var sbSubs=await sbLoadSubs();
+  if(sbSubs.length)subs=sbSubs;
+  var sbLocs=await sbLoadLocs();
+  if(sbLocs.length||subs.length)locs=sbLocs;
+}catch(e){console.log('SB load error',e)}
+var fSubs=getAdminSubs();
+document.getElementById('at').textContent=fSubs.length;document.getElementById('aa').textContent=new Set(fSubs.map(s=>s.un)).size;document.getElementById('al').textContent=locs.length;
+// Show current mode label
+var modeLabel=adminViewMode==='ayoqsh'?'⛽ AYOQSH':adminViewMode==='notarius'?'📜 Notarius':'📊 Barchasi';
+// Temporarily use filtered subs for all rendering
+var _allSubs=subs;
+subs=fSubs;
 const uk=Object.keys(U).filter(k=>U[k].role==='user');
 // Build expandable user cards
 var gridH='';
@@ -1336,7 +1422,7 @@ uk.forEach(function(u){
       gridH+='<div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:10px">';
       // Submission header
       gridH+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-      gridH+='<div style="font-weight:700;font-size:13px;color:var(--blue-800)">🏪 '+sub.ayN+'</div>';
+      gridH+='<div style="font-weight:700;font-size:13px;color:var(--blue-800)">'+((sub.mode||'ayoqsh')==='notarius'?'📜':'🏪')+' '+sub.ayN+'</div>';
       gridH+='<div style="font-size:10px;color:var(--gray-400)">📅 '+new Date(sub.at).toLocaleString('uz')+'</div>';
       gridH+='</div>';
       // Location
@@ -1349,7 +1435,8 @@ uk.forEach(function(u){
       }
       // Answers table
       gridH+='<div style="max-height:300px;overflow-y:auto">';
-      var answeredQ=Q.filter(function(q){return sub.ans[q.id]!=null&&sub.ans[q.id]!==''});
+      var subQs=(sub.mode||'ayoqsh')==='notarius'?Q_N:Q;
+      var answeredQ=subQs.filter(function(q){return sub.ans[q.id]!=null&&sub.ans[q.id]!==''});
       if(answeredQ.length){
         answeredQ.forEach(function(q){
           var v=sub.ans[q.id];
@@ -1382,7 +1469,7 @@ document.getElementById('aSB').innerHTML=!subs.length?'<div style="text-align:ce
 document.getElementById('aLL').innerHTML=!locs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali lokatsiya ma\'lumoti mavjud emas</div>':locs.slice().reverse().map(l=>'<div class="loc-item"><div class="loc-time">'+new Date(l.ts).toLocaleString('uz')+'</div><div class="loc-user">'+l.uN+'</div><div class="loc-details"><div class="loc-address">'+(l.pt||'📍')+' '+(l.place||"Noma'lum joy")+'</div><div class="loc-sub">📍 '+(l.hud||l.reg||'')+' — '+(l.addr||'')+'</div><div class="loc-coords">'+l.lat.toFixed(5)+', '+l.lng.toFixed(5)+(l.acc?' (±'+l.acc+'m)':'')+'</div></div><div class="loc-right"><div class="loc-badge '+(l.act==='submit'||l.act==='no_activity'?'submit':'open')+'">'+(l.act==='submit'?'📤 Yuborish':l.act==='no_activity'?'🚫 Faoliyatsiz':l.act==='heartbeat'?'💓 Ping':'📱 Ochish')+'</div><a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="font-size:18px;text-decoration:none">🗺️</a></div></div>').join('');
 // Export summary panel
 var eS=document.getElementById('exportSummary');
-if(eS){var actC=new Set(subs.map(s=>s.un)).size;eS.innerHTML='<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center"><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Jami ma\'lumotnoma</div><div style="font-size:28px;font-weight:800;color:var(--blue-700)">'+subs.length+'</div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Faol tekshiruvchi</div><div style="font-size:28px;font-weight:800;color:var(--green-500)">'+actC+' <span style="font-size:14px;color:var(--gray-400)">/ 22</span></div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Lokatsiya ping</div><div style="font-size:28px;font-weight:800;color:var(--gold-500)">'+locs.length+'</div></div><div style="flex:1"></div><div style="font-size:11px;color:var(--gray-400)">Hisobot sanasi: '+new Date().toLocaleString('uz')+'</div></div>'}
+if(eS){var actC=new Set(subs.map(s=>s.un)).size;eS.innerHTML='<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center"><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">'+modeLabel+' ma\'lumotnoma</div><div style="font-size:28px;font-weight:800;color:var(--blue-700)">'+subs.length+'</div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Faol tekshiruvchi</div><div style="font-size:28px;font-weight:800;color:var(--green-500)">'+actC+' <span style="font-size:14px;color:var(--gray-400)">/ 22</span></div></div><div><div style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">Lokatsiya ping</div><div style="font-size:28px;font-weight:800;color:var(--gold-500)">'+locs.length+'</div></div><div style="flex:1"></div><div style="font-size:11px;color:var(--gray-400)">Hisobot sanasi: '+new Date().toLocaleString('uz')+'</div></div>'}
 // Populate filters
 populateFilters();
 applyFilters();
@@ -1427,6 +1514,7 @@ function populateFilters(){
   var bArr=Array.from(banks).sort();
   bankSel.innerHTML='<option value="">Barchasi</option>'+bArr.map(function(b){return '<option value="'+b+'">'+b+'</option>'}).join('');
   bankSel.value=curB;
+  subs=_allSubs; // Restore full subs array
 }
 
 function applyFilters(){
@@ -1436,8 +1524,9 @@ function applyFilters(){
   var fB=document.getElementById('fBank')?.value||'';
   var fS=(document.getElementById('fSearch')?.value||'').toLowerCase().trim();
 
-  // Filter submissions
-  var filtered=subs.filter(function(s){
+  // Filter submissions (using mode-filtered data)
+  var baseSubs=getAdminSubs();
+  var filtered=baseSubs.filter(function(s){
     if(fV&&s.un!==fV)return false;
     if(fH){
       var sHud=(s.ans&&s.ans['1.2'])||'';
@@ -1471,7 +1560,7 @@ function applyFilters(){
       statsEl.innerHTML=
         '<div style="padding:10px 16px;background:#dcfce7;border-radius:10px;font-size:13px;font-weight:700;color:#16a34a">✅ Faol: '+active+'</div>'+
         '<div style="padding:10px 16px;background:#fee2e2;border-radius:10px;font-size:13px;font-weight:700;color:#dc2626">🚫 Faoliyatsiz: '+noAct+'</div>'+
-        '<div style="padding:10px 16px;background:#dbeafe;border-radius:10px;font-size:13px;font-weight:700;color:#1d4ed8">📊 Jami: '+filtered.length+' / '+subs.length+'</div>'+
+        '<div style="padding:10px 16px;background:#dbeafe;border-radius:10px;font-size:13px;font-weight:700;color:#1d4ed8">📊 Jami: '+filtered.length+' / '+baseSubs.length+'</div>'+
         Object.entries(byType).map(function(e){return '<div style="padding:8px 12px;background:#fef9c3;border-radius:8px;font-size:11px;font-weight:700;color:#a16207">⛽ '+e[0]+': '+e[1]+'</div>'}).join('');
     } else {
       statsEl.innerHTML='';
@@ -1480,7 +1569,7 @@ function applyFilters(){
 
   // Update count
   var cntEl=document.getElementById('filterCount');
-  if(cntEl)cntEl.textContent=anyFilter?('Filtr: '+filtered.length+' / '+subs.length):'';
+  if(cntEl)cntEl.textContent=anyFilter?('Filtr: '+filtered.length+' / '+baseSubs.length):'';
 
   // Render filtered results table
   var resEl=document.getElementById('filterResults');
@@ -1513,7 +1602,7 @@ function applyFilters(){
     var isNA=s.noActivity;
     h+='<tr style="border-bottom:1px solid var(--gray-100);background:'+(isNA?'#fef2f2':'white')+'">';
     h+='<td style="padding:10px">'+(i+1)+'</td>';
-    h+='<td style="padding:10px;font-weight:700;color:var(--blue-800)">'+s.ayN+'</td>';
+    h+='<td style="padding:10px;font-weight:700;color:var(--blue-800)">'+((s.mode||'ayoqsh')==='notarius'?'📜 ':'⛽ ')+s.ayN+'</td>';
     h+='<td style="padding:10px;font-size:11px;color:var(--gray-500)">'+(s.ans&&s.ans['1.0']||'-')+'</td>';
     h+='<td style="padding:10px;font-size:11px">'+(s.ans&&s.ans['1.2']||(s.loc&&s.loc.hud)||'-')+'</td>';
     h+='<td style="padding:10px;font-size:11px">'+(s.ans&&s.ans['1.4']||'-')+'</td>';
@@ -1539,6 +1628,28 @@ function clearFilters(){
 function setAT(b,id){document.querySelectorAll('#adminPage .tabs-container .tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');['tO','tU','tS','tL','tE','tCfg'].forEach(x=>document.getElementById(x).style.display=x===id?'':'none');
   if(id==='tL'){setTimeout(function(){initAdminMap();updateAdminMap()},200)}
   if(id==='tCfg'){loadCfgUI()}
+}
+// ═══ ADMIN VIEW MODE ═══
+var adminViewMode='ayoqsh'; // 'ayoqsh', 'notarius', 'all'
+function setAdminMode(mode){
+  adminViewMode=mode;
+  var btnA=document.getElementById('admModeA');
+  var btnN=document.getElementById('admModeN');
+  var btnAll=document.getElementById('admModeAll');
+  [btnA,btnN,btnAll].forEach(function(b){b.style.background='transparent';b.style.color='var(--gray-400)'});
+  if(mode==='ayoqsh'){btnA.style.background='#d4a932';btnA.style.color='white'}
+  else if(mode==='notarius'){btnN.style.background='#d4a932';btnN.style.color='white'}
+  else{btnAll.style.background='#d4a932';btnAll.style.color='white'}
+  // Show/hide AYOQSH-specific filters
+  var ftw=document.getElementById('fTypeWrap');
+  var fbw=document.getElementById('fBankWrap');
+  if(ftw)ftw.style.display=(mode==='notarius')?'none':'';
+  if(fbw)fbw.style.display=(mode==='notarius')?'none':'';
+  loadAd();
+}
+function getAdminSubs(){
+  if(adminViewMode==='all')return subs;
+  return subs.filter(function(s){return(s.mode||'ayoqsh')===adminViewMode});
 }
 // ══════════════════════════════════════════
 // SETTINGS / CONFIG SYSTEM
@@ -1728,7 +1839,7 @@ function exJSON(){const d=JSON.stringify({submissions:subs,locations:locs,export
 let delId=null;
 function confirmDel(id,name){delId=id;document.getElementById('delName').textContent='🏪 '+name;document.getElementById('delModal').classList.add('active')}
 function closeDel(){delId=null;document.getElementById('delModal').classList.remove('active')}
-function execDel(){if(!delId)return;const idx=subs.findIndex(s=>s.id===delId);if(idx===-1){closeDel();return}const name=subs[idx].ayN;subs.splice(idx,1);closeDel();loadAd();toast('🗑️ "'+name+'" ma\'lumotnomasi o\'chirildi','error')}
+function execDel(){if(!delId)return;const idx=subs.findIndex(s=>s.id===delId);if(idx===-1){closeDel();return}const name=subs[idx].ayN;sbDeleteSub(delId);subs.splice(idx,1);closeDel();loadAd();toast('🗑️ "'+name+'" ma\'lumotnomasi o\'chirildi','error')}
 function exCSV(){if(!subs.length){toast("Ma'lumot yo'q",'error');return}const h=['ID','User','Hudud','AYOQSH','Vaqt','Lat','Lng','Joy nomi','Manzil'];const r=subs.map(s=>[s.id,s.uN,s.reg,s.ayN,s.at,s.loc?.lat||'',s.loc?.lng||'',s.loc?.place||'',s.loc?.addr||'']);const csv=[h.join(','),...r.map(x=>x.map(c=>'"'+c+'"').join(','))].join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pf246_'+Date.now()+'.csv';a.click();toast('CSV yuklandi')}
 // ══════════════════════════════════════════
 // REPORT TEXT BUILDER (reused by all sharing)
