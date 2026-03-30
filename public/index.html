@@ -61,7 +61,8 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .header-content h1{font-size:19px;font-weight:800;color:var(--white);margin-bottom:3px}
 .header-content p{font-size:12px;color:var(--gold-400);font-weight:500}
 .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
-.gps-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px}
+.gps-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .gps-badge.on{background:rgba(34,197,94,.18);color:#22c55e}
 .gps-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .gps-dot.on{background:#22c55e;animation:gpsPulse 2s infinite}
@@ -233,7 +234,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v4.3</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v4.4</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -491,15 +492,24 @@ async function sbInsertLoc(loc){
 }
 async function sbLoadSubs(){
   try{
-    var{data}=await SB.from('submissions').select('*').order('created_at',{ascending:false});
+    // Don't load media_data initially — it's too heavy (base64 images)
+    var{data}=await SB.from('submissions').select('id,un,u_name,reg,ay_name,mode,answers,media_count,no_activity,loc_lat,loc_lng,loc_acc,loc_hud,loc_addr,loc_place,loc_pt,created_at').order('created_at',{ascending:false});
     if(!data)return[];
     return data.map(function(r){return{
       id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,
-      mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:r.media_data||[],noActivity:r.no_activity,
+      mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:null,noActivity:r.no_activity,
       at:r.created_at,
       loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null
     }});
   }catch(e){console.log('SB load subs error',e);return[]}
+}
+// Load media for a specific submission (on demand)
+async function sbLoadMedia(subId){
+  try{
+    var{data}=await SB.from('submissions').select('media_data').eq('id',subId).single();
+    if(data&&data.media_data)return data.media_data;
+    return[];
+  }catch(e){return[]}
 }
 async function sbLoadLocs(){
   try{
@@ -642,15 +652,20 @@ var gpsWatchId=null;
 function updateGpsBadge(){
   var el=document.getElementById('gpsBadge');
   if(!el)return;
+  el.style.cursor='pointer';
   if(gpsStatus==='active'){
     el.style.background='rgba(34,197,94,.18)';el.style.color='#22c55e';
     el.innerHTML='<span class="gps-dot on"></span> GPS faol'+(gpsLoc?' (±'+Math.round(gpsLoc.acc)+'m)':'');
   } else if(gpsStatus==='searching'){
     el.style.background='rgba(245,158,11,.18)';el.style.color='#f59e0b';
-    el.innerHTML='<span class="gps-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b"></span> GPS qidirilmoqda...';
+    el.innerHTML='<span class="gps-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;animation:pulse 1s infinite"></span> Qidirilmoqda...';
   } else {
     el.style.background='rgba(239,68,68,.18)';el.style.color='#ef4444';
-    el.innerHTML='<span class="gps-dot off"></span> GPS o\'chiq — bosing';
+    el.innerHTML='<span class="gps-dot off"></span> 📍 GPS yoqing';
+    el.onclick=function(){
+      initGPS();
+      toast('📍 GPS qayta qidirilmoqda... Agar brauzer so\'rasa "Ruxsat berish" ni bosing');
+    };
   }
 }
 function onGpsSuccess(p){
@@ -658,30 +673,28 @@ function onGpsSuccess(p){
   gpsStatus='active';updateGpsBadge();
 }
 function initGPS(){
-  if(!navigator.geolocation){gpsStatus='error';updateGpsBadge();return}
+  if(!navigator.geolocation){gpsStatus='error';updateGpsBadge();toast('⚠️ Bu brauzer GPS ni qo\'llab-quvvatlamaydi','error');return}
   gpsStatus='searching';updateGpsBadge();
-  // Strategy 1: watchPosition (continuous tracking)
+  // Clear old watch
+  if(gpsWatchId){try{navigator.geolocation.clearWatch(gpsWatchId)}catch(e){}}
+  // Strategy 1: watchPosition with high accuracy
   try{
     gpsWatchId=navigator.geolocation.watchPosition(onGpsSuccess,function(e){
       console.log('GPS watch err:',e.code,e.message);
-      // Strategy 2: retry with low accuracy
-      try{navigator.geolocation.watchPosition(onGpsSuccess,function(){},{enableHighAccuracy:false,timeout:30000,maximumAge:120000})}catch(ex){}
+      if(e.code===1){
+        // Permission denied
+        gpsStatus='error';updateGpsBadge();
+        toast('🚫 GPS ruxsati rad etildi! Brauzer sozlamalarida lokatsiyani yoqing','error');
+      } else {
+        // Timeout or unavailable — try low accuracy
+        try{navigator.geolocation.getCurrentPosition(onGpsSuccess,function(e2){
+          gpsStatus='error';updateGpsBadge();
+        },{enableHighAccuracy:false,timeout:30000,maximumAge:300000})}catch(ex){}
+      }
     },{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
-  }catch(ex){console.log('GPS watch exception:',ex)}
-  // Strategy 3: immediate getCurrentPosition (parallel)
-  try{navigator.geolocation.getCurrentPosition(onGpsSuccess,function(){
-    // Strategy 4: low accuracy getCurrentPosition  
-    try{navigator.geolocation.getCurrentPosition(onGpsSuccess,function(){
-      gpsStatus='error';updateGpsBadge();
-    },{enableHighAccuracy:false,timeout:20000,maximumAge:300000})}catch(ex){}
-  },{enableHighAccuracy:false,timeout:10000,maximumAge:60000})}catch(ex){}
-  // Strategy 5: keep retrying every 10 seconds if still no GPS
-  var retryCount=0;
-  var retryTimer=setInterval(function(){
-    retryCount++;
-    if(gpsLoc||retryCount>12){clearInterval(retryTimer);return}
-    try{navigator.geolocation.getCurrentPosition(onGpsSuccess,function(){},{enableHighAccuracy:false,timeout:8000,maximumAge:300000})}catch(ex){}
-  },10000);
+  }catch(ex){console.log('GPS exception:',ex)}
+  // Strategy 2: parallel getCurrentPosition
+  try{navigator.geolocation.getCurrentPosition(onGpsSuccess,function(){},{enableHighAccuracy:false,timeout:20000,maximumAge:300000})}catch(ex){}
 }
 initGPS();
 // Ensure GPS before submit — with UI feedback
@@ -797,7 +810,7 @@ function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.rem
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
 async function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted,noBtn:q.noBtn}});
 // Load user's own submissions from Supabase
-try{var{data}=await SB.from('submissions').select('*').eq('un',cu.un).order('created_at',{ascending:false});if(data&&data.length){subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:r.media_data||[],noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});sc=subs.length}}catch(e){console.log('SB user load error',e)}
+try{var{data}=await SB.from('submissions').select('id,un,u_name,reg,ay_name,mode,answers,media_count,no_activity,loc_lat,loc_lng,loc_acc,loc_hud,loc_addr,loc_place,loc_pt,created_at').eq('un',cu.un).order('created_at',{ascending:false});if(data&&data.length){subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:null,noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});sc=subs.length}}catch(e){console.log('SB user load error',e)}
 buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
 // ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
 var ansA={},ansN={},mediaA={},mediaN={};
@@ -1821,20 +1834,7 @@ uk.forEach(function(u){
       if(sub.mediaCount){
         gridH+='<div style="margin-top:10px;padding:10px;background:#eff6ff;border:2px solid #93c5fd;border-radius:10px">';
         gridH+='<div style="font-size:11px;font-weight:700;color:#1d4ed8;margin-bottom:8px">📸 '+sub.mediaCount+' ta media biriktirma</div>';
-        if(sub.mediaData&&sub.mediaData.length){
-          gridH+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
-          sub.mediaData.forEach(function(m,mi){
-            if(m.type==='photo'&&m.data){
-              gridH+='<div onclick="viewMedia(\''+sub.id+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .2s" onmouseover="this.style.transform=\'scale(1.1)\'" onmouseout="this.style.transform=\'scale(1)\'">';
-              gridH+='<img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
-            } else {
-              gridH+='<div style="width:80px;height:60px;border-radius:8px;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid white">🎬</div>';
-            }
-          });
-          gridH+='</div>';
-        } else {
-          gridH+='<div style="font-size:10px;color:#60a5fa">Rasmlar yuklangan (yangi versiyada ko\'rinadi)</div>';
-        }
+        gridH+='<button onclick="event.stopPropagation();loadAndShowMedia(\''+sub.id+'\',this)" style="height:32px;padding:0 14px;border:2px solid #3b82f6;background:white;border-radius:8px;font-size:11px;font-weight:700;color:#1d4ed8;cursor:pointer;font-family:inherit">📷 Rasmlarni ko\'rish</button>';
         gridH+='</div>';
       }
       gridH+='</div>'; // end sub card
@@ -2223,6 +2223,23 @@ function confirmDel(id,name){delId=id;document.getElementById('delName').textCon
 function closeDel(){delId=null;document.getElementById('delModal').classList.remove('active')}
 function execDel(){if(!delId)return;const idx=subs.findIndex(s=>s.id===delId);if(idx===-1){closeDel();return}const name=subs[idx].ayN;sbDeleteSub(delId);subs.splice(idx,1);closeDel();loadAd();toast('🗑️ "'+name+'" ma\'lumotnomasi o\'chirildi','error')}
 // ═══ MEDIA VIEWER ═══
+async function loadAndShowMedia(subId,btn){
+  btn.textContent='⏳ Yuklanmoqda...';btn.disabled=true;
+  var mediaData=await sbLoadMedia(subId);
+  if(!mediaData||!mediaData.length){btn.textContent='📷 Rasmlar topilmadi';return}
+  // Cache it
+  var sub=subs.find(function(s){return s.id===subId});
+  if(sub)sub.mediaData=mediaData;
+  // Replace button with gallery
+  var gallery='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  mediaData.forEach(function(m,mi){
+    if(m.type==='photo'&&m.data){
+      gallery+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+    }
+  });
+  gallery+='</div>';
+  btn.outerHTML=gallery;
+}
 function viewMedia(subId,idx){
   var sub=subs.find(function(s){return s.id===subId});
   if(!sub||!sub.mediaData||!sub.mediaData[idx])return;
