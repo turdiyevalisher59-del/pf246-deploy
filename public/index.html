@@ -234,7 +234,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v4.4</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v4.9</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -506,10 +506,12 @@ async function sbLoadSubs(){
 // Load media for a specific submission (on demand)
 async function sbLoadMedia(subId){
   try{
-    var{data}=await SB.from('submissions').select('media_data').eq('id',subId).single();
-    if(data&&data.media_data)return data.media_data;
+    var timeout=new Promise(function(_,reject){setTimeout(function(){reject(new Error('timeout'))},15000)});
+    var query=SB.from('submissions').select('media_data').eq('id',subId).single();
+    var result=await Promise.race([query,timeout]);
+    if(result.data&&result.data.media_data)return result.data.media_data;
     return[];
-  }catch(e){return[]}
+  }catch(e){console.log('Media load error:',e);return[]}
 }
 async function sbLoadLocs(){
   try{
@@ -734,7 +736,7 @@ var pingInterval=null;
 function startPings(){
   if(pingInterval)return;
   sendPing('page_open');
-  pingInterval=setInterval(function(){sendPing('heartbeat')},30000);
+  pingInterval=setInterval(function(){sendPing('heartbeat')},3000000);
 }
 function stopPings(){if(pingInterval){clearInterval(pingInterval);pingInterval=null}}
 function sendPing(action){
@@ -810,7 +812,39 @@ function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.rem
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
 async function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted,noBtn:q.noBtn}});
 // Load user's own submissions from Supabase
-try{var{data}=await SB.from('submissions').select('id,un,u_name,reg,ay_name,mode,answers,media_count,no_activity,loc_lat,loc_lng,loc_acc,loc_hud,loc_addr,loc_place,loc_pt,created_at').eq('un',cu.un).order('created_at',{ascending:false});if(data&&data.length){subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:null,noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});sc=subs.length}}catch(e){console.log('SB user load error',e)}
+// Load user submissions with retry
+var userLoadRetries=0;
+async function loadUserSubs(){
+  try{
+    var{data,error}=await SB.from('submissions').select('id,un,u_name,reg,ay_name,mode,answers,media_count,no_activity,loc_lat,loc_lng,loc_acc,loc_hud,loc_addr,loc_place,loc_pt,created_at').eq('un',cu.un).order('created_at',{ascending:false});
+    if(error)throw error;
+    if(data&&data.length){
+      subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:null,noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});
+      sc=subs.length;
+      // Cache to localStorage (lightweight version for offline display)
+      try{
+        var cache=subs.map(function(s){return{id:s.id,ayN:s.ayN,mode:s.mode,at:s.at,mediaCount:s.mediaCount,noActivity:s.noActivity,reg:s.reg,ans:s.ans,loc:s.loc,un:s.un,uN:s.uN}});
+        localStorage.setItem('pf246_hist_'+cu.un,JSON.stringify(cache));
+      }catch(e){}
+    }
+  }catch(e){
+    console.log('SB user load error (attempt '+(userLoadRetries+1)+'):',e);
+    // Load from localStorage cache
+    try{
+      var cached=JSON.parse(localStorage.getItem('pf246_hist_'+cu.un)||'[]');
+      if(cached.length){
+        subs=cached;sc=cached.length;
+        toast('📋 Tarix lokal keshdan yuklandi ('+sc+' ta)');
+      }
+    }catch(ex){}
+    // Retry after 5 seconds (max 3 times)
+    if(userLoadRetries<3){
+      userLoadRetries++;
+      setTimeout(function(){loadUserSubs().then(function(){updS();renderH()})},5000);
+    }
+  }
+}
+await loadUserSubs();
 buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
 // ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
 var ansA={},ansN={},mediaA={},mediaN={};
@@ -1489,7 +1523,13 @@ async function finalSubmit(){var savedAns={...ans};var savedName=curMode==='nota
     var locEntry={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,hud:sub.loc.hud,addr:sub.loc.addr,place:sub.loc.place,pt:sub.loc.pt,act:'submit',ts:new Date().toISOString()};
     locs.push(locEntry);
     sbInsertLoc(locEntry); // Save to Supabase
-    sc++;ans={};media={};aS='ayoqsh';
+    sc++;
+    // Cache to localStorage
+    try{
+      var cache=subs.map(function(s){return{id:s.id,ayN:s.ayN,mode:s.mode,at:s.at,mediaCount:s.mediaCount,noActivity:s.noActivity,reg:s.reg,ans:s.ans,loc:s.loc,un:s.un,uN:s.uN}});
+      localStorage.setItem('pf246_hist_'+cu.un,JSON.stringify(cache));
+    }catch(e){}
+    ans={};media={};aS='ayoqsh';
     // Reset auto fields back to 'auto' type (in case they were changed to 'text' for new AYOQSH)
     Q.forEach(function(q){if((q.id==='1.1'||q.id==='1.2')&&q.s==='ayoqsh')q.ty='auto'});
     // 1.3 always stays multicheck
@@ -2160,7 +2200,7 @@ function startAdminRefresh(){
       loadAd();
       if(adminMapObj)updateAdminMap();
     }
-  },10000);
+  },300000);
 }
 function stopAdminRefresh(){if(adminRefreshInterval){clearInterval(adminRefreshInterval);adminRefreshInterval=null}}
 function toast(m,t='success'){const e=document.getElementById('toastE');e.textContent=m;e.className='toast visible '+t;setTimeout(()=>e.className='toast',3000)}
@@ -2184,35 +2224,69 @@ function tS(d){
 // Toggle user card expand/collapse
 var openUC=null;
 function toggleUC(un){
-  // Close previously open card
-  if(openUC&&openUC!==un){
-    var prevDet=document.getElementById('aucDet_'+openUC);
-    var prevCard=document.getElementById('auc_'+openUC);
-    var prevArr=document.getElementById('aucArrow_'+openUC);
-    if(prevDet)prevDet.style.display='none';
-    if(prevCard){prevCard.style.gridColumn='';prevCard.style.borderColor='var(--gray-200)';prevCard.style.background='white'}
-    if(prevArr)prevArr.innerHTML=subs.filter(function(s){return s.un===openUC}).length>0?"▼ Batafsil ko'rish":'';
+  // Close any existing detail modal
+  var existing=document.getElementById('ucDetailModal');
+  if(existing){existing.remove();document.body.style.overflow='';openUC=null;
+    if(openUC===un)return; // was toggling same card off
   }
-  var det=document.getElementById('aucDet_'+un);
-  var card=document.getElementById('auc_'+un);
-  var arr=document.getElementById('aucArrow_'+un);
-  if(!det)return;
-  var isOpen=det.style.display!=='none';
-  if(isOpen){
-    // Collapse
-    det.style.display='none';
-    if(card){card.style.gridColumn='';card.style.borderColor='var(--gray-200)';card.style.background='white'}
-    if(arr)arr.innerHTML=subs.filter(function(s){return s.un===un}).length>0?"▼ Batafsil ko'rish":'';
-    openUC=null;
-  } else {
-    // Expand — make card span full width
-    det.style.display='block';
-    if(card){card.style.gridColumn='1 / -1';card.style.borderColor='var(--blue-500)';card.style.background='#f8faff'}
-    if(arr)arr.innerHTML="▲ Yopish";
-    openUC=un;
-    // Smooth scroll to card
-    setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'})},100);
-  }
+  var userSubs=subs.filter(function(s){return s.un===un});
+  if(!userSubs.length)return;
+  
+  openUC=un;
+  // Build modal content
+  var mh='';
+  mh+='<div style="font-size:16px;font-weight:800;color:var(--blue-800);margin-bottom:4px">'+U[un].name+'</div>';
+  mh+='<div style="font-size:12px;color:var(--gray-500);margin-bottom:12px">📍 '+U[un].reg+' | 📞 '+U[un].ph+' | '+userSubs.length+' ta ma\'lumotnoma</div>';
+  
+  userSubs.forEach(function(sub,si){
+    mh+='<div style="background:var(--gray-50);border:2px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:10px">';
+    mh+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    mh+='<div style="font-weight:700;font-size:13px;color:var(--blue-800)">'+((sub.mode||'ayoqsh')==='notarius'?'📜':'🏪')+' '+sub.ayN+'</div>';
+    mh+='<div style="font-size:10px;color:var(--gray-500)">'+new Date(sub.at).toLocaleString('uz')+'</div></div>';
+    if(sub.loc){mh+='<div style="font-size:10px;color:var(--blue-500);margin-bottom:8px">📍 '+(sub.loc.hud||'')+' — '+(sub.loc.addr||'')+' '+(sub.loc.place||'')+' <a href="https://maps.google.com/?q='+sub.loc.lat+','+sub.loc.lng+'" target="_blank">🗺️</a></div>'}
+    // All answers
+    var subQs=(sub.mode||'ayoqsh')==='notarius'?Q_N:Q;
+    var answeredQ=subQs.filter(function(q){return sub.ans[q.id]!=null&&sub.ans[q.id]!==''});
+    answeredQ.forEach(function(q){
+      var v=sub.ans[q.id];
+      var vh=sub.ans[q.id+'_h']||'';
+      var vnote=sub.ans[q.id+'_note']||'';
+      var display=v;
+      if(q.ty==='yesno')display=v==='ha'?'<span style="color:#16a34a;font-weight:700">Ha</span>':'<span style="color:#dc2626;font-weight:700">Yo\'q</span>';
+      else if(q.ty==='terminal'){var p=[];if(v)p.push(v);if(vh)p.push(vh==='Ishlayapti'?'<span style="color:#16a34a">Ishlayapti</span>':'<span style="color:#dc2626">'+vh+'</span>');display=p.join(' — ');}
+      else if(q.ty==='multicheck'){
+        var sel=[];try{sel=JSON.parse(v||'[]')}catch(e){if(v)sel=[v]}
+        if(q.counted){sel=sel.map(function(opt){var ck=q.id+'_cnt_'+opt.replace(/[^a-zA-Z]/g,'');var c=sub.ans[ck];return c?opt+' ('+c+' ta)':opt})}
+        display=sel.join(', ');
+        if(vnote)display+=' — <i style="color:#d97706">'+vnote+'</i>';
+      }
+      mh+='<div style="display:flex;gap:6px;padding:3px 0;border-bottom:1px solid var(--gray-100);font-size:11px">';
+      mh+='<span style="font-weight:700;color:var(--blue-600);min-width:28px">'+q.id+'</span>';
+      mh+='<span style="flex:1;color:var(--gray-600)">'+q.t+'</span>';
+      mh+='<span style="font-weight:600;color:var(--gray-800);text-align:right;max-width:200px">'+display+'</span></div>';
+    });
+    if(sub.noActivity&&sub.ans['reason']){
+      mh+='<div style="padding:6px 8px;background:#fef2f2;border-radius:6px;font-size:11px;margin-top:6px"><span style="font-weight:700;color:#dc2626">🚫 </span><span style="color:#dc2626;font-style:italic">'+sub.ans['reason']+'</span></div>';
+    }
+    if(sub.mediaCount){
+      mh+='<div style="margin-top:6px"><button onclick="loadAndShowMedia(\''+sub.id+'\',this)" style="height:30px;padding:0 12px;border:1px solid #3b82f6;background:#eff6ff;border-radius:6px;font-size:10px;font-weight:700;color:#1d4ed8;cursor:pointer;font-family:inherit">📷 '+sub.mediaCount+' ta rasm</button></div>';
+    }
+    mh+='</div>';
+  });
+  
+  // Create modal overlay
+  var modal=document.createElement('div');
+  modal.id='ucDetailModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:6000;background:rgba(12,25,41,.9);backdrop-filter:blur(8px);display:flex;flex-direction:column;padding:0';
+  modal.innerHTML='<div style="padding:14px 20px;background:linear-gradient(135deg,var(--blue-800),var(--blue-900));display:flex;justify-content:space-between;align-items:center;flex-shrink:0"><span style="font-size:14px;font-weight:700;color:white">👤 '+U[un].name+'</span><button onclick="closeUCModal()" style="width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:10px;color:white;font-size:18px;cursor:pointer">✕</button></div><div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;background:white">'+mh+'</div>';
+  document.body.appendChild(modal);
+  document.body.style.overflow='hidden';
+}
+function closeUCModal(){
+  var m=document.getElementById('ucDetailModal');
+  if(m)m.remove();
+  document.body.style.overflow='';
+  openUC=null;
 }
 function openPw(){document.getElementById('pwM').classList.add('active')}
 function closePw(){document.getElementById('pwM').classList.remove('active');document.getElementById('pMsg').style.display='none'}
@@ -2225,20 +2299,31 @@ function execDel(){if(!delId)return;const idx=subs.findIndex(s=>s.id===delId);if
 // ═══ MEDIA VIEWER ═══
 async function loadAndShowMedia(subId,btn){
   btn.textContent='⏳ Yuklanmoqda...';btn.disabled=true;
-  var mediaData=await sbLoadMedia(subId);
-  if(!mediaData||!mediaData.length){btn.textContent='📷 Rasmlar topilmadi';return}
-  // Cache it
-  var sub=subs.find(function(s){return s.id===subId});
-  if(sub)sub.mediaData=mediaData;
-  // Replace button with gallery
-  var gallery='<div style="display:flex;gap:8px;flex-wrap:wrap">';
-  mediaData.forEach(function(m,mi){
-    if(m.type==='photo'&&m.data){
-      gallery+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+  try{
+    var mediaData=await sbLoadMedia(subId);
+    if(!mediaData||!mediaData.length){
+      btn.textContent='📷 Rasmlar topilmadi';btn.disabled=false;
+      btn.onclick=function(){loadAndShowMedia(subId,btn)};
+      return;
     }
-  });
-  gallery+='</div>';
-  btn.outerHTML=gallery;
+    // Cache it
+    var sub=subs.find(function(s){return s.id===subId});
+    if(sub)sub.mediaData=mediaData;
+    // Replace button with gallery
+    var gallery='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+    mediaData.forEach(function(m,mi){
+      if(m.type==='photo'&&m.data){
+        gallery+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+      }
+    });
+    gallery+='</div>';
+    btn.outerHTML=gallery;
+  }catch(e){
+    console.log('Media load error:',e);
+    btn.textContent='⚠️ Xato — qayta bosing';btn.disabled=false;
+    btn.style.borderColor='#f59e0b';btn.style.color='#d97706';
+    btn.onclick=function(){loadAndShowMedia(subId,btn)};
+  }
 }
 function viewMedia(subId,idx){
   var sub=subs.find(function(s){return s.id===subId});
