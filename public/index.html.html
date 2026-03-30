@@ -659,10 +659,16 @@ async function init(){if(cu.role==='user'){document.getElementById('uBadge').tex
 try{var{data}=await SB.from('submissions').select('*').eq('un',cu.un).order('created_at',{ascending:false});if(data&&data.length){subs=data.map(function(r){return{id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,noActivity:r.no_activity,at:r.created_at,loc:r.loc_lat?{lat:r.loc_lat,lng:r.loc_lng,acc:r.loc_acc,hud:r.loc_hud,addr:r.loc_addr,place:r.loc_place,pt:r.loc_pt}:null}});sc=subs.length}}catch(e){console.log('SB user load error',e)}
 buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
 // ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
+var ansA={},ansN={},mediaA={},mediaN={};
 function switchMode(mode){
   if(curMode===mode)return;
+  // Save current mode answers
+  if(curMode==='ayoqsh'){ansA={...ans};mediaA={...media}}
+  else{ansN={...ans};mediaN={...media}}
   curMode=mode;
-  ans={};media={};
+  // Restore target mode answers
+  if(mode==='ayoqsh'){ans={...ansA};media={...mediaA}}
+  else{ans={...ansN};media={...mediaN}}
   // Update toggle buttons
   var btnA=document.getElementById('modeAyoqsh');
   var btnN=document.getElementById('modeNotarius');
@@ -813,7 +819,7 @@ function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').t
         }
       }
     }
-    else if(q.ty==='number')h+='<input class="form-input" type="number" min="0" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';else if(q.ty==='textarea')h+='<textarea class="form-textarea" placeholder="'+(q.ph||'')+'" rows="3" oninput="setA(\''+q.id+'\',this.value)">'+v+'</textarea>';else if(q.ty==='yesno')h+='<div class="answer-row"><button class="answer-btn '+(v==='ha'?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\'ha\');renderQ()">✅ Ha</button><button class="answer-btn '+(v==='yoq'?'active-no':'')+'" onclick="setA(\''+q.id+'\',\'yoq\');renderQ()">❌ Yo\'q</button></div>';else if(q.ty==='select')h+='<div class="answer-row">'+q.opts.map(o=>'<button class="answer-btn '+(v===o?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\''+o+'\');renderQ()">'+o+'</button>').join('')+'</div>';
+    else if(q.ty==='number')h+='<input class="form-input" type="number" min="0" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)">';else if(q.ty==='textarea')h+='<textarea class="form-textarea" placeholder="'+(q.ph||'')+'" rows="3" oninput="setA(\''+q.id+'\',this.value)">'+v+'</textarea>';else if(q.ty==='yesno')h+='<div class="answer-row"><button class="answer-btn '+(v==='ha'?'active-yes':'')+'" onclick="setA(\''+q.id+'\',\'ha\');renderQ()">✅ Ha</button><button class="answer-btn '+(v==='yoq'?'active-no':'')+'" onclick="setA(\''+q.id+'\',\'yoq\');renderQ()">❌ Yo\'q</button></div>';else if(q.ty==='select')h+='<div class="answer-row">'+q.opts.map(function(o,oi){return '<button class="answer-btn '+(v===o?'active-yes':'')+'" onclick="selOpt(\''+q.id+'\','+oi+')">'+o+'</button>'}).join('')+'</div>';
     else if(q.ty==='terminal'){
       var vh=ans[q.id+'_h']||'';
       h+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><label style="font-size:12px;font-weight:700;color:var(--gray-600);min-width:40px">Soni:</label><input class="form-input" type="number" min="0" style="width:120px;flex:none" placeholder="'+(q.ph||'')+'" value="'+v+'" oninput="setA(\''+q.id+'\',this.value)"></div>';
@@ -908,6 +914,7 @@ function renderQ(){const s=SEC.find(x=>x.k===aS);document.getElementById('sI').t
   // ── END media section ──
   document.getElementById('qList').innerHTML=h;const i=SEC.findIndex(x=>x.k===aS);let n='';if(i>0)n+='<button class="btn btn-outline" style="color:var(--blue-700);border-color:var(--blue-500)" onclick="swS(\''+SEC[i-1].k+'\')">← Oldingi</button>';n+='<div style="flex:1"></div>';if(i<SEC.length-1)n+='<button class="btn btn-primary" onclick="swS(\''+SEC[i+1].k+'\')">Keyingi →</button>';else n+='<button class="btn btn-gold" onclick="submitS()">📤 Yuborish</button>';document.getElementById('nBtns').innerHTML=n}
 function setA(id,v){ans[id]=v;buildT();updS()}
+function selOpt(qid,idx){var q=Q.find(function(x){return x.id===qid});if(q&&q.opts&&q.opts[idx]!=null){ans[qid]=q.opts[idx];renderQ();buildT();updS()}}
 // ── Phone number auto-formatter: +998 (XX) XXX-XX-XX ──
 function onPhoneInput(qid,el){
   var raw=el.value.replace(/\D/g,''); // only digits
