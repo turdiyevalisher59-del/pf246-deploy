@@ -236,7 +236,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v6.1</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v6.5</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -587,7 +587,7 @@ const Q=[
 {id:'9.1',s:'terminal',t:'"Humo" kartalarini qabul qiluvchi terminal soni',ty:'terminal',ph:'Soni'},
 {id:'9.2',s:'terminal',t:'"Uzcard" kartalarini qabul qiluvchi terminal soni',ty:'terminal',ph:'Soni'},
 {id:'9.3',s:'terminal',t:'"Universal" terminal soni (bank kartasini qabul qiluvchi)',ty:'terminal',ph:'Soni'},
-{id:'9.4',s:'terminal',t:"Faqat soliq chekini chiqaradigan kassa apparati (bank kartasini qabul qilmaydi)",ty:'yesno'},
+
 {id:'10.1',s:'bankomat',t:"Bankomat o'rnatgan bank nomi (naqd pul to'ldirish imkoniyati bor, 100 metr radiusda joylashgan)",ty:'textbtn',ph:'Bank nomini yozing',noBtn:'Mavjud emas'},
 {id:'10.2',s:'bankomat',t:"Infokioskalar soni va nomi (naqd pul to'ldirish imkoniyati bor, 100 metr radiusda joylashgan)",ty:'multicheck',ph:'',opts:['Paynet','Oson','Multipay','Boshqa (nomi yoziladi)','Mavjud emas'],counted:true},
 {id:'11',s:'boshqa',t:'"Ishonch telefoni" ro\'yxati mavjudligi',ty:'yesno'},
@@ -1800,7 +1800,7 @@ function renderUserDaily(){
   h+='</div>';
   panel.innerHTML=h;
 }
-function renderH(){const my=subs.filter(s=>s.un===cu?.un);if(!my.length){document.getElementById('hSec').style.display='none';return}document.getElementById('hSec').style.display='';document.getElementById('hCnt').textContent=my.length+' ta';
+function renderH(){const my=subs.filter(s=>s.un===cu?.un&&(s.mode||'ayoqsh')===curMode);if(!my.length){document.getElementById('hSec').style.display='none';return}document.getElementById('hSec').style.display='';document.getElementById('hCnt').textContent=my.length+' ta';
 // Group by date
 var byDate={};
 my.forEach(function(h){
@@ -1939,7 +1939,7 @@ const uk=Object.keys(U).filter(k=>U[k].role==='user');
 // Build expandable user cards
 var gridH='';
 uk.forEach(function(u){
-  var allUserSubs=subs.filter(function(s){return s.un===u});
+  var allUserSubs=fSubs.filter(function(s){return s.un===u});
   var ll=locs.filter(function(l){return l.un===u}).pop();
   // Group by date
   var byDate={};
@@ -2058,8 +2058,9 @@ uk.forEach(function(u){
   gridH+='</div>'; // end card
 });
 document.getElementById('aG').innerHTML=gridH;
-document.getElementById('aUB').innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Login</th><th style="padding:10px 14px;text-align:left">Ism</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">Telefon</th><th style="padding:10px 14px;text-align:center">Yuborilgan</th><th style="padding:10px 14px;text-align:center">Holat</th></tr></thead><tbody>'+uk.map((u,i)=>{const c=subs.filter(s=>s.un===u).length,ll=locs.filter(l=>l.un===u).pop();return '<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 14px">'+(i+1)+'</td><td style="padding:10px 14px;font-weight:600">'+u+'</td><td style="padding:10px 14px">'+U[u].name+'</td><td style="padding:10px 14px;font-size:11px">'+U[u].reg+'</td><td style="padding:10px 14px;font-size:11px;color:var(--blue-600);font-weight:600">'+U[u].ph+'</td><td style="padding:10px 14px;text-align:center"><span style="font-weight:800;font-size:15px;color:'+(c>0?'var(--green-500)':'var(--gray-400)')+'">'+c+'</span></td><td style="padding:10px 14px;text-align:center"><span class="gps-dot '+(ll?'on':'off')+'"></span></td></tr>'}).join('')+'</tbody></table></div>';
-document.getElementById('aSB').innerHTML=!subs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali ma\'lumotnoma yuborilmagan</div>':'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Tekshiruvchi</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">AYOQSH</th><th style="padding:10px 14px;text-align:left">Vaqt</th><th style="padding:10px 14px;text-align:center">📍</th><th style="padding:10px 14px;text-align:center">🗑️</th></tr></thead><tbody>'+subs.slice().reverse().map((s,i)=>'<tr style="border-bottom:1px solid var(--gray-100)" id="row_'+s.id+'"><td style="padding:10px 14px">'+(subs.length-i)+'</td><td style="padding:10px 14px;font-weight:600">'+s.uN+'</td><td style="padding:10px 14px;font-size:11px">'+s.reg+'</td><td style="padding:10px 14px;font-weight:600;color:var(--blue-700)">'+s.ayN+'</td><td style="padding:10px 14px;font-size:11px;color:var(--gray-500)">'+new Date(s.at).toLocaleString('uz')+'</td><td style="padding:10px 14px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td><td style="padding:10px 14px;text-align:center"><button onclick="confirmDel(\''+s.id+'\',\''+s.ayN.replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border:2px solid var(--gray-200);background:var(--gray-50);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'#fee2e2\';this.style.borderColor=\'#fca5a5\'" onmouseout="this.style.background=\'var(--gray-50)\';this.style.borderColor=\'var(--gray-200)\'">🗑️</button></td></tr>').join('')+'</tbody></table></div>';
+document.getElementById('aUB').innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Login</th><th style="padding:10px 14px;text-align:left">Ism</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">Telefon</th><th style="padding:10px 14px;text-align:center">Yuborilgan</th><th style="padding:10px 14px;text-align:center">Holat</th></tr></thead><tbody>'+uk.map((u,i)=>{const c=fSubs.filter(s=>s.un===u).length,ll=locs.filter(l=>l.un===u).pop();return '<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 14px">'+(i+1)+'</td><td style="padding:10px 14px;font-weight:600">'+u+'</td><td style="padding:10px 14px">'+U[u].name+'</td><td style="padding:10px 14px;font-size:11px">'+U[u].reg+'</td><td style="padding:10px 14px;font-size:11px;color:var(--blue-600);font-weight:600">'+U[u].ph+'</td><td style="padding:10px 14px;text-align:center"><span style="font-weight:800;font-size:15px;color:'+(c>0?'var(--green-500)':'var(--gray-400)')+'">'+c+'</span></td><td style="padding:10px 14px;text-align:center"><span class="gps-dot '+(ll?'on':'off')+'"></span></td></tr>'}).join('')+'</tbody></table></div>';
+var mfSubs=getAdminSubs();
+document.getElementById('aSB').innerHTML=!mfSubs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali ma\'lumotnoma yuborilmagan</div>':'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Tekshiruvchi</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">'+(adminViewMode==='notarius'?'Notarius':'AYOQSH')+'</th><th style="padding:10px 14px;text-align:left">Vaqt</th><th style="padding:10px 14px;text-align:center">📍</th><th style="padding:10px 14px;text-align:center">🗑️</th></tr></thead><tbody>'+mfSubs.slice().reverse().map((s,i)=>'<tr style="border-bottom:1px solid var(--gray-100)" id="row_'+s.id+'"><td style="padding:10px 14px">'+(mfSubs.length-i)+'</td><td style="padding:10px 14px;font-weight:600">'+s.uN+'</td><td style="padding:10px 14px;font-size:11px">'+s.reg+'</td><td style="padding:10px 14px;font-weight:600;color:'+((s.mode||'ayoqsh')==='notarius'?'#7c3aed':'var(--blue-700)')+'">'+((s.mode||'ayoqsh')==='notarius'?'📜 ':'🏪 ')+s.ayN+'</td><td style="padding:10px 14px;font-size:11px;color:var(--gray-500)">'+new Date(s.at).toLocaleString('uz')+'</td><td style="padding:10px 14px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td><td style="padding:10px 14px;text-align:center"><button onclick="confirmDel(\''+s.id+'\',\''+s.ayN.replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border:2px solid var(--gray-200);background:var(--gray-50);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'#fee2e2\';this.style.borderColor=\'#fca5a5\'" onmouseout="this.style.background=\'var(--gray-50)\';this.style.borderColor=\'var(--gray-200)\'">🗑️</button></td></tr>').join('')+'</tbody></table></div>';
 // ENHANCED LOCATIONS with address info
 var subLocs=subs.filter(function(s){return s.loc&&s.loc.lat&&s.loc.lat!==0}).slice().reverse();
 document.getElementById('aLL').innerHTML=!subLocs.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Hali lokatsiya ma\'lumoti mavjud emas</div>':subLocs.map(function(s){var l=s.loc;return '<div class="loc-item"><div class="loc-time">'+new Date(s.at).toLocaleString('uz')+'</div><div class="loc-user">'+s.uN+'</div><div class="loc-details"><div class="loc-address">🏪 '+s.ayN+'</div><div class="loc-sub">📍 '+(l.hud||s.reg||'')+' — '+(l.addr||'')+(l.place?' — '+l.place:'')+'</div><div class="loc-coords">'+l.lat.toFixed(5)+', '+l.lng.toFixed(5)+(l.acc?' (±'+Math.round(l.acc)+'m)':'')+'</div></div><div class="loc-right"><div class="loc-badge submit">'+(s.noActivity?'🚫 Faoliyatsiz':'📤 Yuborish')+'</div><a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="font-size:18px;text-decoration:none">🗺️</a></div></div>'}).join('');
@@ -2252,6 +2253,9 @@ function setAdminMode(mode){
   if(ftw)ftw.style.display=(mode==='notarius')?'none':'';
   if(fbw)fbw.style.display=(mode==='notarius')?'none':'';
   loadAd();
+  // Re-render hudud if that tab is visible
+  var hTab=document.getElementById('tH');
+  if(hTab&&hTab.style.display!=='none')renderHududReport();
 }
 function getAdminSubs(){
   if(adminViewMode==='all')return subs;
@@ -2410,7 +2414,7 @@ var openUC=null;
 function toggleUC(un){
   var existing=document.getElementById('ucDetailModal');
   if(existing){existing.remove();document.body.style.overflow='';openUC=null;if(openUC===un)return}
-  var userSubs=subs.filter(function(s){return s.un===un});
+  var userSubs=getAdminSubs().filter(function(s){return s.un===un});
   if(!userSubs.length)return;
   openUC=un;
   var byDate={};
@@ -2513,6 +2517,7 @@ function viewMedia(subId,idx){
 }
 // ═══ HUDUD HISOBOTI ═══
 function renderHududReport(){
+  var vm=adminViewMode||'ayoqsh';
   var ayBase={};var ayTotal=AYOQSH_DB.length;
   AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!ayBase[h])ayBase[h]=0;ayBase[h]++});
   var notBase={};var notTotal=NOTARIUS_DB.length;
@@ -2524,47 +2529,40 @@ function renderHududReport(){
   var hList=Array.from(allHududs).sort();
   var totalAySubs=subs.filter(function(s){return(s.mode||'ayoqsh')==='ayoqsh'}).length;
   var totalNotSubs=subs.filter(function(s){return s.mode==='notarius'}).length;
-  var ayPct=ayTotal?Math.round(totalAySubs/ayTotal*100):0;
-  var notPct=notTotal?Math.round(totalNotSubs/notTotal*100):0;
-  // Extra stats
   var todayStr=new Date().toISOString().slice(0,10);
   var todayAy=subs.filter(function(s){return(s.mode||'ayoqsh')==='ayoqsh'&&s.at&&s.at.slice(0,10)===todayStr}).length;
   var todayNot=subs.filter(function(s){return s.mode==='notarius'&&s.at&&s.at.slice(0,10)===todayStr}).length;
-  var uniqueAyNames=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity)uniqueAyNames.add(s.ayN)});
-  var uniqueNotNames=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN)uniqueNotNames.add(s.ayN)});
-  var unvisitedAy=ayTotal-uniqueAyNames.size;
-  var unvisitedNot=notTotal-uniqueNotNames.size;
-  var bannerHa=subs.filter(function(s){return s.ans&&s.ans['3']==='ha'}).length;
-  var bannerYoq=subs.filter(function(s){return s.ans&&s.ans['3']==='yoq'}).length;
+  var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity)uniqueAy.add(s.ayN)});
+  var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN)uniqueNot.add(s.ayN)});
   var noActCount=subs.filter(function(s){return s.noActivity}).length;
   var mediaTotal=0;subs.forEach(function(s){mediaTotal+=(s.mediaCount||0)});
   var activeToday=new Set();subs.forEach(function(s){if(s.at&&s.at.slice(0,10)===todayStr)activeToday.add(s.un)});
+  var bannerHa=subs.filter(function(s){return s.ans&&s.ans['3']==='ha'}).length;
+  var bannerYoq=subs.filter(function(s){return s.ans&&s.ans['3']==='yoq'}).length;
   var h='';
-  // Stats panel
   h+='<div style="background:linear-gradient(135deg,#0c1929,#1a3a5c);border-radius:14px;padding:16px;margin-bottom:12px;color:white">';
-  h+='<div style="font-size:14px;font-weight:800;margin-bottom:10px">📊 Umumiy statistika</div>';
-  // Row 1: Base counts
+  h+='<div style="font-size:14px;font-weight:800;margin-bottom:10px">📊 '+(vm==='ayoqsh'?'⛽ AYOQSH statistikasi':vm==='notarius'?'📜 Notarius statistikasi':'📊 Umumiy statistika')+'</div>';
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin-bottom:8px">';
-  h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#d4a932">'+ayTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi AYOQSH</div></div>';
-  h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAyNames.size+'</div><div style="font-size:8px;opacity:.7">Noyob tekshirilgan</div></div>';
-  h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+unvisitedAy+'</div><div style="font-size:8px;opacity:.7">Borilmagan AYOQSH</div></div>';
-  h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(ayPct>=50?'#22c55e':ayPct>=25?'#f59e0b':'#ef4444')+'">'+ayPct+'%</div><div style="font-size:8px;opacity:.7">AYOQSH qamrovi</div></div>';
+  if(vm==='ayoqsh'||vm==='all'){var ayPct=ayTotal?Math.round(uniqueAy.size/ayTotal*100):0;
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#d4a932">'+ayTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi AYOQSH</div></div>';
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAy.size+'</div><div style="font-size:8px;opacity:.7">Noyob tekshirilgan</div></div>';
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(ayTotal-uniqueAy.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(ayPct>=50?'#22c55e':ayPct>=25?'#f59e0b':'#ef4444')+'">'+ayPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
+  }
+  if(vm==='notarius'||vm==='all'){var notPct=notTotal?Math.round(uniqueNot.size/notTotal*100):0;
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#a78bfa">'+notTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi Notarius</div></div>';
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueNot.size+'</div><div style="font-size:8px;opacity:.7">Noyob tekshirilgan</div></div>';
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(notTotal-uniqueNot.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(notPct>=50?'#22c55e':notPct>=25?'#f59e0b':'#ef4444')+'">'+notPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
+  }
   h+='</div>';
-  // Row 2: Today + Notarius
-  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin-bottom:8px">';
-  h+='<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+todayAy+'</div><div style="font-size:8px;color:#86efac">Bugun AYOQSH</div></div>';
-  h+='<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+todayNot+'</div><div style="font-size:8px;color:#86efac">Bugun Notarius</div></div>';
-  h+='<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+activeToday.size+'</div><div style="font-size:8px;color:#86efac">Bugun faol vakil</div></div>';
-  h+='<div style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#a78bfa">'+notPct+'%</div><div style="font-size:8px;color:#c4b5fd">Notarius qamrovi</div></div>';
-  h+='</div>';
-  // Row 3: Additional insights
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px">';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:#60a5fa">'+totalAySubs+'</div><div style="font-size:7px;opacity:.6">Jami AYOQSH tekshiruv</div></div>';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:#a78bfa">'+totalNotSubs+'</div><div style="font-size:7px;opacity:.6">Jami Notarius tekshiruv</div></div>';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:'+(bannerHa>bannerYoq?'#22c55e':'#ef4444')+'">'+bannerHa+'/'+(bannerHa+bannerYoq)+'</div><div style="font-size:7px;opacity:.6">Banner bor/jami</div></div>';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:#f59e0b">'+noActCount+'</div><div style="font-size:7px;opacity:.6">Faoliyatsiz AYOQSH</div></div>';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:#60a5fa">'+mediaTotal+'</div><div style="font-size:7px;opacity:.6">Jami rasm/media</div></div>';
-  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:16px;font-weight:800;color:#ef4444">'+unvisitedNot+'</div><div style="font-size:7px;opacity:.6">Borilmagan Notarius</div></div>';
+  h+='<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#22c55e">'+(vm==='notarius'?todayNot:vm==='ayoqsh'?todayAy:(todayAy+todayNot))+'</div><div style="font-size:7px;color:#86efac">Bugun tekshirilgan</div></div>';
+  h+='<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#22c55e">'+activeToday.size+'</div><div style="font-size:7px;color:#86efac">Bugun faol vakil</div></div>';
+  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#60a5fa">'+(vm==='notarius'?totalNotSubs:vm==='ayoqsh'?totalAySubs:(totalAySubs+totalNotSubs))+'</div><div style="font-size:7px;opacity:.6">Jami tekshiruv</div></div>';
+  if(vm==='ayoqsh'||vm==='all')h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:'+(bannerHa>bannerYoq?'#22c55e':'#ef4444')+'">'+bannerHa+'/'+(bannerHa+bannerYoq)+'</div><div style="font-size:7px;opacity:.6">Banner bor</div></div>';
+  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#f59e0b">'+noActCount+'</div><div style="font-size:7px;opacity:.6">Faoliyatsiz</div></div>';
+  h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#60a5fa">'+mediaTotal+'</div><div style="font-size:7px;opacity:.6">Jami rasm</div></div>';
   h+='</div></div>';
   // Hudud cards
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px">';
@@ -2579,12 +2577,12 @@ function renderHududReport(){
     // Clickable header
     h+='<div onclick="toggleHR(\''+hid+'\');var c=this.parentElement;c.style.borderColor=document.getElementById(\''+hid+'\').style.display===\'none\'?\'var(--gray-200)\':\'#3b82f6\'" style="padding:10px 12px;cursor:pointer;background:white">';
     h+='<div style="font-size:13px;font-weight:800;color:var(--blue-800);margin-bottom:6px">📍 '+hud+'</div>';
-    if(dbAy){
+    if(dbAy&&(vm==='ayoqsh'||vm==='all')){
       h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#d4a932">⛽ AYOQSH</span><span style="font-weight:800;color:var(--blue-800)">'+sentAy+' / '+dbAy+'</span></div>';
       h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:1px"><div style="height:100%;width:'+Math.min(ayPctH,100)+'%;background:linear-gradient(90deg,#d4a932,#f59e0b);border-radius:3px"></div></div>';
       h+='<div style="text-align:right;font-size:9px;font-weight:700;color:'+(ayPctH>=50?'#16a34a':ayPctH>=25?'#d97706':'#dc2626')+';margin-bottom:4px">'+ayPctH+'%</div>';
     }
-    if(dbNot){
+    if(dbNot&&(vm==='notarius'||vm==='all')){
       h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#7c3aed">📜 Notarius</span><span style="font-weight:800;color:var(--blue-800)">'+sentNot+' / '+dbNot+'</span></div>';
       h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:1px"><div style="height:100%;width:'+Math.min(notPctH,100)+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:3px"></div></div>';
       h+='<div style="text-align:right;font-size:9px;font-weight:700;color:'+(notPctH>=50?'#16a34a':notPctH>=25?'#d97706':'#dc2626')+'">'+notPctH+'%</div>';
@@ -2592,7 +2590,7 @@ function renderHududReport(){
     h+='<div style="text-align:center;font-size:9px;color:var(--gray-400);margin-top:2px">▼ Batafsil</div></div>';
     // Expandable detail
     h+='<div id="'+hid+'" style="display:none;border-top:2px solid #3b82f6;background:#f8fafc;padding:8px;max-height:400px;overflow-y:auto">';
-    var allSubs=subData.ayoqsh.concat(subData.notarius);
+    var allSubs=vm==='ayoqsh'?subData.ayoqsh:vm==='notarius'?subData.notarius:subData.ayoqsh.concat(subData.notarius);
     if(!allSubs.length){h+='<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:11px">Hali tekshirilmagan</div>'}
     else{
       // Group by date
