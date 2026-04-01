@@ -419,6 +419,27 @@ const SUPA_URL='https://ttgzgfbmppiilyfcbmhg.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0Z3pnZmJtcHBpaWx5ZmNibWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MTQyODksImV4cCI6MjA5MDM5MDI4OX0.9zOhmggEAq0-nqa4nc2NHQKD-8oowJwD-IFQV9VFZ5A';
 const SB=supabase.createClient(SUPA_URL,SUPA_KEY);
 
+// ═══ STORAGE HELPERS ═══
+function base64ToBlob(dataUrl){
+  var parts=dataUrl.split(',');var mime=parts[0].match(/:(.*?);/)[1];
+  var raw=atob(parts[1]);var arr=new Uint8Array(raw.length);
+  for(var i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+async function uploadToStorage(subId,secKey,idx,dataUrl){
+  try{
+    var blob=base64ToBlob(dataUrl);
+    var path=subId+'/'+secKey+'_'+idx+'.jpg';
+    var{data,error}=await SB.storage.from('media').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+    if(error){console.log('Storage upload error:',error);return null}
+    return SUPA_URL+'/storage/v1/object/public/media/'+path;
+  }catch(e){console.log('Upload error:',e);return null}
+}
+function getMediaSrc(m){
+  if(m.url)return m.url;
+  if(m.data)return m.data;
+  return '';
+}
 // ═══ SUPABASE HELPERS ═══
 async function sbInsertSub(sub){
   try{
@@ -456,33 +477,34 @@ function compressImg(dataUrl,maxW,quality){
     }catch(e){resolve(dataUrl)}
   });
 }
-async function collectMedia(){
+async function collectMedia(subId){
   var allMedia=[];
   var sections=Object.keys(media);
-  var totalSize=0;var maxTotal=2000000;
+  var uploadCount=0;
   for(var i=0;i<sections.length;i++){
     var items=media[sections[i]]||[];
     for(var j=0;j<items.length;j++){
       var item=items[j];
-      if(totalSize>=maxTotal)break;
       if(item.type==='photo'&&item.data){
         try{
           var imgData=item.data;
-          // Always compress for smaller DB size
           try{
             var compressed=await compressImg(imgData,400,0.25);
             imgData=compressed;
           }catch(ce){console.log('Re-compress skip:',ce)}
-          totalSize+=imgData.length;
-          if(totalSize<maxTotal){
+          // Upload to Supabase Storage
+          var url=await uploadToStorage(subId,sections[i],j,imgData);
+          if(url){
+            allMedia.push({sec:sections[i],type:'photo',url:url});
+            uploadCount++;
+          } else {
+            // Fallback: store base64 if upload fails
             allMedia.push({sec:sections[i],type:'photo',data:imgData});
           }
         }catch(e){
           console.log('Collect media error:',e);
-          // Fallback: try to store raw data if small enough
           if(item.data.length<500000){
             allMedia.push({sec:sections[i],type:'photo',data:item.data});
-            totalSize+=item.data.length;
           }
         }
       } else if(item.type==='video'){
@@ -490,7 +512,7 @@ async function collectMedia(){
       }
     }
   }
-  console.log('Media collected:',allMedia.length,'items, ~'+(totalSize/1024).toFixed(0)+'KB');
+  console.log('Media collected:',allMedia.length,'items,',uploadCount,'uploaded to Storage');
   return allMedia;
 }
 async function sbInsertLoc(loc){
@@ -540,7 +562,18 @@ async function sbLoadLocs(){
   }catch(e){console.log('SB load locs error',e);return[]}
 }
 async function sbDeleteSub(id){
-  try{await SB.from('submissions').delete().eq('id',id)}catch(e){console.log('SB delete error',e)}
+  try{
+    // Delete Storage files for this submission
+    try{
+      var{data:files}=await SB.storage.from('media').list(id);
+      if(files&&files.length){
+        var paths=files.map(function(f){return id+'/'+f.name});
+        await SB.storage.from('media').remove(paths);
+      }
+    }catch(se){console.log('Storage cleanup skip:',se)}
+    await SB.from('submission_media').delete().eq('submission_id',id);
+    await SB.from('submissions').delete().eq('id',id);
+  }catch(e){console.log('SB delete error',e)}
 }
 const U={
 admin:{pw:'Admin@2025',role:'admin',name:"Jo'rayev Anvar Abdumurotovich",reg:'Barchasi',ph:'93-600-77-22'},
@@ -1535,15 +1568,17 @@ async function finalSubmit(){
   var savedAns={...ans};delete savedAns['_editingId'];delete savedAns['_editingName'];
   var savedName=curMode==='notarius'?(ans['n1.1']||''):(ans['1.1']||'');var savedMedia={...media};closeRev();
   var totalMedia=0;Object.values(media).forEach(function(arr){totalMedia+=arr.length});
-  // Compress media first
+  // Generate submission ID first for Storage paths
+  var subId=Date.now().toString(36);
+  // Compress and upload media to Storage
   var mediaData=[];
-  try{mediaData=await collectMedia()}catch(e){console.log('Media compress error',e)}
+  try{mediaData=await collectMedia(subId)}catch(e){console.log('Media compress error',e)}
   // Ensure GPS with iOS fallback
   ensureGPS(function(ok){
     if(!ok||!gpsLoc){_submitting=false;toast('⚠️ GPS aniqlanmadi — GPS badge ni bosib qayta urinib ko\'ring','error');return}
     toast('📍 Ma\'lumot yuklanmoqda...');
     reverseGeo(gpsLoc.lat,gpsLoc.lng,function(geo){
-    var sub={id:Date.now().toString(36),un:cu.un,uN:cu.name,reg:cu.reg,ayN:savedName,mode:curMode,ans:{...savedAns},mediaCount:totalMedia,mediaData:mediaData,at:new Date().toISOString(),
+    var sub={id:subId,un:cu.un,uN:cu.name,reg:cu.reg,ayN:savedName,mode:curMode,ans:{...savedAns},mediaCount:totalMedia,mediaData:mediaData,at:new Date().toISOString(),
       loc:{lat:gpsLoc.lat,lng:gpsLoc.lng,acc:gpsLoc.acc,
         hud:geo.district||geo.city||cu.reg,
         addr:geo.road||geo.display||'',
@@ -1552,7 +1587,16 @@ async function finalSubmit(){
     // If editing, remove old submission
     if(editingId){
       subs=subs.filter(function(s){return s.id!==editingId});
-      try{SB.from('submissions').delete().eq('id',editingId).then(function(){});SB.from('submission_media').delete().eq('submission_id',editingId).then(function(){})}catch(e){}
+      try{
+        // Clean up old Storage files
+        SB.storage.from('media').list(editingId).then(function(res){
+          if(res.data&&res.data.length){
+            var paths=res.data.map(function(f){return editingId+'/'+f.name});
+            SB.storage.from('media').remove(paths);
+          }
+        });
+        SB.from('submissions').delete().eq('id',editingId).then(function(){});SB.from('submission_media').delete().eq('submission_id',editingId).then(function(){})
+      }catch(e){}
     }
     subs.push(sub);
     sbInsertSub(sub); // Save to Supabase
@@ -2640,8 +2684,8 @@ async function loadAndShowMediaInline(subId,containerId){
     if(sub)sub.mediaData=mediaData;
     var g='<div style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 0">';
     mediaData.forEach(function(m,mi){
-      if(m.type==='photo'&&m.data){
-        g+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:100px;height:75px;border-radius:8px;overflow:hidden;border:2px solid var(--gray-200);box-shadow:0 2px 8px rgba(0,0,0,.1)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+      if(m.type==='photo'&&(m.data||m.url)){
+        g+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:100px;height:75px;border-radius:8px;overflow:hidden;border:2px solid var(--gray-200);box-shadow:0 2px 8px rgba(0,0,0,.1)"><img src="'+getMediaSrc(m)+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
       }
     });
     g+='</div>';
@@ -2665,8 +2709,8 @@ async function loadAndShowMedia(subId,btn){
     // Replace button with gallery
     var gallery='<div style="display:flex;gap:8px;flex-wrap:wrap">';
     mediaData.forEach(function(m,mi){
-      if(m.type==='photo'&&m.data){
-        gallery+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+      if(m.type==='photo'&&(m.data||m.url)){
+        gallery+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:80px;height:60px;border-radius:8px;overflow:hidden;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.15)"><img src="'+getMediaSrc(m)+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
       }
     });
     gallery+='</div>';
@@ -2682,10 +2726,11 @@ function viewMedia(subId,idx){
   var sub=subs.find(function(s){return s.id===subId});
   if(!sub||!sub.mediaData||!sub.mediaData[idx])return;
   var m=sub.mediaData[idx];
-  if(m.type!=='photo'||!m.data)return;
+  if(m.type!=='photo'||!(m.data||m.url))return;
+  var src=getMediaSrc(m);
   var modal=document.createElement('div');
   modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s';
-  modal.innerHTML='<div style="position:relative;max-width:90vw;max-height:90vh"><img src="'+m.data+'" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"><div style="position:absolute;top:-40px;right:0;display:flex;gap:8px"><span style="color:white;font-size:12px;padding:8px 14px;background:rgba(255,255,255,.15);border-radius:8px">'+sub.ayN+' — '+(m.sec||'')+'</span><button onclick="this.parentElement.parentElement.parentElement.remove()" style="width:36px;height:36px;border:none;background:rgba(255,255,255,.2);border-radius:50%;color:white;font-size:18px;cursor:pointer">✕</button></div></div>';
+  modal.innerHTML='<div style="position:relative;max-width:90vw;max-height:90vh"><img src="'+src+'" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)"><div style="position:absolute;top:-40px;right:0;display:flex;gap:8px"><span style="color:white;font-size:12px;padding:8px 14px;background:rgba(255,255,255,.15);border-radius:8px">'+sub.ayN+' — '+(m.sec||'')+'</span><button onclick="this.parentElement.parentElement.parentElement.remove()" style="width:36px;height:36px;border:none;background:rgba(255,255,255,.2);border-radius:50%;color:white;font-size:18px;cursor:pointer">✕</button></div></div>';
   modal.onclick=function(e){if(e.target===modal)modal.remove()};
   document.body.appendChild(modal);
 }
@@ -2922,8 +2967,8 @@ function buildSubDetail(s,mode){
     h+='<div style="font-size:10px;font-weight:700;color:#1d4ed8;margin-bottom:6px">📸 Rasmlar ('+s.mediaData.length+')</div>';
     h+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
     s.mediaData.forEach(function(m,mi){
-      if(m.type==='photo'&&m.data){
-        h+='<img onclick="viewMedia(\''+s.id+'\','+mi+')" src="'+m.data+'" style="width:70px;height:52px;object-fit:cover;border-radius:6px;border:2px solid white;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)" loading="lazy">';
+      if(m.type==='photo'&&(m.data||m.url)){
+        h+='<img onclick="viewMedia(\''+s.id+'\','+mi+')" src="'+getMediaSrc(m)+'" style="width:70px;height:52px;object-fit:cover;border-radius:6px;border:2px solid white;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)" loading="lazy">';
       }
     });
     h+='</div></div>';
@@ -3097,10 +3142,15 @@ function genAdminPDF(){
 function sendTelegram(){
   var text=buildReport();
   var encoded=encodeURIComponent(text);
-  // Try Telegram app first, then web
-  var url='https://t.me/share/url?url='+encodeURIComponent('PF-246 Hisobot')+'&text='+encoded;
-  window.open(url,'_blank');
-  toast('✈️ Telegram ochildi');
+  // Copy to clipboard as backup
+  try{navigator.clipboard.writeText(text)}catch(e){try{fallbackCopy(text)}catch(e2){}}
+  // Use tg:// protocol directly (t.me is blocked in UZ)
+  var a=document.createElement('a');
+  a.href='tg://msg?text='+encoded;
+  a.style.display='none';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a)},100);
+  toast('✈️ Telegram ochilmoqda (matn nusxalandi)');
 }
 // ══════════════ EMAIL ══════════════
 function sendEmail(){
