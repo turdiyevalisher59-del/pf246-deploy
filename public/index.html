@@ -847,11 +847,11 @@ function updateAdminMap(){
   var tEl=document.getElementById('liveTimer');
   if(tEl)tEl.textContent=new Date().toLocaleTimeString('uz')+' — '+subs.length+' ta submission';
 }
-function doLogin(){const u=document.getElementById('loginUser').value.toLowerCase().trim(),p=document.getElementById('loginPass').value,e=document.getElementById('loginError');if(!U[u]||U[u].pw!==p){e.classList.add('show');return}e.classList.remove('show');cu={un:u,...U[u]};localStorage.setItem('pf246',JSON.stringify(cu));cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}
+function doLogin(){const u=document.getElementById('loginUser').value.toLowerCase().trim(),p=document.getElementById('loginPass').value,e=document.getElementById('loginError');if(!U[u]||U[u].pw!==p){e.classList.add('show');return}e.classList.remove('show');cu={un:u,...U[u]};cu.reg=normalizeHudud(cu.reg);localStorage.setItem('pf246',JSON.stringify(cu));cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}
 function togglePwVis(){var inp=document.getElementById('loginPass');var eye=document.getElementById('pwEye');if(inp.type==='password'){inp.type='text';eye.textContent='🙈'}else{inp.type='password';eye.textContent='👁️'}}
 function doLogout(){stopPings();stopAdminRefresh();cu=null;localStorage.removeItem('pf246');ans={};media={};showP('loginPage')}
 function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
-(function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
+(function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.reg=normalizeHudud(cu.reg);cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
 async function init(){if(cu.role==='user'){
 // Version check — clear stale history cache
 var curVer='v8.0';
@@ -2406,7 +2406,7 @@ async function saveCfg(){
   CFG.users.forEach(function(u,i){
     var oldName=u.name, oldReg=u.reg;
     var en=document.getElementById('cfgUN_'+i);if(en)u.name=en.value;
-    var er=document.getElementById('cfgUR_'+i);if(er)u.reg=er.value;
+    var er=document.getElementById('cfgUR_'+i);if(er)u.reg=normalizeHudud(er.value);
     var ep=document.getElementById('cfgUP_'+i);if(ep)u.ph=ep.value;
     if(u.name!==oldName||u.reg!==oldReg){
       userChanges.push({un:u.un,oldName:oldName,newName:u.name,oldReg:oldReg,newReg:u.reg});
@@ -2804,6 +2804,25 @@ function viewMedia(subId,idx){
   document.body.appendChild(modal);
 }
 // ═══ HUDUD HISOBOTI ═══
+function normalizeHudud(reg){
+  if(!reg)return 'Nomalum';
+  var canonicals={};
+  AYOQSH_DB.forEach(function(a){if(a.hudud)canonicals[a.hudud]=a.hudud});
+  NOTARIUS_DB.forEach(function(n){if(n.tuman)canonicals[n.tuman]=n.tuman});
+  if(canonicals[reg])return reg;
+  var regL=reg.replace(/[\s.'`]/g,'').toLowerCase();
+  var best=null;var bestScore=999;
+  Object.keys(canonicals).forEach(function(c){
+    var cL=c.replace(/[\s.'`]/g,'').toLowerCase();
+    if(cL===regL){best=c;bestScore=0;return}
+    if(regL.indexOf(cL)>=0||cL.indexOf(regL)>=0){
+      var d=Math.abs(regL.length-cL.length);
+      if(d<bestScore){bestScore=d;best=c}
+    }
+  });
+  if(best&&bestScore<=3)return best;
+  return reg;
+}
 function renderHududReport(){
   var vm=adminViewMode||'ayoqsh';
   var ayBase={};var ayTotal=AYOQSH_DB.length;
@@ -2811,7 +2830,7 @@ function renderHududReport(){
   var notBase={};var notTotal=NOTARIUS_DB.length;
   NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!notBase[h])notBase[h]=0;notBase[h]++});
   var byHudud={};
-  subs.forEach(function(s){var h=s.reg||'Nomalum';if(!byHudud[h])byHudud[h]={ayoqsh:[],notarius:[]};byHudud[h][s.mode||'ayoqsh'].push(s)});
+  subs.forEach(function(s){var h=normalizeHudud(s.reg);if(!byHudud[h])byHudud[h]={ayoqsh:[],notarius:[]};byHudud[h][s.mode||'ayoqsh'].push(s)});
   var allHududs=new Set();
   Object.keys(ayBase).forEach(function(h){allHududs.add(h)});Object.keys(notBase).forEach(function(h){allHududs.add(h)});Object.keys(byHudud).forEach(function(h){allHududs.add(h)});
   var hList=Array.from(allHududs).sort();
