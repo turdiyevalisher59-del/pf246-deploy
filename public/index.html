@@ -267,6 +267,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div id="fBankWrap"><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🏦 Xizmat ko'rsatuvchi bank</label><select id="fBank" class="form-input" style="height:40px;font-size:12px" onchange="applyFilters()"><option value="">Barchasi</option></select></div>
 <!-- Text search -->
 <div><label style="font-size:10px;font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🔎 Qidiruv</label><input id="fSearch" class="form-input" style="height:40px;font-size:12px" placeholder="AYOQSH nomi, STIR..." oninput="applyFilters()"></div>
+<div style="display:flex;align-items:flex-end"><label style="height:40px;display:flex;align-items:center;gap:6px;cursor:pointer;padding:0 12px;border:1px solid #3b82f6;border-radius:8px;background:white;font-size:11px;font-weight:700;color:#3b82f6"><input type="checkbox" id="fYangi" onchange="applyFilters()" style="accent-color:#3b82f6"> 🆕 Yangi qo'shilgan</label></div>
 </div>
 </div>
 <!-- FILTER STATS -->
@@ -277,7 +278,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div style="margin-top:16px"><div style="font-size:14px;font-weight:800;color:var(--blue-800);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gray-200)">👥 Vakillar bo'yicha</div><div class="admin-grid" id="aG"></div></div>
 </div></div>
 <div id="tU" class="card" style="display:none"><div class="card-header"><div class="card-icon">👥</div><div class="card-title">Foydalanuvchilar ro'yxati</div></div><div class="card-body" id="aUB"></div></div>
-<div id="tS" class="card" style="display:none"><div class="card-header"><div class="card-icon">📋</div><div class="card-title">Barcha ma'lumotnomalar</div><div style="margin-left:auto" id="stCount"></div></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px;padding:12px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)"><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">📅 Sana</label><input id="stDate" type="date" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">👤 Vakil</label><select id="stVakil" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"><option value="">Barchasi</option></select></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">📍 Hudud</label><select id="stHudud" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"><option value="">Barchasi</option></select></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">🔎 Qidiruv</label><input id="stSearch" class="form-input" style="height:36px;font-size:11px" placeholder="Nom, STIR..." oninput="renderSubsTable()"></div><div style="display:flex;align-items:flex-end"><button onclick="document.getElementById('stDate').value='';document.getElementById('stVakil').value='';document.getElementById('stHudud').value='';document.getElementById('stSearch').value='';renderSubsTable()" style="height:36px;padding:0 12px;border:1px solid var(--gray-300);background:white;border-radius:8px;font-size:11px;font-weight:700;color:var(--gray-500);cursor:pointer;font-family:inherit">✕ Tozalash</button></div></div><div id="aSB"></div></div></div>
+<div id="tS" class="card" style="display:none"><div class="card-header"><div class="card-icon">📋</div><div class="card-title">Barcha ma'lumotnomalar</div><div style="margin-left:auto" id="stCount"></div></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px;padding:12px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-200)"><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">📅 Sana</label><input id="stDate" type="date" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">👤 Vakil</label><select id="stVakil" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"><option value="">Barchasi</option></select></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">📍 Hudud</label><select id="stHudud" class="form-input" style="height:36px;font-size:11px" onchange="renderSubsTable()"><option value="">Barchasi</option></select></div><div><label style="font-size:10px;font-weight:700;color:var(--blue-700);display:block;margin-bottom:3px">🔎 Qidiruv</label><input id="stSearch" class="form-input" style="height:36px;font-size:11px" placeholder="Nom, STIR..." oninput="renderSubsTable()"></div><div style="display:flex;align-items:flex-end;gap:6px"><label style="height:36px;display:flex;align-items:center;gap:4px;cursor:pointer;padding:0 8px;border:1px solid #3b82f6;border-radius:8px;background:white;font-size:10px;font-weight:700;color:#3b82f6"><input type="checkbox" id="stYangi" onchange="renderSubsTable()" style="accent-color:#3b82f6">🆕 Yangi</label><button onclick="document.getElementById('stDate').value='';document.getElementById('stVakil').value='';document.getElementById('stHudud').value='';document.getElementById('stSearch').value='';if(document.getElementById('stYangi'))document.getElementById('stYangi').checked=false;renderSubsTable()" style="height:36px;padding:0 12px;border:1px solid var(--gray-300);background:white;border-radius:8px;font-size:11px;font-weight:700;color:var(--gray-500);cursor:pointer;font-family:inherit">✕ Tozalash</button></div></div><div id="aSB"></div></div></div>
 <div id="tH" class="card" style="display:none"><div class="card-header"><div class="card-icon">🏢</div><div class="card-title">Hudud bo'yicha batafsil hisobot</div><div style="margin-left:auto;display:flex;gap:8px">
 <button onclick="exportHududExcel()" style="height:36px;padding:0 14px;border:2px solid #22c55e;background:#f0fdf4;border-radius:10px;font-size:12px;font-weight:700;color:#16a34a;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">📊 Excel</button>
 <button onclick="exportHududPDF()" style="height:36px;padding:0 14px;border:2px solid #ef4444;background:#fef2f2;border-radius:10px;font-size:12px;font-weight:700;color:#dc2626;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">📄 PDF</button>
@@ -2092,6 +2093,7 @@ function applyFilters(){
   var fB=document.getElementById('fBank')?.value||'';
   var fS=(document.getElementById('fSearch')?.value||'').toLowerCase().trim();
   var fD=document.getElementById('fDate')?.value||''; // YYYY-MM-DD
+  var fY=document.getElementById('fYangi')?.checked||false;
 
   // Filter submissions (using mode-filtered data)
   var baseSubs=getAdminSubs();
@@ -2112,10 +2114,11 @@ function applyFilters(){
       var haystack=JSON.stringify(s).toLowerCase();
       if(haystack.indexOf(fS)===-1)return false;
     }
+    if(fY&&!isYangi(s))return false;
     return true;
   });
 
-  var anyFilter=fV||fH||fT||fB||fS;
+  var anyFilter=fV||fH||fT||fB||fS||fY;
 
   // Filter stats
   var statsEl=document.getElementById('filterStats');
@@ -2296,6 +2299,7 @@ function clearFilters(){
   document.getElementById('fBank').value='';
   document.getElementById('fSearch').value='';
   document.getElementById('fDate').value='';
+  if(document.getElementById('fYangi'))document.getElementById('fYangi').checked=false;
   applyFilters();
 }
 function renderSubsTable(){
@@ -2304,19 +2308,22 @@ function renderSubsTable(){
   var fV=document.getElementById('stVakil')?.value||'';
   var fH=document.getElementById('stHudud')?.value||'';
   var fS=(document.getElementById('stSearch')?.value||'').toLowerCase().trim();
+  var fY=document.getElementById('stYangi')?.checked||false;
   var filtered=allSubs.filter(function(s){
     if(fV&&s.un!==fV)return false;
     if(fH&&s.reg!==fH)return false;
     if(fD){var sd=new Date(s.at);var dd=sd.getFullYear()+'-'+String(sd.getMonth()+1).padStart(2,'0')+'-'+String(sd.getDate()).padStart(2,'0');if(dd!==fD)return false}
     if(fS){if(JSON.stringify(s).toLowerCase().indexOf(fS)===-1)return false}
+    if(fY&&!isYangi(s))return false;
     return true;
   });
   // Sort by time DESC (newest first)
   filtered.sort(function(a,b){return new Date(b.at)-new Date(a.at)});
+  var anyF=fD||fV||fH||fS||fY;
   var cntEl=document.getElementById('stCount');
-  if(cntEl)cntEl.innerHTML=(fD||fV||fH||fS)?'<span style="font-size:12px;font-weight:700;color:var(--gold-600);background:var(--gold-100);padding:4px 12px;border-radius:8px">'+filtered.length+' / '+allSubs.length+'</span>':'<span style="font-size:12px;color:var(--gray-400)">'+allSubs.length+' ta</span>';
+  if(cntEl)cntEl.innerHTML=anyF?'<span style="font-size:12px;font-weight:700;color:var(--gold-600);background:var(--gold-100);padding:4px 12px;border-radius:8px">'+filtered.length+' / '+allSubs.length+'</span>':'<span style="font-size:12px;color:var(--gray-400)">'+allSubs.length+' ta</span>';
   var modeLabel=adminViewMode==='notarius'?'Notarius':'AYOQSH';
-  document.getElementById('aSB').innerHTML=!filtered.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Ma\'lumotnoma topilmadi</div>':'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Tekshiruvchi</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">'+modeLabel+'</th><th style="padding:10px 14px;text-align:left">Vaqt</th><th style="padding:10px 14px;text-align:center">📍</th><th style="padding:10px 14px;text-align:center">🗑️</th></tr></thead><tbody>'+filtered.map(function(s,i){return '<tr onclick="showSubDetail(\''+s.id+'\')" style="border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'#eff6ff\'" onmouseout="this.style.background=\'white\'" id="row_'+s.id+'"><td style="padding:10px 14px">'+(i+1)+'</td><td style="padding:10px 14px;font-weight:600">'+s.uN+'</td><td style="padding:10px 14px;font-size:11px">'+s.reg+'</td><td style="padding:10px 14px;font-weight:600;color:'+((s.mode||'ayoqsh')==='notarius'?'#7c3aed':'var(--blue-700)')+'">'+((s.mode||'ayoqsh')==='notarius'?'📜 ':'🏪 ')+s.ayN+'</td><td style="padding:10px 14px;font-size:11px;color:var(--gray-500)">'+new Date(s.at).toLocaleString('uz')+'</td><td style="padding:10px 14px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td><td style="padding:10px 14px;text-align:center"><button onclick="confirmDel(\''+s.id+'\',\''+s.ayN.replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border:2px solid var(--gray-200);background:var(--gray-50);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'#fee2e2\';this.style.borderColor=\'#fca5a5\'" onmouseout="this.style.background=\'var(--gray-50)\';this.style.borderColor=\'var(--gray-200)\'">🗑️</button></td></tr>'}).join('')+'</tbody></table></div>';
+  document.getElementById('aSB').innerHTML=!filtered.length?'<div style="text-align:center;padding:40px;color:var(--gray-400)">Ma\'lumotnoma topilmadi</div>':'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--gray-50);border-bottom:2px solid var(--gray-200)"><th style="padding:10px 14px;text-align:left">№</th><th style="padding:10px 14px;text-align:left">Tekshiruvchi</th><th style="padding:10px 14px;text-align:left">Hudud</th><th style="padding:10px 14px;text-align:left">'+modeLabel+'</th><th style="padding:10px 14px;text-align:left">Vaqt</th><th style="padding:10px 14px;text-align:center">📍</th><th style="padding:10px 14px;text-align:center">🗑️</th></tr></thead><tbody>'+filtered.map(function(s,i){var yangiBadge=isYangi(s)?'<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:#dbeafe;color:#1d4ed8;font-weight:700;margin-left:4px">🆕</span>':'';return '<tr onclick="showSubDetail(\''+s.id+'\')" style="border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'#eff6ff\'" onmouseout="this.style.background=\'white\'" id="row_'+s.id+'"><td style="padding:10px 14px">'+(i+1)+'</td><td style="padding:10px 14px;font-weight:600">'+s.uN+'</td><td style="padding:10px 14px;font-size:11px">'+s.reg+'</td><td style="padding:10px 14px;font-weight:600;color:'+((s.mode||'ayoqsh')==='notarius'?'#7c3aed':'var(--blue-700)')+'">'+((s.mode||'ayoqsh')==='notarius'?'📜 ':'🏪 ')+s.ayN+yangiBadge+'</td><td style="padding:10px 14px;font-size:11px;color:var(--gray-500)">'+new Date(s.at).toLocaleString('uz')+'</td><td style="padding:10px 14px;text-align:center">'+(s.loc?'<a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="text-decoration:none">📍</a>':'—')+'</td><td style="padding:10px 14px;text-align:center"><button onclick="confirmDel(\''+s.id+'\',\''+s.ayN.replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border:2px solid var(--gray-200);background:var(--gray-50);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background=\'#fee2e2\';this.style.borderColor=\'#fca5a5\'" onmouseout="this.style.background=\'var(--gray-50)\';this.style.borderColor=\'var(--gray-200)\'">🗑️</button></td></tr>'}).join('')+'</tbody></table></div>';
 }
 function populateSubsFilters(){
   var uk=Object.keys(U).filter(function(k){return U[k].role==='user'});
@@ -2804,6 +2811,15 @@ function viewMedia(subId,idx){
   document.body.appendChild(modal);
 }
 // ═══ HUDUD HISOBOTI ═══
+// Global "yangi" (not in DB) detection
+var _ayNameSet=null,_notNameSet=null;
+function getAyNameSet(){if(!_ayNameSet){_ayNameSet=new Set();AYOQSH_DB.forEach(function(a){_ayNameSet.add(a.dname)})}return _ayNameSet}
+function getNotNameSet(){if(!_notNameSet){_notNameSet=new Set();NOTARIUS_DB.forEach(function(n){_notNameSet.add(n.name)})}return _notNameSet}
+function isYangi(s){
+  if(!s||!s.ayN||s.noActivity)return false;
+  var isAy=(s.mode||'ayoqsh')==='ayoqsh';
+  return isAy?!getAyNameSet().has(s.ayN):!getNotNameSet().has(s.ayN);
+}
 function normalizeHudud(reg){
   if(!reg)return 'Nomalum';
   var canonicals={};
@@ -2829,6 +2845,11 @@ function renderHududReport(){
   AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!ayBase[h])ayBase[h]=0;ayBase[h]++});
   var notBase={};var notTotal=NOTARIUS_DB.length;
   NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!notBase[h])notBase[h]=0;notBase[h]++});
+  // Valid name sets — only count names that exist in DB
+  var validAyNames=new Set();AYOQSH_DB.forEach(function(a){validAyNames.add(a.dname)});
+  var validNotNames=new Set();NOTARIUS_DB.forEach(function(n){validNotNames.add(n.name)});
+  var validAyByHudud={};AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!validAyByHudud[h])validAyByHudud[h]=new Set();validAyByHudud[h].add(a.dname)});
+  var validNotByHudud={};NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!validNotByHudud[h])validNotByHudud[h]=new Set();validNotByHudud[h].add(n.name)});
   var byHudud={};
   subs.forEach(function(s){var h=normalizeHudud(s.reg);if(!byHudud[h])byHudud[h]={ayoqsh:[],notarius:[]};byHudud[h][s.mode||'ayoqsh'].push(s)});
   var allHududs=new Set();
@@ -2839,8 +2860,22 @@ function renderHududReport(){
   var todayStr=new Date().toISOString().slice(0,10);
   var todayAy=subs.filter(function(s){return(s.mode||'ayoqsh')==='ayoqsh'&&s.at&&s.at.slice(0,10)===todayStr}).length;
   var todayNot=subs.filter(function(s){return s.mode==='notarius'&&s.at&&s.at.slice(0,10)===todayStr}).length;
-  var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity)uniqueAy.add(s.ayN)});
-  var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN)uniqueNot.add(s.ayN)});
+  var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&validAyNames.has(s.ayN))uniqueAy.add(s.ayN)});
+  var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&validNotNames.has(s.ayN))uniqueNot.add(s.ayN)});
+  // Extra names NOT in any DB
+  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
+  var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!validNotNames.has(s.ayN))extraNotGlobal.add(s.ayN)});
+  // First-seen date for non-DB names
+  var firstSeenMap={};
+  subs.forEach(function(s){
+    if(!s.ayN||s.noActivity)return;
+    var isAy=(s.mode||'ayoqsh')==='ayoqsh';
+    var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);
+    if(!inDB){var d=s.at?s.at.slice(0,10):'';if(d&&(!firstSeenMap[s.ayN]||d<firstSeenMap[s.ayN]))firstSeenMap[s.ayN]=d}
+  });
+  // Count global yangi bugun
+  var yangiAyBugun=0;extraAyGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiAyBugun++});
+  var yangiNotBugun=0;extraNotGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiNotBugun++});
   var noActCount=subs.filter(function(s){return s.noActivity}).length;
   var mediaTotal=0;subs.forEach(function(s){mediaTotal+=(s.mediaCount||0)});
   var activeToday=new Set();subs.forEach(function(s){if(s.at&&s.at.slice(0,10)===todayStr)activeToday.add(s.un)});
@@ -2852,13 +2887,13 @@ function renderHududReport(){
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin-bottom:8px">';
   if(vm==='ayoqsh'||vm==='all'){var ayPct=ayTotal?Math.round(uniqueAy.size/ayTotal*100):0;
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#d4a932">'+ayTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi AYOQSH</div></div>';
-    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAy.size+'</div><div style="font-size:8px;opacity:.7">Kamida 1 marta tekshirilgan</div></div>';
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAy.size+'</div><div style="font-size:8px;opacity:.7">Tekshirilgan</div>'+(yangiAyBugun?'<div style="font-size:9px;color:#60a5fa;font-weight:700">+'+yangiAyBugun+' yangi bugun</div>':(extraAyGlobal.size?'<div style="font-size:8px;color:#94a3b8">'+extraAyGlobal.size+' ta yangi jami</div>':''))+'</div>';
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(ayTotal-uniqueAy.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(ayPct>=50?'#22c55e':ayPct>=25?'#f59e0b':'#ef4444')+'">'+ayPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
   }
   if(vm==='notarius'||vm==='all'){var notPct=notTotal?Math.round(uniqueNot.size/notTotal*100):0;
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#a78bfa">'+notTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi Notarius</div></div>';
-    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueNot.size+'</div><div style="font-size:8px;opacity:.7">Kamida 1 marta tekshirilgan</div></div>';
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueNot.size+'</div><div style="font-size:8px;opacity:.7">Tekshirilgan</div>'+(yangiNotBugun?'<div style="font-size:9px;color:#60a5fa;font-weight:700">+'+yangiNotBugun+' yangi bugun</div>':(extraNotGlobal.size?'<div style="font-size:8px;color:#94a3b8">'+extraNotGlobal.size+' ta yangi jami</div>':''))+'</div>';
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(notTotal-uniqueNot.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(notPct>=50?'#22c55e':notPct>=25?'#f59e0b':'#ef4444')+'">'+notPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
   }
@@ -2876,16 +2911,25 @@ function renderHududReport(){
   hList.forEach(function(hud){
     var dbAy=ayBase[hud]||0;var dbNot=notBase[hud]||0;
     var subData=byHudud[hud]||{ayoqsh:[],notarius:[]};
-    // Unique names visited (NOT total submissions)
-    var uniqueAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity)uniqueAyH.add(s.ayN)});
-    var uniqueNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN)uniqueNotH.add(s.ayN)});
+    // Unique names visited — ONLY count names that exist in DB for this hudud
+    var uniqueAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN))uniqueAyH.add(s.ayN)});
+    var uniqueNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN))uniqueNotH.add(s.ayN)});
+    // Extra names NOT in DB (yangi qo'shilgan)
+    var extraAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&!(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)))extraAyH.add(s.ayN)});
+    var extraNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&!(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN)))extraNotH.add(s.ayN)});
+    // Today's first-seen yangi only
+    var newTodayAyH=0;extraAyH.forEach(function(n){if(firstSeenMap[n]===todayStr)newTodayAyH++});
+    var newTodayNotH=0;extraNotH.forEach(function(n){if(firstSeenMap[n]===todayStr)newTodayNotH++});
     var ayPctH=dbAy?Math.round(uniqueAyH.size/dbAy*100):0;
     var notPctH=dbNot?Math.round(uniqueNotH.size/dbNot*100):0;
     var hid='hud_'+hud.replace(/[^a-zA-Z0-9]/g,'');
     // Daily breakdown for this hudud
     var allHudSubs=vm==='ayoqsh'?subData.ayoqsh:vm==='notarius'?subData.notarius:subData.ayoqsh.concat(subData.notarius);
     var byDateH={};
-    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d){if(!byDateH[d])byDateH[d]=new Set();if(s.ayN&&!s.noActivity)byDateH[d].add(s.ayN)}});
+    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d){if(!byDateH[d])byDateH[d]=new Set();var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));if(s.ayN&&!s.noActivity&&inDB)byDateH[d].add(s.ayN)}});
+    // Per-day new (first-seen) non-DB names
+    var byDateNew={};
+    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d&&s.ayN&&!s.noActivity){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));if(!inDB&&firstSeenMap[s.ayN]===d){if(!byDateNew[d])byDateNew[d]=new Set();byDateNew[d].add(s.ayN)}}});
     var dbTotal=vm==='ayoqsh'?dbAy:vm==='notarius'?dbNot:(dbAy+dbNot);
     if(!dbTotal&&!allHudSubs.length)return; // skip empty hududs
     var uniqueTotal=vm==='ayoqsh'?uniqueAyH.size:vm==='notarius'?uniqueNotH.size:(uniqueAyH.size+uniqueNotH.size);
@@ -2896,11 +2940,13 @@ function renderHududReport(){
     h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:800;color:var(--blue-800)">📍 '+hud+'</span><span style="font-size:12px;font-weight:800;color:'+(totalPctH>=50?'#16a34a':totalPctH>=25?'#d97706':'#dc2626')+'">'+totalPctH+'%</span></div>';
     // AYOQSH progress (unique-based)
     if(dbAy&&(vm==='ayoqsh'||vm==='all')){
-      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#d4a932">⛽ AYOQSH</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueAyH.size+' / '+dbAy+' tekshirilgan</span></div>';
+      var extraAyLabel=newTodayAyH?' <span style="color:#2563eb;font-weight:600;font-size:9px">+'+newTodayAyH+' yangi bugun</span>':(extraAyH.size?' <span style="color:#94a3b8;font-size:8px">+'+extraAyH.size+' yangi</span>':'');
+      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#d4a932">⛽ AYOQSH</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueAyH.size+' / '+dbAy+' tekshirilgan'+extraAyLabel+'</span></div>';
       h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(ayPctH,100)+'%;background:linear-gradient(90deg,#d4a932,#f59e0b);border-radius:3px"></div></div>';
     }
     if(dbNot&&(vm==='notarius'||vm==='all')){
-      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#7c3aed">📜 Notarius</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueNotH.size+' / '+dbNot+' tekshirilgan</span></div>';
+      var extraNotLabel=newTodayNotH?' <span style="color:#2563eb;font-weight:600;font-size:9px">+'+newTodayNotH+' yangi bugun</span>':(extraNotH.size?' <span style="color:#94a3b8;font-size:8px">+'+extraNotH.size+' yangi</span>':'');
+      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#7c3aed">📜 Notarius</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueNotH.size+' / '+dbNot+' tekshirilgan'+extraNotLabel+'</span></div>';
       h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(notPctH,100)+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:3px"></div></div>';
     }
     // Daily breakdown on card
@@ -2910,7 +2956,9 @@ function renderHududReport(){
       dateKeysH.slice(0,5).forEach(function(d){
         var dayUnique=byDateH[d].size;
         var dayPct=dbTotal?Math.round(dayUnique/dbTotal*100):0;
-        h+='<div style="display:flex;justify-content:space-between;font-size:9px;padding:1px 0;color:var(--gray-500)"><span>📅 '+d+'</span><span style="font-weight:700;color:'+(dayPct>=50?'#16a34a':'var(--blue-800)')+'">'+dayUnique+' tekshirilgan ('+dayPct+'%)</span></div>';
+        var dayNew=byDateNew[d]?byDateNew[d].size:0;
+        var dayNewLabel=dayNew?' <span style="color:#2563eb;font-weight:700">+'+dayNew+' yangi</span>':'';
+        h+='<div style="display:flex;justify-content:space-between;font-size:9px;padding:1px 0;color:var(--gray-500)"><span>📅 '+d+'</span><span style="font-weight:700;color:'+(dayPct>=50?'#16a34a':'var(--blue-800)')+'">'+dayUnique+' tekshirilgan ('+dayPct+'%)'+dayNewLabel+'</span></div>';
       });
       if(dateKeysH.length>5)h+='<div style="font-size:8px;color:var(--gray-400);text-align:center">...va yana '+(dateKeysH.length-5)+' kun</div>';
       h+='</div>';
@@ -2929,6 +2977,10 @@ function renderHududReport(){
           var a=s.ans||{};var rid='hd_'+s.id;
           var icon=(s.mode||'ayoqsh')==='notarius'?'📜':'🏪';
           var badges='';
+          // Yangi badge — not in DB
+          var sIsAy=(s.mode||'ayoqsh')==='ayoqsh';
+          var sInDB=sIsAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));
+          if(s.ayN&&!s.noActivity&&!sInDB){var fs=firstSeenMap[s.ayN]||'';badges+='<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-weight:700">🆕 Yangi'+(fs?' '+fs:'')+'</span>'}
           if(a['3'])badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:'+(a['3']==='ha'?'#dcfce7':'#fef2f2')+';color:'+(a['3']==='ha'?'#16a34a':'#dc2626')+'">B:'+a['3']+'</span>';
           if(s.mediaCount)badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#fef3c7;color:#92400e">📸'+s.mediaCount+'</span>';
           h+='<div style="border:1px solid var(--gray-200);border-radius:8px;margin-bottom:4px;overflow:hidden">';
