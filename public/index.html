@@ -2816,7 +2816,7 @@ var _ayNameSet=null,_notNameSet=null;
 function getAyNameSet(){if(!_ayNameSet){_ayNameSet=new Set();AYOQSH_DB.forEach(function(a){_ayNameSet.add(a.dname)})}return _ayNameSet}
 function getNotNameSet(){if(!_notNameSet){_notNameSet=new Set();NOTARIUS_DB.forEach(function(n){_notNameSet.add(n.name)})}return _notNameSet}
 function isYangi(s){
-  if(!s||!s.ayN)return false;
+  if(!s||!s.ayN||s.noActivity)return false;
   var isAy=(s.mode||'ayoqsh')==='ayoqsh';
   return isAy?!getAyNameSet().has(s.ayN):!getNotNameSet().has(s.ayN);
 }
@@ -2862,13 +2862,13 @@ function renderHududReport(){
   var todayNot=subs.filter(function(s){return s.mode==='notarius'&&s.at&&s.at.slice(0,10)===todayStr}).length;
   var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&validAyNames.has(s.ayN))uniqueAy.add(s.ayN)});
   var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&validNotNames.has(s.ayN))uniqueNot.add(s.ayN)});
-  // Extra names NOT in any DB (ALL including noActivity — for Jami count)
-  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
-  var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!validNotNames.has(s.ayN))extraNotGlobal.add(s.ayN)});
-  // First-seen date for non-DB names (ALL including noActivity)
+  // Extra names NOT in any DB (only active — noActivity excluded)
+  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
+  var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!s.noActivity&&!validNotNames.has(s.ayN))extraNotGlobal.add(s.ayN)});
+  // First-seen date for non-DB names (only active)
   var firstSeenMap={};
   subs.forEach(function(s){
-    if(!s.ayN)return;
+    if(!s.ayN||s.noActivity)return;
     var isAy=(s.mode||'ayoqsh')==='ayoqsh';
     var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);
     if(!inDB){var d=s.at?s.at.slice(0,10):'';if(d&&(!firstSeenMap[s.ayN]||d<firstSeenMap[s.ayN]))firstSeenMap[s.ayN]=d}
@@ -2877,6 +2877,7 @@ function renderHududReport(){
   var yangiAyBugun=0;extraAyGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiAyBugun++});
   var yangiNotBugun=0;extraNotGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiNotBugun++});
   var noActCount=subs.filter(function(s){return s.noActivity}).length;
+  var noActYangi=new Set();subs.forEach(function(s){if(s.noActivity&&s.ayN){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);if(!inDB)noActYangi.add(s.ayN)}});
   var mediaTotal=0;subs.forEach(function(s){mediaTotal+=(s.mediaCount||0)});
   var activeToday=new Set();subs.forEach(function(s){if(s.at&&s.at.slice(0,10)===todayStr)activeToday.add(s.un)});
   var bannerHa=subs.filter(function(s){return s.ans&&s.ans['3']==='ha'}).length;
@@ -2906,6 +2907,7 @@ function renderHududReport(){
   h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#60a5fa">'+(vm==='notarius'?totalNotSubs:vm==='ayoqsh'?totalAySubs:(totalAySubs+totalNotSubs))+'</div><div style="font-size:7px;opacity:.6">Jami tekshiruv</div></div>';
   if(vm==='ayoqsh'||vm==='all')h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:'+(bannerHa>bannerYoq?'#22c55e':'#ef4444')+'">'+bannerHa+'/'+(bannerHa+bannerYoq)+'</div><div style="font-size:7px;opacity:.6">Banner bor</div></div>';
   h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#f59e0b">'+noActCount+'</div><div style="font-size:7px;opacity:.6">Faoliyatsiz</div></div>';
+  h+='<div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#fca5a5">'+noActYangi.size+'</div><div style="font-size:7px;color:#fca5a5">Faoliyatsiz yangi</div><div style="font-size:7px;opacity:.5">bazada yo\'q</div></div>';
   h+='<div style="background:rgba(255,255,255,.06);border-radius:8px;padding:6px;text-align:center"><div style="font-size:18px;font-weight:800;color:#60a5fa">'+mediaTotal+'</div><div style="font-size:7px;opacity:.6">Jami rasm</div></div>';
   h+='</div></div>';
   // Hudud cards
