@@ -237,7 +237,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn" style="background:linear-gradient(135deg,#16a34a,#15803d);color:white" onclick="showExcelChoice('user')">📊 Excel yuklash</button><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v7.9</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v8.0</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -459,7 +459,7 @@ function compressImg(dataUrl,maxW,quality){
 async function collectMedia(){
   var allMedia=[];
   var sections=Object.keys(media);
-  var totalSize=0;var maxTotal=3000000;
+  var totalSize=0;var maxTotal=2000000;
   for(var i=0;i<sections.length;i++){
     var items=media[sections[i]]||[];
     for(var j=0;j<items.length;j++){
@@ -468,13 +468,11 @@ async function collectMedia(){
       if(item.type==='photo'&&item.data){
         try{
           var imgData=item.data;
-          // Only re-compress if image is large (>200KB base64)
-          if(imgData.length>200000){
-            try{
-              var compressed=await compressImg(imgData,600,0.4);
-              imgData=compressed;
-            }catch(ce){console.log('Re-compress skip:',ce)}
-          }
+          // Always compress for smaller DB size
+          try{
+            var compressed=await compressImg(imgData,400,0.25);
+            imgData=compressed;
+          }catch(ce){console.log('Re-compress skip:',ce)}
           totalSize+=imgData.length;
           if(totalSize<maxTotal){
             allMedia.push({sec:sections[i],type:'photo',data:imgData});
@@ -823,7 +821,7 @@ function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.rem
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
 async function init(){if(cu.role==='user'){
 // Version check — clear stale history cache
-var curVer='v7.9';
+var curVer='v8.0';
 if(localStorage.getItem('pf246_ver')!==curVer){
   Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
   localStorage.setItem('pf246_ver',curVer);
@@ -1399,7 +1397,7 @@ function onCapture(event,secKey,type){
     var dataUrl=e.target.result;
     // Compress if needed (iOS canvas-safe approach)
     if(file.size>300000){
-      compressForCapture(dataUrl,1200,0.7,function(compressed){
+      compressForCapture(dataUrl,800,0.5,function(compressed){
         if(!media[secKey])media[secKey]=[];
         media[secKey].push({...metaObj,data:compressed||dataUrl});
         renderQ();toast('📸 Rasm muvaffaqiyatli yuklandi!');
@@ -1933,7 +1931,7 @@ function viewSubmission(id){
 }
 async function loadAd(){
 // Version check — clear stale cache on version change
-var curVer='v7.9';
+var curVer='v8.0';
 if(localStorage.getItem('pf246_ver')!==curVer){
   Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
   localStorage.setItem('pf246_ver',curVer);
