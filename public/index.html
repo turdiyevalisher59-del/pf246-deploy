@@ -2816,7 +2816,7 @@ var _ayNameSet=null,_notNameSet=null;
 function getAyNameSet(){if(!_ayNameSet){_ayNameSet=new Set();AYOQSH_DB.forEach(function(a){_ayNameSet.add(a.dname)})}return _ayNameSet}
 function getNotNameSet(){if(!_notNameSet){_notNameSet=new Set();NOTARIUS_DB.forEach(function(n){_notNameSet.add(n.name)})}return _notNameSet}
 function isYangi(s){
-  if(!s||!s.ayN||s.noActivity)return false;
+  if(!s||!s.ayN)return false;
   var isAy=(s.mode||'ayoqsh')==='ayoqsh';
   return isAy?!getAyNameSet().has(s.ayN):!getNotNameSet().has(s.ayN);
 }
@@ -2862,13 +2862,13 @@ function renderHududReport(){
   var todayNot=subs.filter(function(s){return s.mode==='notarius'&&s.at&&s.at.slice(0,10)===todayStr}).length;
   var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&validAyNames.has(s.ayN))uniqueAy.add(s.ayN)});
   var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&validNotNames.has(s.ayN))uniqueNot.add(s.ayN)});
-  // Extra names NOT in any DB
-  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
+  // Extra names NOT in any DB (ALL including noActivity — for Jami count)
+  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
   var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!validNotNames.has(s.ayN))extraNotGlobal.add(s.ayN)});
-  // First-seen date for non-DB names
+  // First-seen date for non-DB names (ALL including noActivity)
   var firstSeenMap={};
   subs.forEach(function(s){
-    if(!s.ayN||s.noActivity)return;
+    if(!s.ayN)return;
     var isAy=(s.mode||'ayoqsh')==='ayoqsh';
     var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);
     if(!inDB){var d=s.at?s.at.slice(0,10):'';if(d&&(!firstSeenMap[s.ayN]||d<firstSeenMap[s.ayN]))firstSeenMap[s.ayN]=d}
