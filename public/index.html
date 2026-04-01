@@ -196,6 +196,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .media-item-type.photo{background:rgba(59,130,246,.85)}
 .media-item-type.video{background:rgba(239,68,68,.85)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 </head>
 <body>
 <div id="loginPage" class="page active">
@@ -233,10 +234,10 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="card-body" id="qCardBody"><div class="question-list" id="qList"></div><div class="nav-buttons" id="nBtns"></div></div></div>
 <div class="submit-bar"><button class="btn btn-gold" onclick="submitS()">📤 Ma'lumotnomani yuborish</button></div>
 <div class="history-section" id="hSec" style="display:none"><div class="history-header"><div class="history-title">📋 Yuborilgan ma'lumotnomalar</div><div id="hCnt" style="font-size:13px;font-weight:700;color:var(--blue-900)">0 ta</div></div><div class="history-list" id="hList"></div></div>
-<div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
+<div class="export-section"><button class="btn" style="background:linear-gradient(135deg,#16a34a,#15803d);color:white" onclick="exUserExcel()">📊 Excel yuklash</button><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v6.8</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v7.5</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -315,8 +316,13 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div style="font-size:14px;font-weight:800;color:var(--gray-800);margin-bottom:4px">JSON yuklash</div>
 <div style="font-size:11px;color:var(--gray-500)">Barcha ma'lumotlar JSON formatda</div>
 </div>
-<div style="border:2px solid var(--gray-200);border-radius:14px;padding:20px;text-align:center;transition:all .2s;cursor:pointer" onclick="exCSV()" onmouseover="this.style.borderColor='#16a34a';this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
+<div style="border:2px solid var(--gray-200);border-radius:14px;padding:20px;text-align:center;transition:all .2s;cursor:pointer" onclick="exAdminExcel()" onmouseover="this.style.borderColor='#16a34a';this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
 <div style="font-size:36px;margin-bottom:8px">📊</div>
+<div style="font-size:14px;font-weight:800;color:var(--gray-800);margin-bottom:4px">Excel yuklash</div>
+<div style="font-size:11px;color:var(--gray-500)">Barcha ma'lumotlar Excel formatda</div>
+</div>
+<div style="border:2px solid var(--gray-200);border-radius:14px;padding:20px;text-align:center;transition:all .2s;cursor:pointer" onclick="exCSV()" onmouseover="this.style.borderColor='#16a34a';this.style.background='#f0fdf4'" onmouseout="this.style.borderColor='var(--gray-200)';this.style.background='white'">
+<div style="font-size:36px;margin-bottom:8px">📝</div>
 <div style="font-size:14px;font-weight:800;color:var(--gray-800);margin-bottom:4px">CSV yuklash</div>
 <div style="font-size:11px;color:var(--gray-500)">Excel uchun CSV format</div>
 </div>
@@ -817,7 +823,7 @@ function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.rem
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
 async function init(){if(cu.role==='user'){
 // Version check — clear stale history cache
-var curVer='v6.8';
+var curVer='v7.5';
 if(localStorage.getItem('pf246_ver')!==curVer){
   Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
   localStorage.setItem('pf246_ver',curVer);
@@ -1927,14 +1933,13 @@ function viewSubmission(id){
 }
 async function loadAd(){
 // Version check — clear stale cache on version change
-var curVer='v6.8';
+var curVer='v7.5';
 if(localStorage.getItem('pf246_ver')!==curVer){
   Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
   localStorage.setItem('pf246_ver',curVer);
 }
-// Set default date filter to today
+// Date filter — empty by default (shows ALL dates)
 var dateEl=document.getElementById('fDate');
-if(dateEl&&!dateEl.value){dateEl.value=new Date().toISOString().slice(0,10)}
 // Load from Supabase
 try{
   var sbSubs=await sbLoadSubs();
@@ -2139,7 +2144,8 @@ function applyFilters(){
       if(userReg!==fH)return false;
     }
     if(fD){
-      var subDate=new Date(s.at).toISOString().slice(0,10);
+      var sd=new Date(s.at);
+      var subDate=sd.getFullYear()+'-'+String(sd.getMonth()+1).padStart(2,'0')+'-'+String(sd.getDate()).padStart(2,'0');
       if(subDate!==fD)return false;
     }
     if(fT){var sType=(s.ans&&s.ans['1.4'])||'';if(sType!==fT)return false}
@@ -2467,6 +2473,264 @@ function closeUCModal(){
 function openPw(){document.getElementById('pwM').classList.add('active')}
 function closePw(){document.getElementById('pwM').classList.remove('active');document.getElementById('pMsg').style.display='none'}
 function doPw(){const o=document.getElementById('pO').value,n=document.getElementById('pN').value,c=document.getElementById('pC').value,m=document.getElementById('pMsg');if(!o||!n||!c){m.style.display='block';m.style.background='#fef2f2';m.style.color='#dc2626';m.textContent="Barcha maydonlarni to'ldiring";return}if(n!==c){m.style.display='block';m.style.background='#fef2f2';m.style.color='#dc2626';m.textContent='Yangi parollar mos kelmadi';return}if(U[cu.un].pw!==o){m.style.display='block';m.style.background='#fef2f2';m.style.color='#dc2626';m.textContent="Joriy parol noto'g'ri";return}U[cu.un].pw=n;m.style.display='block';m.style.background='#f0fdf4';m.style.color='#16a34a';m.textContent="✓ Parol muvaffaqiyatli o'zgartirildi!"}
+// ═══ USER EXCEL EXPORT ═══
+// ═══ USER EXCEL EXPORT WITH STYLING ═══
+function exUserExcel(){
+  if(!cu)return;
+  var my=subs.filter(function(s){return s.un===cu.un});
+  if(!my.length){toast('❌ Hali ma\'lumotnoma yuborilmagan','error');return}
+  try{
+    var wb=XLSX.utils.book_new();
+    // Style definitions
+    var border={top:{style:'thin',color:{rgb:'999999'}},bottom:{style:'thin',color:{rgb:'999999'}},left:{style:'thin',color:{rgb:'999999'}},right:{style:'thin',color:{rgb:'999999'}}};
+    var titleStyle={font:{bold:true,sz:14,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'122A46'}},alignment:{horizontal:'center',vertical:'center'},border:border};
+    var infoLabel={font:{bold:true,sz:11,color:{rgb:'122A46'}},border:border};
+    var infoVal={font:{sz:11},border:border};
+    var hdrStyle={font:{bold:true,sz:10,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1D4ED8'}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:border};
+    var cellStyle={font:{sz:10},alignment:{vertical:'center',wrapText:true},border:border};
+    var cellBold={font:{bold:true,sz:10},alignment:{vertical:'center',wrapText:true},border:border};
+    var cellGreen={font:{bold:true,sz:10,color:{rgb:'16A34A'}},alignment:{vertical:'center'},border:border};
+    var cellRed={font:{bold:true,sz:10,color:{rgb:'DC2626'}},alignment:{vertical:'center'},border:border};
+    var numStyle={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border};
+    var hdrCols=['№','Hudud','Turi','INN (STIR)','Nomi','Manzil','Faoliyat turi','Xizmat ko\'rsatuvchi bank','Xodim banki','Sana','Vaqt','Banner','QR bank/tashkilot','QR soni','ATTO berilgan','ATTO tarqatilgan','Humo jami','Humo ishlamaydi','Humo holati','Uzcard jami','Uzcard ishlamaydi','Uzcard holati','Universal jami','Universal ishlamaydi','Universal holati','Bankomat','Infokiosklar','Izoh'];
+    // Build rows
+    var rows=[];
+    rows.push([{v:'PF-246 O\'rganish Ma\'lumotnomasi — Hisobot',s:titleStyle}]);
+    rows.push([{v:'Tekshiruvchi:',s:infoLabel},{v:cu.name,s:infoVal}]);
+    rows.push([{v:'Hudud:',s:infoLabel},{v:cu.reg,s:infoVal}]);
+    rows.push([{v:'Sana:',s:infoLabel},{v:new Date().toLocaleString('uz'),s:infoVal}]);
+    rows.push([{v:'Jami yuborilgan:',s:infoLabel},{v:my.length,s:infoVal}]);
+    rows.push([]);
+    rows.push(hdrCols.map(function(c){return{v:c,s:hdrStyle}}));
+    my.forEach(function(s,i){
+      var a=s.ans||{};
+      var mode=(s.mode||'ayoqsh')==='notarius'?'Notarius':'AYOQSH';
+      var dt=new Date(s.at);
+      var dateStr=dt.toLocaleDateString('uz');
+      var timeStr=dt.toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'});
+      var inn=a['1.0']||a['n1.0']||'';
+      var manzil=a['1.3']||'';
+      var faoliyat='';try{var ft=JSON.parse(a['1.4']||'[]');faoliyat=ft.join(', ')}catch(e){faoliyat=a['1.4']||''}
+      var xizmatBank=a['1.5']||'';
+      var xodimBank=a['2.2']||'';
+      var banner=a['3']==='ha'?'Ha':a['3']==='yoq'?'Yo\'q':'';
+      // QR kodlar — split into names and counts
+      var qrNames='',qrCounts='';
+      try{var qi=JSON.parse(a['4']||'[]');qrNames=qi.map(function(it){return it.name||''}).join('\n');qrCounts=qi.map(function(it){return it.count||''}).join('\n')}catch(e){}
+      var attoBerilgan=a['6.1']||'';
+      var attoTarqatilgan=a['6.2']||'';
+      // Terminal Humo
+      var h1j=a['9.1']==='Mavjud emas'?'Mavjud emas':a['9.1']||'';
+      var h1i=a['9.1']==='Mavjud emas'?'':a['9.1_broken']||'';
+      var h1h=a['9.1']==='Mavjud emas'?'Mavjud emas':a['9.1_h']||'';
+      // Terminal Uzcard
+      var h2j=a['9.2']==='Mavjud emas'?'Mavjud emas':a['9.2']||'';
+      var h2i=a['9.2']==='Mavjud emas'?'':a['9.2_broken']||'';
+      var h2h=a['9.2']==='Mavjud emas'?'Mavjud emas':a['9.2_h']||'';
+      // Terminal Universal
+      var h3j=a['9.3']==='Mavjud emas'?'Mavjud emas':a['9.3']||'';
+      var h3i=a['9.3']==='Mavjud emas'?'':a['9.3_broken']||'';
+      var h3h=a['9.3']==='Mavjud emas'?'Mavjud emas':a['9.3_h']||'';
+      var bankomat=a['10.1']==='Mavjud emas'?'Mavjud emas':a['10.1']||(a['10.1']==='yoq'?'Yo\'q':'');
+      var infokiosk='';try{var ik=JSON.parse(a['10.2']||'[]');infokiosk=ik.join(', ')}catch(e){infokiosk=a['10.2']||''}
+      if(a['10.2']==='Mavjud emas'||infokiosk==='Mavjud emas')infokiosk='Mavjud emas';
+      var izoh=a['12']||a['n5.1']||'';
+      var evenBg=i%2===0?{fgColor:{rgb:'F8FAFC'}}:{fgColor:{rgb:'FFFFFF'}};
+      var rc={font:{sz:10},alignment:{vertical:'center',wrapText:true},border:border,fill:evenBg};
+      var rcB={font:{bold:true,sz:10},alignment:{vertical:'center',wrapText:true},border:border,fill:evenBg};
+      var rcG={font:{bold:true,sz:10,color:{rgb:'16A34A'}},alignment:{vertical:'center'},border:border,fill:evenBg};
+      var rcR={font:{bold:true,sz:10,color:{rgb:'DC2626'}},alignment:{vertical:'center'},border:border,fill:evenBg};
+      var rcN={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border,fill:evenBg};
+      var rcC={font:{sz:10},alignment:{horizontal:'center',vertical:'center'},border:border,fill:evenBg};
+      var bS=a['3']==='ha'?rcG:a['3']==='yoq'?rcR:rc;
+      // Terminal holati styling
+      function tHS(v){return v==='Ishlayapti'?rcG:v==='Ishlamayapti'||v==='Mavjud emas'?rcR:v==='Uzilish bor'?{font:{bold:true,sz:10,color:{rgb:'D97706'}},alignment:{vertical:'center'},border:border,fill:evenBg}:rc}
+      rows.push([
+        {v:i+1,s:rcN},{v:s.reg,s:rc},{v:mode,s:rcB},{v:inn,s:rc},{v:s.ayN,s:rcB},{v:manzil,s:rc},{v:faoliyat,s:rc},{v:xizmatBank,s:rc},{v:xodimBank,s:rc},{v:dateStr,s:rc},{v:timeStr,s:rcC},{v:banner,s:bS},
+        {v:qrNames,s:rc},{v:qrCounts,s:rcC},{v:attoBerilgan,s:rcC},{v:attoTarqatilgan,s:rcC},
+        {v:h1j,s:h1j==='Mavjud emas'?rcR:rcC},{v:h1i,s:h1i?rcR:rcC},{v:h1h,s:tHS(h1h)},
+        {v:h2j,s:h2j==='Mavjud emas'?rcR:rcC},{v:h2i,s:h2i?rcR:rcC},{v:h2h,s:tHS(h2h)},
+        {v:h3j,s:h3j==='Mavjud emas'?rcR:rcC},{v:h3i,s:h3i?rcR:rcC},{v:h3h,s:tHS(h3h)},
+        {v:bankomat,s:rc},{v:infokiosk,s:rc},{v:izoh,s:rc}
+      ]);
+    });
+    var ws1=XLSX.utils.aoa_to_sheet(rows);
+    ws1['!cols']=[{wch:4},{wch:14},{wch:9},{wch:12},{wch:32},{wch:18},{wch:16},{wch:20},{wch:20},{wch:11},{wch:6},{wch:7},{wch:22},{wch:8},{wch:10},{wch:10},{wch:7},{wch:10},{wch:12},{wch:7},{wch:10},{wch:12},{wch:7},{wch:10},{wch:12},{wch:15},{wch:18},{wch:22}];
+    ws1['!merges']=[{s:{r:0,c:0},e:{r:0,c:29}}];
+    ws1['!rows']=[{hpt:28}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Umumiy');
+    // Sheet 2: Batafsil
+    var det=[];
+    var detHdr=['№','AYOQSH/Notarius','Sana','Savol №','Savol','Javob'];
+    det.push(detHdr.map(function(c){return{v:c,s:hdrStyle}}));
+    my.forEach(function(s,i){
+      var a=s.ans||{};
+      var subQs=(s.mode||'ayoqsh')==='notarius'?Q_N:Q_A;
+      if(!subQs||!subQs.length)subQs=Q;
+      var first=true;
+      subQs.forEach(function(q){
+        var v=a[q.id];if(v==null||v==='')return;
+        var display=v;
+        if(q.ty==='yesno')display=v==='ha'?'Ha':'Yo\'q';
+        else if(q.ty==='terminal'){if(v==='Mavjud emas')display='Mavjud emas';else{var vh=a[q.id+'_h']||'';var vb=a[q.id+'_broken']||'';display=v+' ta'+(vb?' ('+vb+' ishlamaydi)':'')+(vh?' — '+vh:'')}}
+        else if(q.ty==='multicheck'){var sel=[];try{sel=JSON.parse(v||'[]')}catch(e){if(v)sel=[v]}if(q.counted){sel=sel.map(function(opt){var ck=q.id+'_cnt_'+opt.replace(/[^a-zA-Z]/g,'');var c=a[ck];return c?opt+' ('+c+' ta)':opt})}display=sel.join(', ');var note=a[q.id+'_note'];if(note)display+=' — '+note}
+        else if(q.ty==='qrlist'){try{var items=JSON.parse(v||'[]');display=items.map(function(it){return it.name+(it.count?' ('+it.count+')':'')}).join(', ')}catch(e){}}
+        var rBg=i%2===0?{fgColor:{rgb:'FFF9E6'}}:{fgColor:{rgb:'FFFFFF'}};
+        var ds={font:{sz:9},alignment:{vertical:'center',wrapText:true},border:border,fill:rBg};
+        var dsB={font:{bold:true,sz:9},alignment:{vertical:'center',wrapText:true},border:border,fill:rBg};
+        det.push([{v:first?(i+1):'',s:dsB},{v:first?s.ayN:'',s:dsB},{v:first?new Date(s.at).toLocaleString('uz'):'',s:ds},{v:q.id,s:dsB},{v:q.t,s:ds},{v:display,s:ds}]);
+        first=false;
+      });
+    });
+    var ws2=XLSX.utils.aoa_to_sheet(det);
+    ws2['!cols']=[{wch:4},{wch:35},{wch:18},{wch:6},{wch:45},{wch:40}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Batafsil');
+    // Sheet 3: QR kodlar (filterable — each bank on its own row)
+    var qrRows=[];
+    var qrHdrStyle={font:{bold:true,sz:10,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'7C3AED'}},alignment:{horizontal:'center',vertical:'center'},border:border};
+    qrRows.push(['№','AYOQSH nomi','Hudud','Sana','QR bank/tashkilot','Soni'].map(function(c){return{v:c,s:qrHdrStyle}}));
+    var qrNum=0;
+    my.forEach(function(s){
+      try{var qi=JSON.parse(s.ans['4']||'[]');
+        qi.forEach(function(it){
+          qrNum++;
+          var bg=qrNum%2===0?{fgColor:{rgb:'F5F3FF'}}:{fgColor:{rgb:'FFFFFF'}};
+          var r={font:{sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+          var rB={font:{bold:true,sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+          var rC={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border,fill:bg};
+          qrRows.push([{v:qrNum,s:rC},{v:s.ayN,s:rB},{v:s.reg,s:r},{v:new Date(s.at).toLocaleDateString('uz'),s:r},{v:it.name||'',s:rB},{v:it.count||'',s:rC}]);
+        });
+      }catch(e){}
+    });
+    if(qrRows.length>1){
+      var ws3=XLSX.utils.aoa_to_sheet(qrRows);
+      ws3['!cols']=[{wch:4},{wch:35},{wch:14},{wch:12},{wch:25},{wch:8}];
+      ws3['!autofilter']={ref:'A1:F'+qrRows.length};
+      XLSX.utils.book_append_sheet(wb,ws3,'QR kodlar');
+    }
+    var fileName='PF246_'+cu.name.replace(/[^a-zA-Z0-9]/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.xlsx';
+    XLSX.writeFile(wb,fileName);
+    toast('✅ Excel yuklandi: '+fileName);
+  }catch(e){console.error('Excel export error',e);toast('❌ Excel yaratishda xatolik','error')}
+}
+// ═══ ADMIN EXCEL EXPORT ═══
+function exAdminExcel(){
+  var allSubs=getAdminSubs();
+  if(!allSubs.length){toast('❌ Ma\'lumotnoma topilmadi','error');return}
+  try{
+    var wb=XLSX.utils.book_new();
+    var border={top:{style:'thin',color:{rgb:'999999'}},bottom:{style:'thin',color:{rgb:'999999'}},left:{style:'thin',color:{rgb:'999999'}},right:{style:'thin',color:{rgb:'999999'}}};
+    var titleStyle={font:{bold:true,sz:14,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'122A46'}},alignment:{horizontal:'center',vertical:'center'},border:border};
+    var infoLabel={font:{bold:true,sz:11,color:{rgb:'122A46'}},border:border};
+    var infoVal={font:{sz:11},border:border};
+    var hdrStyle={font:{bold:true,sz:10,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'1D4ED8'}},alignment:{horizontal:'center',vertical:'center',wrapText:true},border:border};
+    var modeLabel=adminViewMode==='ayoqsh'?'AYOQSH':adminViewMode==='notarius'?'Notarius':'Barchasi';
+    var hdrCols=['№','Tekshiruvchi','Hudud','Turi','INN (STIR)','Nomi','Manzil','Faoliyat turi','Xizmat ko\'rsatuvchi bank','Xodim banki','Sana','Vaqt','Banner','QR bank/tashkilot','QR soni','ATTO berilgan','ATTO tarqatilgan','Humo jami','Humo ishlamaydi','Humo holati','Uzcard jami','Uzcard ishlamaydi','Uzcard holati','Universal jami','Universal ishlamaydi','Universal holati','Bankomat','Infokiosklar','Izoh'];
+    var rows=[];
+    rows.push([{v:'PF-246 O\'rganish Ma\'lumotnomasi — Admin Hisobot ('+modeLabel+')',s:titleStyle}]);
+    rows.push([{v:'Sana:',s:infoLabel},{v:new Date().toLocaleString('uz'),s:infoVal}]);
+    rows.push([{v:'Jami:',s:infoLabel},{v:allSubs.length+' ta '+modeLabel,s:infoVal}]);
+    rows.push([{v:'Faol tekshiruvchi:',s:infoLabel},{v:new Set(allSubs.map(function(s){return s.un})).size+' ta',s:infoVal}]);
+    rows.push([]);
+    rows.push(hdrCols.map(function(c){return{v:c,s:hdrStyle}}));
+    allSubs.forEach(function(s,i){
+      var a=s.ans||{};
+      var mode=(s.mode||'ayoqsh')==='notarius'?'Notarius':'AYOQSH';
+      var dt=new Date(s.at);
+      var dateStr=dt.toLocaleDateString('uz');
+      var timeStr=dt.toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'});
+      var inn=a['1.0']||a['n1.0']||'';
+      var manzil=a['1.3']||'';
+      var faoliyat='';try{var ft=JSON.parse(a['1.4']||'[]');faoliyat=ft.join(', ')}catch(e){faoliyat=a['1.4']||''}
+      var xizmatBank=a['1.5']||'';
+      var xodimBank=a['2.2']||'';
+      var banner=a['3']==='ha'?'Ha':a['3']==='yoq'?'Yo\'q':'';
+      var qrNames='',qrCounts='';
+      try{var qi=JSON.parse(a['4']||'[]');qrNames=qi.map(function(it){return it.name||''}).join('\n');qrCounts=qi.map(function(it){return it.count||''}).join('\n')}catch(e){}
+      var attoBerilgan=a['6.1']||'';
+      var attoTarqatilgan=a['6.2']||'';
+      var h1j=a['9.1']==='Mavjud emas'?'Mavjud emas':a['9.1']||'';
+      var h1i=a['9.1']==='Mavjud emas'?'':a['9.1_broken']||'';
+      var h1h=a['9.1']==='Mavjud emas'?'Mavjud emas':a['9.1_h']||'';
+      var h2j=a['9.2']==='Mavjud emas'?'Mavjud emas':a['9.2']||'';
+      var h2i=a['9.2']==='Mavjud emas'?'':a['9.2_broken']||'';
+      var h2h=a['9.2']==='Mavjud emas'?'Mavjud emas':a['9.2_h']||'';
+      var h3j=a['9.3']==='Mavjud emas'?'Mavjud emas':a['9.3']||'';
+      var h3i=a['9.3']==='Mavjud emas'?'':a['9.3_broken']||'';
+      var h3h=a['9.3']==='Mavjud emas'?'Mavjud emas':a['9.3_h']||'';
+      var bankomat=a['10.1']==='Mavjud emas'?'Mavjud emas':a['10.1']||'';
+      var infokiosk='';try{var ik=JSON.parse(a['10.2']||'[]');infokiosk=ik.join(', ')}catch(e){infokiosk=a['10.2']||''}
+      if(a['10.2']==='Mavjud emas'||infokiosk==='Mavjud emas')infokiosk='Mavjud emas';
+      var izoh=a['12']||a['n5.1']||'';
+      var evenBg=i%2===0?{fgColor:{rgb:'F8FAFC'}}:{fgColor:{rgb:'FFFFFF'}};
+      var rc={font:{sz:10},alignment:{vertical:'center',wrapText:true},border:border,fill:evenBg};
+      var rcB={font:{bold:true,sz:10},alignment:{vertical:'center',wrapText:true},border:border,fill:evenBg};
+      var rcC={font:{sz:10},alignment:{horizontal:'center',vertical:'center'},border:border,fill:evenBg};
+      var rcN={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border,fill:evenBg};
+      var rcG={font:{bold:true,sz:10,color:{rgb:'16A34A'}},alignment:{vertical:'center'},border:border,fill:evenBg};
+      var rcR={font:{bold:true,sz:10,color:{rgb:'DC2626'}},alignment:{vertical:'center'},border:border,fill:evenBg};
+      var bS=a['3']==='ha'?rcG:a['3']==='yoq'?rcR:rc;
+      function tHS(v){return v==='Ishlayapti'?rcG:v==='Ishlamayapti'||v==='Mavjud emas'?rcR:v==='Uzilish bor'?{font:{bold:true,sz:10,color:{rgb:'D97706'}},alignment:{vertical:'center'},border:border,fill:evenBg}:rc}
+      rows.push([
+        {v:i+1,s:rcN},{v:s.uN,s:rcB},{v:s.reg,s:rc},{v:mode,s:rcB},{v:inn,s:rc},{v:s.ayN,s:rcB},{v:manzil,s:rc},{v:faoliyat,s:rc},{v:xizmatBank,s:rc},{v:xodimBank,s:rc},{v:dateStr,s:rc},{v:timeStr,s:rcC},{v:banner,s:bS},
+        {v:qrNames,s:rc},{v:qrCounts,s:rcC},{v:attoBerilgan,s:rcC},{v:attoTarqatilgan,s:rcC},
+        {v:h1j,s:h1j==='Mavjud emas'?rcR:rcC},{v:h1i,s:h1i?rcR:rcC},{v:h1h,s:tHS(h1h)},
+        {v:h2j,s:h2j==='Mavjud emas'?rcR:rcC},{v:h2i,s:h2i?rcR:rcC},{v:h2h,s:tHS(h2h)},
+        {v:h3j,s:h3j==='Mavjud emas'?rcR:rcC},{v:h3i,s:h3i?rcR:rcC},{v:h3h,s:tHS(h3h)},
+        {v:bankomat,s:rc},{v:infokiosk,s:rc},{v:izoh,s:rc}
+      ]);
+    });
+    var ws1=XLSX.utils.aoa_to_sheet(rows);
+    ws1['!cols']=[{wch:4},{wch:18},{wch:14},{wch:9},{wch:12},{wch:32},{wch:18},{wch:16},{wch:20},{wch:20},{wch:11},{wch:6},{wch:7},{wch:22},{wch:8},{wch:10},{wch:10},{wch:7},{wch:10},{wch:12},{wch:7},{wch:10},{wch:12},{wch:7},{wch:10},{wch:12},{wch:15},{wch:18},{wch:22}];
+    ws1['!merges']=[{s:{r:0,c:0},e:{r:0,c:28}}];
+    ws1['!rows']=[{hpt:28}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Umumiy');
+    // Sheet 2: Tekshiruvchilar bo'yicha xulosa
+    var sumHdr=['№','Tekshiruvchi','Hudud','Telefon','AYOQSH soni','Notarius soni','Jami'];
+    var sumRows=[];
+    sumRows.push(sumHdr.map(function(c){return{v:c,s:hdrStyle}}));
+    var uk=Object.keys(U).filter(function(k){return U[k].role==='user'});
+    uk.forEach(function(u,i){
+      var uSubs=allSubs.filter(function(s){return s.un===u});
+      var ayCnt=uSubs.filter(function(s){return(s.mode||'ayoqsh')==='ayoqsh'}).length;
+      var notCnt=uSubs.filter(function(s){return s.mode==='notarius'}).length;
+      var bg=i%2===0?{fgColor:{rgb:'F8FAFC'}}:{fgColor:{rgb:'FFFFFF'}};
+      var r={font:{sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+      var rB={font:{bold:true,sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+      var rC={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border,fill:bg};
+      sumRows.push([{v:i+1,s:rC},{v:U[u].name,s:rB},{v:U[u].reg,s:r},{v:U[u].ph,s:r},{v:ayCnt,s:rC},{v:notCnt,s:rC},{v:ayCnt+notCnt,s:rC}]);
+    });
+    var ws2=XLSX.utils.aoa_to_sheet(sumRows);
+    ws2['!cols']=[{wch:4},{wch:22},{wch:16},{wch:14},{wch:12},{wch:12},{wch:8}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Tekshiruvchilar');
+    // Sheet 3: QR kodlar (filterable — each bank on its own row)
+    var qrRows=[];
+    var qrHdrStyle={font:{bold:true,sz:10,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'7C3AED'}},alignment:{horizontal:'center',vertical:'center'},border:border};
+    qrRows.push(['№','Tekshiruvchi','AYOQSH nomi','Hudud','Sana','QR bank/tashkilot','Soni'].map(function(c){return{v:c,s:qrHdrStyle}}));
+    var qrNum=0;
+    allSubs.forEach(function(s){
+      try{var qi=JSON.parse(s.ans['4']||'[]');
+        qi.forEach(function(it){
+          qrNum++;
+          var bg=qrNum%2===0?{fgColor:{rgb:'F5F3FF'}}:{fgColor:{rgb:'FFFFFF'}};
+          var r={font:{sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+          var rB={font:{bold:true,sz:10},alignment:{vertical:'center'},border:border,fill:bg};
+          var rC={font:{sz:10,bold:true},alignment:{horizontal:'center',vertical:'center'},border:border,fill:bg};
+          qrRows.push([{v:qrNum,s:rC},{v:s.uN,s:rB},{v:s.ayN,s:rB},{v:s.reg,s:r},{v:new Date(s.at).toLocaleDateString('uz'),s:r},{v:it.name||'',s:rB},{v:it.count||'',s:rC}]);
+        });
+      }catch(e){}
+    });
+    if(qrRows.length>1){
+      var ws3=XLSX.utils.aoa_to_sheet(qrRows);
+      ws3['!cols']=[{wch:4},{wch:18},{wch:32},{wch:14},{wch:12},{wch:25},{wch:8}];
+      ws3['!autofilter']={ref:'A1:G'+qrRows.length};
+      XLSX.utils.book_append_sheet(wb,ws3,'QR kodlar');
+    }
+    var fileName='PF246_Admin_'+modeLabel+'_'+new Date().toISOString().slice(0,10)+'.xlsx';
+    XLSX.writeFile(wb,fileName);
+    toast('✅ Excel yuklandi: '+fileName);
+  }catch(e){console.error('Admin Excel error',e);toast('❌ Excel xatolik','error')}
+}
 function exJSON(){const d=JSON.stringify({submissions:subs,locations:locs,exportDate:new Date().toISOString()},null,2);const b=new Blob([d],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pf246_'+Date.now()+'.json';a.click();toast('JSON yuklandi')}
 let delId=null;
 function confirmDel(id,name){delId=id;document.getElementById('delName').textContent='🏪 '+name;document.getElementById('delModal').classList.add('active')}
