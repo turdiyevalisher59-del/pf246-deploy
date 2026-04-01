@@ -2117,6 +2117,12 @@ function applyFilters(){
     if(fY&&!isYangi(s))return false;
     return true;
   });
+  // Yangi filter: deduplicate by ayN — show only one per unique name (newest)
+  if(fY){
+    filtered.sort(function(a,b){return new Date(b.at)-new Date(a.at)});
+    var seenNames=new Set();
+    filtered=filtered.filter(function(s){if(seenNames.has(normalizeAyName(s.ayN)))return false;seenNames.add(normalizeAyName(s.ayN));return true});
+  }
 
   var anyFilter=fV||fH||fT||fB||fS||fY;
 
@@ -2319,6 +2325,8 @@ function renderSubsTable(){
   });
   // Sort by time DESC (newest first)
   filtered.sort(function(a,b){return new Date(b.at)-new Date(a.at)});
+  // Yangi filter: deduplicate by ayN — one per unique name
+  if(fY){var seenN=new Set();filtered=filtered.filter(function(s){if(seenN.has(normalizeAyName(s.ayN)))return false;seenN.add(normalizeAyName(s.ayN));return true})}
   var anyF=fD||fV||fH||fS||fY;
   var cntEl=document.getElementById('stCount');
   if(cntEl)cntEl.innerHTML=anyF?'<span style="font-size:12px;font-weight:700;color:var(--gold-600);background:var(--gold-100);padding:4px 12px;border-radius:8px">'+filtered.length+' / '+allSubs.length+'</span>':'<span style="font-size:12px;color:var(--gray-400)">'+allSubs.length+' ta</span>';
@@ -2813,12 +2821,15 @@ function viewMedia(subId,idx){
 // ═══ HUDUD HISOBOTI ═══
 // Global "yangi" (not in DB) detection
 var _ayNameSet=null,_notNameSet=null;
-function getAyNameSet(){if(!_ayNameSet){_ayNameSet=new Set();AYOQSH_DB.forEach(function(a){_ayNameSet.add(a.dname)})}return _ayNameSet}
-function getNotNameSet(){if(!_notNameSet){_notNameSet=new Set();NOTARIUS_DB.forEach(function(n){_notNameSet.add(n.name)})}return _notNameSet}
+// Fuzzy name normalization — strips quotes, backticks, extra spaces, lowercases
+function normalizeAyName(s){if(!s)return'';return s.replace(/[`"'\u201c\u201d\u2018\u2019]/g,'').replace(/\s+/g,' ').trim().toLowerCase()}
+function getAyNameSet(){if(!_ayNameSet){_ayNameSet=new Set();AYOQSH_DB.forEach(function(a){_ayNameSet.add(normalizeAyName(a.dname))})}return _ayNameSet}
+function getNotNameSet(){if(!_notNameSet){_notNameSet=new Set();NOTARIUS_DB.forEach(function(n){_notNameSet.add(normalizeAyName(n.name))})}return _notNameSet}
 function isYangi(s){
   if(!s||!s.ayN||s.noActivity)return false;
   var isAy=(s.mode||'ayoqsh')==='ayoqsh';
-  return isAy?!getAyNameSet().has(s.ayN):!getNotNameSet().has(s.ayN);
+  var n=normalizeAyName(s.ayN);
+  return isAy?!getAyNameSet().has(n):!getNotNameSet().has(n);
 }
 function normalizeHudud(reg){
   if(!reg)return 'Nomalum';
@@ -2845,11 +2856,11 @@ function renderHududReport(){
   AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!ayBase[h])ayBase[h]=0;ayBase[h]++});
   var notBase={};var notTotal=NOTARIUS_DB.length;
   NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!notBase[h])notBase[h]=0;notBase[h]++});
-  // Valid name sets — only count names that exist in DB
-  var validAyNames=new Set();AYOQSH_DB.forEach(function(a){validAyNames.add(a.dname)});
-  var validNotNames=new Set();NOTARIUS_DB.forEach(function(n){validNotNames.add(n.name)});
-  var validAyByHudud={};AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!validAyByHudud[h])validAyByHudud[h]=new Set();validAyByHudud[h].add(a.dname)});
-  var validNotByHudud={};NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!validNotByHudud[h])validNotByHudud[h]=new Set();validNotByHudud[h].add(n.name)});
+  // Valid name sets — normalized for fuzzy matching
+  var validAyNames=new Set();AYOQSH_DB.forEach(function(a){validAyNames.add(normalizeAyName(a.dname))});
+  var validNotNames=new Set();NOTARIUS_DB.forEach(function(n){validNotNames.add(normalizeAyName(n.name))});
+  var validAyByHudud={};AYOQSH_DB.forEach(function(a){var h=a.hudud||'Nomalum';if(!validAyByHudud[h])validAyByHudud[h]=new Set();validAyByHudud[h].add(normalizeAyName(a.dname))});
+  var validNotByHudud={};NOTARIUS_DB.forEach(function(n){var h=n.tuman||'Nomalum';if(!validNotByHudud[h])validNotByHudud[h]=new Set();validNotByHudud[h].add(normalizeAyName(n.name))});
   var byHudud={};
   subs.forEach(function(s){var h=normalizeHudud(s.reg);if(!byHudud[h])byHudud[h]={ayoqsh:[],notarius:[]};byHudud[h][s.mode||'ayoqsh'].push(s)});
   var allHududs=new Set();
@@ -2860,24 +2871,24 @@ function renderHududReport(){
   var todayStr=new Date().toISOString().slice(0,10);
   var todayAy=subs.filter(function(s){return(s.mode||'ayoqsh')==='ayoqsh'&&s.at&&s.at.slice(0,10)===todayStr}).length;
   var todayNot=subs.filter(function(s){return s.mode==='notarius'&&s.at&&s.at.slice(0,10)===todayStr}).length;
-  var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&validAyNames.has(s.ayN))uniqueAy.add(s.ayN)});
-  var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&validNotNames.has(s.ayN))uniqueNot.add(s.ayN)});
+  var uniqueAy=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&validAyNames.has(normalizeAyName(s.ayN)))uniqueAy.add(normalizeAyName(s.ayN))});
+  var uniqueNot=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&validNotNames.has(normalizeAyName(s.ayN)))uniqueNot.add(normalizeAyName(s.ayN))});
   // Extra names NOT in any DB (only active — noActivity excluded)
-  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&!validAyNames.has(s.ayN))extraAyGlobal.add(s.ayN)});
-  var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!s.noActivity&&!validNotNames.has(s.ayN))extraNotGlobal.add(s.ayN)});
+  var extraAyGlobal=new Set();subs.forEach(function(s){if((s.mode||'ayoqsh')==='ayoqsh'&&s.ayN&&!s.noActivity&&!validAyNames.has(normalizeAyName(s.ayN)))extraAyGlobal.add(normalizeAyName(s.ayN))});
+  var extraNotGlobal=new Set();subs.forEach(function(s){if(s.mode==='notarius'&&s.ayN&&!s.noActivity&&!validNotNames.has(normalizeAyName(s.ayN)))extraNotGlobal.add(normalizeAyName(s.ayN))});
   // First-seen date for non-DB names (only active)
   var firstSeenMap={};
   subs.forEach(function(s){
     if(!s.ayN||s.noActivity)return;
     var isAy=(s.mode||'ayoqsh')==='ayoqsh';
-    var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);
-    if(!inDB){var d=s.at?s.at.slice(0,10):'';if(d&&(!firstSeenMap[s.ayN]||d<firstSeenMap[s.ayN]))firstSeenMap[s.ayN]=d}
+    var inDB=isAy?validAyNames.has(normalizeAyName(s.ayN)):validNotNames.has(normalizeAyName(s.ayN));
+    if(!inDB){var d=s.at?s.at.slice(0,10):'';if(d&&(!firstSeenMap[normalizeAyName(s.ayN)]||d<firstSeenMap[normalizeAyName(s.ayN)]))firstSeenMap[normalizeAyName(s.ayN)]=d}
   });
   // Count global yangi bugun
   var yangiAyBugun=0;extraAyGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiAyBugun++});
   var yangiNotBugun=0;extraNotGlobal.forEach(function(n){if(firstSeenMap[n]===todayStr)yangiNotBugun++});
   var noActCount=subs.filter(function(s){return s.noActivity}).length;
-  var noActYangi=new Set();subs.forEach(function(s){if(s.noActivity&&s.ayN){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?validAyNames.has(s.ayN):validNotNames.has(s.ayN);if(!inDB)noActYangi.add(s.ayN)}});
+  var noActYangi=new Set();subs.forEach(function(s){if(s.noActivity&&s.ayN){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?validAyNames.has(normalizeAyName(s.ayN)):validNotNames.has(normalizeAyName(s.ayN));if(!inDB)noActYangi.add(normalizeAyName(s.ayN))}});
   var mediaTotal=0;subs.forEach(function(s){mediaTotal+=(s.mediaCount||0)});
   var activeToday=new Set();subs.forEach(function(s){if(s.at&&s.at.slice(0,10)===todayStr)activeToday.add(s.un)});
   var bannerHa=subs.filter(function(s){return s.ans&&s.ans['3']==='ha'}).length;
@@ -2916,11 +2927,11 @@ function renderHududReport(){
     var dbAy=ayBase[hud]||0;var dbNot=notBase[hud]||0;
     var subData=byHudud[hud]||{ayoqsh:[],notarius:[]};
     // Unique names visited — ONLY count names that exist in DB for this hudud
-    var uniqueAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN))uniqueAyH.add(s.ayN)});
-    var uniqueNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN))uniqueNotH.add(s.ayN)});
+    var uniqueAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&validAyByHudud[hud]&&validAyByHudud[hud].has(normalizeAyName(s.ayN)))uniqueAyH.add(normalizeAyName(s.ayN))});
+    var uniqueNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&validNotByHudud[hud]&&validNotByHudud[hud].has(normalizeAyName(s.ayN)))uniqueNotH.add(normalizeAyName(s.ayN))});
     // Extra names NOT in DB (yangi qo'shilgan)
-    var extraAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&!(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)))extraAyH.add(s.ayN)});
-    var extraNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&!(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN)))extraNotH.add(s.ayN)});
+    var extraAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity&&!(validAyByHudud[hud]&&validAyByHudud[hud].has(normalizeAyName(s.ayN))))extraAyH.add(normalizeAyName(s.ayN))});
+    var extraNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN&&!(validNotByHudud[hud]&&validNotByHudud[hud].has(normalizeAyName(s.ayN))))extraNotH.add(normalizeAyName(s.ayN))});
     // Today's first-seen yangi only
     var newTodayAyH=0;extraAyH.forEach(function(n){if(firstSeenMap[n]===todayStr)newTodayAyH++});
     var newTodayNotH=0;extraNotH.forEach(function(n){if(firstSeenMap[n]===todayStr)newTodayNotH++});
@@ -2930,10 +2941,10 @@ function renderHududReport(){
     // Daily breakdown for this hudud
     var allHudSubs=vm==='ayoqsh'?subData.ayoqsh:vm==='notarius'?subData.notarius:subData.ayoqsh.concat(subData.notarius);
     var byDateH={};
-    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d){if(!byDateH[d])byDateH[d]=new Set();var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));if(s.ayN&&!s.noActivity&&inDB)byDateH[d].add(s.ayN)}});
+    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d){if(!byDateH[d])byDateH[d]=new Set();var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(normalizeAyName(s.ayN))):(validNotByHudud[hud]&&validNotByHudud[hud].has(normalizeAyName(s.ayN)));if(s.ayN&&!s.noActivity&&inDB)byDateH[d].add(normalizeAyName(s.ayN))}});
     // Per-day new (first-seen) non-DB names
     var byDateNew={};
-    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d&&s.ayN&&!s.noActivity){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));if(!inDB&&firstSeenMap[s.ayN]===d){if(!byDateNew[d])byDateNew[d]=new Set();byDateNew[d].add(s.ayN)}}});
+    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d&&s.ayN&&!s.noActivity){var isAy=(s.mode||'ayoqsh')==='ayoqsh';var inDB=isAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(normalizeAyName(s.ayN))):(validNotByHudud[hud]&&validNotByHudud[hud].has(normalizeAyName(s.ayN)));if(!inDB&&firstSeenMap[normalizeAyName(s.ayN)]===d){if(!byDateNew[d])byDateNew[d]=new Set();byDateNew[d].add(normalizeAyName(s.ayN))}}});
     var dbTotal=vm==='ayoqsh'?dbAy:vm==='notarius'?dbNot:(dbAy+dbNot);
     if(!dbTotal&&!allHudSubs.length)return; // skip empty hududs
     var uniqueTotal=vm==='ayoqsh'?uniqueAyH.size:vm==='notarius'?uniqueNotH.size:(uniqueAyH.size+uniqueNotH.size);
@@ -2983,8 +2994,8 @@ function renderHududReport(){
           var badges='';
           // Yangi badge — not in DB
           var sIsAy=(s.mode||'ayoqsh')==='ayoqsh';
-          var sInDB=sIsAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(s.ayN)):(validNotByHudud[hud]&&validNotByHudud[hud].has(s.ayN));
-          if(s.ayN&&!s.noActivity&&!sInDB){var fs=firstSeenMap[s.ayN]||'';badges+='<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-weight:700">🆕 Yangi'+(fs?' '+fs:'')+'</span>'}
+          var sInDB=sIsAy?(validAyByHudud[hud]&&validAyByHudud[hud].has(normalizeAyName(s.ayN))):(validNotByHudud[hud]&&validNotByHudud[hud].has(normalizeAyName(s.ayN)));
+          if(s.ayN&&!s.noActivity&&!sInDB){var fs=firstSeenMap[normalizeAyName(s.ayN)]||'';badges+='<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:#dbeafe;color:#1d4ed8;font-weight:700">🆕 Yangi'+(fs?' '+fs:'')+'</span>'}
           if(a['3'])badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:'+(a['3']==='ha'?'#dcfce7':'#fef2f2')+';color:'+(a['3']==='ha'?'#16a34a':'#dc2626')+'">B:'+a['3']+'</span>';
           if(s.mediaCount)badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#fef3c7;color:#92400e">📸'+s.mediaCount+'</span>';
           h+='<div style="border:1px solid var(--gray-200);border-radius:8px;margin-bottom:4px;overflow:hidden">';
