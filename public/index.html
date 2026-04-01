@@ -236,7 +236,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div class="export-section"><button class="btn btn-primary" onclick="exJSON()">💾 JSON yuklash</button><button class="btn btn-danger" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" onclick="genPDF()">📄 PDF yuklash</button></div>
 </div></div>
 <div id="adminPage" class="page">
-<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v6.5</span></p></div>
+<div class="header"><div class="header-container"><div class="logo-box">⭐</div><div class="header-content" style="flex:1"><h1>Admin Panel — PF-246</h1><p>Barcha foydalanuvchilar statistikasi va monitoring <span style="font-size:9px;opacity:.5">v6.8</span></p></div>
 <!-- Admin Mode Toggle -->
 <div style="display:flex;gap:4px;background:var(--blue-800);border-radius:12px;padding:4px;margin-right:10px" id="adminModeToggle">
 <button onclick="setAdminMode('ayoqsh')" id="admModeA" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
@@ -501,10 +501,11 @@ async function sbInsertLoc(loc){
 }
 async function sbLoadSubs(){
   try{
-    // Don't load media_data initially — it's too heavy (base64 images)
     var{data}=await SB.from('submissions').select('id,un,u_name,reg,ay_name,mode,answers,media_count,no_activity,loc_lat,loc_lng,loc_acc,loc_hud,loc_addr,loc_place,loc_pt,created_at').order('created_at',{ascending:false});
     if(!data)return[];
-    return data.map(function(r){return{
+    // Dedup by id
+    var seen={};
+    return data.filter(function(r){if(seen[r.id])return false;seen[r.id]=true;return true}).map(function(r){return{
       id:r.id,un:r.un,uN:r.u_name,reg:r.reg,ayN:r.ay_name,
       mode:r.mode,ans:r.answers||{},mediaCount:r.media_count,mediaData:null,noActivity:r.no_activity,
       at:r.created_at,
@@ -814,7 +815,14 @@ function togglePwVis(){var inp=document.getElementById('loginPass');var eye=docu
 function doLogout(){stopPings();stopAdminRefresh();cu=null;localStorage.removeItem('pf246');ans={};media={};showP('loginPage')}
 function showP(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
 (function(){loadCfg();try{const s=JSON.parse(localStorage.getItem('pf246'));if(s&&U[s.un]){cu=s;cu.role==='admin'?showP('adminPage'):showP('surveyPage');init()}}catch(e){}})();
-async function init(){if(cu.role==='user'){document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted,noBtn:q.noBtn}});
+async function init(){if(cu.role==='user'){
+// Version check — clear stale history cache
+var curVer='v6.8';
+if(localStorage.getItem('pf246_ver')!==curVer){
+  Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
+  localStorage.setItem('pf246_ver',curVer);
+}
+document.getElementById('uBadge').textContent='👤 '+cu.name+' ('+cu.reg+')';SEC_A=SEC.map(function(s){return{k:s.k,l:s.l,i:s.i,media:s.media}});Q_A=Q.map(function(q){return{id:q.id,s:q.s,t:q.t,ty:q.ty,ph:q.ph,opts:q.opts,counted:q.counted,noBtn:q.noBtn}});
 // Load user's own submissions from Supabase
 // Load user submissions with retry
 var userLoadRetries=0;
@@ -1918,23 +1926,25 @@ function viewSubmission(id){
   document.body.appendChild(modal);
 }
 async function loadAd(){
+// Version check — clear stale cache on version change
+var curVer='v6.8';
+if(localStorage.getItem('pf246_ver')!==curVer){
+  Object.keys(localStorage).forEach(function(k){if(k.startsWith('pf246_hist_'))localStorage.removeItem(k)});
+  localStorage.setItem('pf246_ver',curVer);
+}
 // Set default date filter to today
 var dateEl=document.getElementById('fDate');
 if(dateEl&&!dateEl.value){dateEl.value=new Date().toISOString().slice(0,10)}
 // Load from Supabase
 try{
   var sbSubs=await sbLoadSubs();
-  if(sbSubs.length)subs=sbSubs;
+  subs=sbSubs||[];
   var sbLocs=await sbLoadLocs();
-  if(sbLocs.length||subs.length)locs=sbLocs;
+  locs=sbLocs||[];
 }catch(e){console.log('SB load error',e)}
 var fSubs=getAdminSubs();
 document.getElementById('at').textContent=fSubs.length;document.getElementById('aa').textContent=new Set(fSubs.map(s=>s.un)).size;document.getElementById('al').textContent=fSubs.filter(function(s){return s.loc&&s.loc.lat&&s.loc.lat!==0}).length;
-// Show current mode label
 var modeLabel=adminViewMode==='ayoqsh'?'⛽ AYOQSH':adminViewMode==='notarius'?'📜 Notarius':'📊 Barchasi';
-// Temporarily use filtered subs for all rendering
-var _allSubs=subs;
-subs=fSubs;
 const uk=Object.keys(U).filter(k=>U[k].role==='user');
 // Build expandable user cards
 var gridH='';
@@ -2110,7 +2120,6 @@ function populateFilters(){
   var bArr=Array.from(banks).sort();
   bankSel.innerHTML='<option value="">Barchasi</option>'+bArr.map(function(b){return '<option value="'+b+'">'+b+'</option>'}).join('');
   bankSel.value=curB;
-  subs=_allSubs; // Restore full subs array
 }
 
 function applyFilters(){
@@ -2427,7 +2436,7 @@ function toggleUC(un){
     var daySubs=byDate[d];
     mh+='<div style="padding:5px 10px;background:#fffbeb;border-radius:6px;margin-bottom:4px;display:flex;justify-content:space-between;font-size:11px;font-weight:700"><span style="color:#d4a932">📅 '+d+'</span><span style="color:var(--blue-800)">'+daySubs.length+' ta</span></div>';
     daySubs.forEach(function(sub){
-      var a=sub.ans||{};var rid='ucD_'+sub.id;
+      var a=sub.ans||{};
       var icon=(sub.mode||'ayoqsh')==='notarius'?'📜':'🏪';
       var badges='';
       if(a['3'])badges+='<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:'+(a['3']==='ha'?'#dcfce7':'#fef2f2')+';color:'+(a['3']==='ha'?'#16a34a':'#dc2626')+'">B:'+a['3']+'</span>';
@@ -2435,23 +2444,11 @@ function toggleUC(un){
       if(sub.mediaCount)badges+='<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:#fef3c7;color:#92400e">📸'+sub.mediaCount+'</span>';
       if(sub.noActivity)badges+='<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:#fef2f2;color:#dc2626">🚫</span>';
       mh+='<div style="border:1px solid var(--gray-200);border-radius:6px;margin-bottom:3px;overflow:hidden">';
-      mh+='<div onclick="var el=document.getElementById(\''+rid+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'" style="padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;background:white">';
+      mh+='<div onclick="openSubModal(\''+sub.id+'\')" style="padding:6px 8px;cursor:pointer;display:flex;align-items:center;gap:6px;background:white">';
       mh+='<span>'+icon+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:11px;color:var(--blue-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sub.ayN+'</div>';
       mh+='<div style="font-size:8px;color:var(--gray-400)">🕐 '+new Date(sub.at).toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'})+(sub.loc&&sub.loc.place?' | '+sub.loc.place:'')+'</div></div>';
-      mh+='<div style="display:flex;gap:2px;flex-shrink:0">'+badges+'<span style="font-size:9px;color:var(--gray-300)">▼</span></div></div>';
-      mh+='<div id="'+rid+'" style="display:none;padding:8px;background:#f8fafc;border-top:1px solid var(--gray-200);font-size:10px">';
-      if(sub.loc)mh+='<div style="font-size:9px;color:var(--blue-500);margin-bottom:4px">📍 '+(sub.loc.hud||'')+' — '+(sub.loc.addr||'')+' <a href="https://maps.google.com/?q='+sub.loc.lat+','+sub.loc.lng+'" target="_blank">🗺️</a></div>';
-      var subQs=(sub.mode||'ayoqsh')==='notarius'?Q_N:Q;
-      subQs.filter(function(q){return sub.ans[q.id]!=null&&sub.ans[q.id]!==''}).forEach(function(q){
-        var v=sub.ans[q.id],vh=sub.ans[q.id+'_h']||'',vnote=sub.ans[q.id+'_note']||'',display=v;
-        if(q.ty==='yesno')display=v==='ha'?'<span style="color:#16a34a">Ha</span>':'<span style="color:#dc2626">Yo\'q</span>';
-        else if(q.ty==='terminal'){var p=[];if(v&&v!=='Mavjud emas')p.push(v);if(vh)p.push(vh==='Ishlayapti'?'<span style="color:#16a34a">'+vh+'</span>':'<span style="color:#dc2626">'+vh+'</span>');display=v==='Mavjud emas'?'<span style="color:#dc2626">Mavjud emas</span>':p.join(' — ')}
-        else if(q.ty==='multicheck'){var sel=[];try{sel=JSON.parse(v||'[]')}catch(e){if(v)sel=[v]}if(q.counted){sel=sel.map(function(opt){var ck=q.id+'_cnt_'+opt.replace(/[^a-zA-Z]/g,'');var c=sub.ans[ck];return c?opt+' ('+c+')':opt})}display=sel.join(', ');if(vnote)display+=' — <i style="color:#d97706">'+vnote+'</i>'}
-        mh+='<div style="display:flex;gap:3px;padding:1px 0;border-bottom:1px solid var(--gray-100)"><span style="font-weight:700;color:var(--blue-600);min-width:24px">'+q.id+'</span><span style="flex:1;color:var(--gray-500)">'+q.t+'</span><span style="font-weight:600;color:var(--gray-800);text-align:right;max-width:160px">'+display+'</span></div>';
-      });
-      if(sub.noActivity&&sub.ans['reason'])mh+='<div style="padding:3px 5px;background:#fef2f2;border-radius:3px;margin-top:3px;font-size:9px;color:#dc2626">🚫 '+sub.ans['reason']+'</div>';
-      if(sub.mediaCount)mh+='<div style="margin-top:3px"><button onclick="loadAndShowMedia(\''+sub.id+'\',this)" style="height:24px;padding:0 8px;border:1px solid #3b82f6;background:#eff6ff;border-radius:3px;font-size:9px;font-weight:700;color:#1d4ed8;cursor:pointer;font-family:inherit">📷 Rasmlar</button></div>';
-      mh+='</div></div>';
+      mh+='<div style="display:flex;gap:2px;flex-shrink:0">'+badges+'<span style="font-size:9px;color:var(--gray-300)">▶</span></div></div>';
+      mh+='</div>';
     });
   });
   var modal=document.createElement('div');
@@ -2476,6 +2473,27 @@ function confirmDel(id,name){delId=id;document.getElementById('delName').textCon
 function closeDel(){delId=null;document.getElementById('delModal').classList.remove('active')}
 function execDel(){if(!delId)return;const idx=subs.findIndex(s=>s.id===delId);if(idx===-1){closeDel();return}const name=subs[idx].ayN;sbDeleteSub(delId);subs.splice(idx,1);closeDel();loadAd();toast('🗑️ "'+name+'" ma\'lumotnomasi o\'chirildi','error')}
 // ═══ MEDIA VIEWER ═══
+async function loadAndShowMediaInline(subId,containerId){
+  var el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:12px;font-size:13px;color:var(--blue-500)">⏳ Rasmlar yuklanmoqda...</div>';
+  try{
+    var mediaData=await sbLoadMedia(subId);
+    if(!mediaData||!mediaData.length){el.innerHTML='<div style="text-align:center;padding:8px;font-size:12px;color:var(--gray-400)">📷 Rasmlar topilmadi</div>';return}
+    var sub=subs.find(function(s){return s.id===subId});
+    if(sub)sub.mediaData=mediaData;
+    var g='<div style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 0">';
+    mediaData.forEach(function(m,mi){
+      if(m.type==='photo'&&m.data){
+        g+='<div onclick="viewMedia(\''+subId+'\','+mi+')" style="cursor:pointer;width:100px;height:75px;border-radius:8px;overflow:hidden;border:2px solid var(--gray-200);box-shadow:0 2px 8px rgba(0,0,0,.1)"><img src="'+m.data+'" style="width:100%;height:100%;object-fit:cover" loading="lazy"></div>';
+      }
+    });
+    g+='</div>';
+    el.innerHTML=g;
+  }catch(e){
+    el.innerHTML='<button onclick="loadAndShowMediaInline(\''+subId+'\',\''+containerId+'\')" style="width:100%;height:36px;border:2px solid #f59e0b;background:#fffbeb;border-radius:6px;font-size:12px;font-weight:700;color:#d97706;cursor:pointer;font-family:inherit">⚠️ Xato — qayta bosing</button>';
+  }
+}
 async function loadAndShowMedia(subId,btn){
   btn.textContent='⏳ Yuklanmoqda...';btn.disabled=true;
   try{
@@ -2545,13 +2563,13 @@ function renderHududReport(){
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin-bottom:8px">';
   if(vm==='ayoqsh'||vm==='all'){var ayPct=ayTotal?Math.round(uniqueAy.size/ayTotal*100):0;
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#d4a932">'+ayTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi AYOQSH</div></div>';
-    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAy.size+'</div><div style="font-size:8px;opacity:.7">Noyob tekshirilgan</div></div>';
+    h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueAy.size+'</div><div style="font-size:8px;opacity:.7">Kamida 1 marta tekshirilgan</div></div>';
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(ayTotal-uniqueAy.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
     h+='<div style="background:rgba(255,255,255,.1);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(ayPct>=50?'#22c55e':ayPct>=25?'#f59e0b':'#ef4444')+'">'+ayPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
   }
   if(vm==='notarius'||vm==='all'){var notPct=notTotal?Math.round(uniqueNot.size/notTotal*100):0;
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#a78bfa">'+notTotal+'</div><div style="font-size:8px;opacity:.7">Bazadagi Notarius</div></div>';
-    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueNot.size+'</div><div style="font-size:8px;opacity:.7">Noyob tekshirilgan</div></div>';
+    h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#22c55e">'+uniqueNot.size+'</div><div style="font-size:8px;opacity:.7">Kamida 1 marta tekshirilgan</div></div>';
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:#ef4444">'+(notTotal-uniqueNot.size)+'</div><div style="font-size:8px;opacity:.7">Borilmagan</div></div>';
     h+='<div style="background:rgba(124,58,237,.15);border-radius:8px;padding:8px;text-align:center"><div style="font-size:20px;font-weight:800;color:'+(notPct>=50?'#22c55e':notPct>=25?'#f59e0b':'#ef4444')+'">'+notPct+'%</div><div style="font-size:8px;opacity:.7">Qamrov</div></div>';
   }
@@ -2569,59 +2587,66 @@ function renderHududReport(){
   hList.forEach(function(hud){
     var dbAy=ayBase[hud]||0;var dbNot=notBase[hud]||0;
     var subData=byHudud[hud]||{ayoqsh:[],notarius:[]};
-    var sentAy=subData.ayoqsh.length;var sentNot=subData.notarius.length;
-    var ayPctH=dbAy?Math.round(sentAy/dbAy*100):0;
-    var notPctH=dbNot?Math.round(sentNot/dbNot*100):0;
+    // Unique names visited (NOT total submissions)
+    var uniqueAyH=new Set();subData.ayoqsh.forEach(function(s){if(s.ayN&&!s.noActivity)uniqueAyH.add(s.ayN)});
+    var uniqueNotH=new Set();subData.notarius.forEach(function(s){if(s.ayN)uniqueNotH.add(s.ayN)});
+    var ayPctH=dbAy?Math.round(uniqueAyH.size/dbAy*100):0;
+    var notPctH=dbNot?Math.round(uniqueNotH.size/dbNot*100):0;
     var hid='hud_'+hud.replace(/[^a-zA-Z0-9]/g,'');
+    // Daily breakdown for this hudud
+    var allHudSubs=vm==='ayoqsh'?subData.ayoqsh:vm==='notarius'?subData.notarius:subData.ayoqsh.concat(subData.notarius);
+    var byDateH={};
+    allHudSubs.forEach(function(s){var d=s.at?s.at.slice(0,10):'';if(d){if(!byDateH[d])byDateH[d]=new Set();if(s.ayN&&!s.noActivity)byDateH[d].add(s.ayN)}});
+    var dbTotal=vm==='ayoqsh'?dbAy:vm==='notarius'?dbNot:(dbAy+dbNot);
+    var uniqueTotal=vm==='ayoqsh'?uniqueAyH.size:vm==='notarius'?uniqueNotH.size:(uniqueAyH.size+uniqueNotH.size);
+    var totalPctH=dbTotal?Math.round(uniqueTotal/dbTotal*100):0;
+    
     h+='<div style="border:2px solid var(--gray-200);border-radius:10px;overflow:hidden">';
-    // Clickable header
     h+='<div onclick="toggleHR(\''+hid+'\');var c=this.parentElement;c.style.borderColor=document.getElementById(\''+hid+'\').style.display===\'none\'?\'var(--gray-200)\':\'#3b82f6\'" style="padding:10px 12px;cursor:pointer;background:white">';
-    h+='<div style="font-size:13px;font-weight:800;color:var(--blue-800);margin-bottom:6px">📍 '+hud+'</div>';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:800;color:var(--blue-800)">📍 '+hud+'</span><span style="font-size:12px;font-weight:800;color:'+(totalPctH>=50?'#16a34a':totalPctH>=25?'#d97706':'#dc2626')+'">'+totalPctH+'%</span></div>';
+    // AYOQSH progress (unique-based)
     if(dbAy&&(vm==='ayoqsh'||vm==='all')){
-      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#d4a932">⛽ AYOQSH</span><span style="font-weight:800;color:var(--blue-800)">'+sentAy+' / '+dbAy+'</span></div>';
-      h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:1px"><div style="height:100%;width:'+Math.min(ayPctH,100)+'%;background:linear-gradient(90deg,#d4a932,#f59e0b);border-radius:3px"></div></div>';
-      h+='<div style="text-align:right;font-size:9px;font-weight:700;color:'+(ayPctH>=50?'#16a34a':ayPctH>=25?'#d97706':'#dc2626')+';margin-bottom:4px">'+ayPctH+'%</div>';
+      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#d4a932">⛽ AYOQSH</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueAyH.size+' / '+dbAy+' tekshirilgan</span></div>';
+      h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(ayPctH,100)+'%;background:linear-gradient(90deg,#d4a932,#f59e0b);border-radius:3px"></div></div>';
     }
     if(dbNot&&(vm==='notarius'||vm==='all')){
-      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#7c3aed">📜 Notarius</span><span style="font-weight:800;color:var(--blue-800)">'+sentNot+' / '+dbNot+'</span></div>';
-      h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:1px"><div style="height:100%;width:'+Math.min(notPctH,100)+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:3px"></div></div>';
-      h+='<div style="text-align:right;font-size:9px;font-weight:700;color:'+(notPctH>=50?'#16a34a':notPctH>=25?'#d97706':'#dc2626')+'">'+notPctH+'%</div>';
+      h+='<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:700;color:#7c3aed">📜 Notarius</span><span style="font-weight:800;color:var(--blue-800)">'+uniqueNotH.size+' / '+dbNot+' tekshirilgan</span></div>';
+      h+='<div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:'+Math.min(notPctH,100)+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:3px"></div></div>';
+    }
+    // Daily breakdown on card
+    var dateKeysH=Object.keys(byDateH).sort().reverse();
+    if(dateKeysH.length){
+      h+='<div style="border-top:1px solid var(--gray-100);padding-top:4px;margin-top:2px">';
+      dateKeysH.slice(0,5).forEach(function(d){
+        var dayUnique=byDateH[d].size;
+        var dayPct=dbTotal?Math.round(dayUnique/dbTotal*100):0;
+        h+='<div style="display:flex;justify-content:space-between;font-size:9px;padding:1px 0;color:var(--gray-500)"><span>📅 '+d+'</span><span style="font-weight:700;color:'+(dayPct>=50?'#16a34a':'var(--blue-800)')+'">'+dayUnique+' tekshirilgan ('+dayPct+'%)</span></div>';
+      });
+      if(dateKeysH.length>5)h+='<div style="font-size:8px;color:var(--gray-400);text-align:center">...va yana '+(dateKeysH.length-5)+' kun</div>';
+      h+='</div>';
     }
     h+='<div style="text-align:center;font-size:9px;color:var(--gray-400);margin-top:2px">▼ Batafsil</div></div>';
     // Expandable detail
-    h+='<div id="'+hid+'" style="display:none;border-top:2px solid #3b82f6;background:#f8fafc;padding:8px;max-height:400px;overflow-y:auto">';
+    h+='<div id="'+hid+'" style="display:none;border-top:2px solid #3b82f6;background:#f8fafc;padding:8px;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     var allSubs=vm==='ayoqsh'?subData.ayoqsh:vm==='notarius'?subData.notarius:subData.ayoqsh.concat(subData.notarius);
-    if(!allSubs.length){h+='<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:11px">Hali tekshirilmagan</div>'}
+    if(!allSubs.length){h+='<div style="text-align:center;padding:12px;color:var(--gray-400);font-size:13px">Hali tekshirilmagan</div>'}
     else{
-      // Group by date
       var byDate={};allSubs.forEach(function(s){var d=new Date(s.at).toLocaleDateString('uz',{day:'2-digit',month:'2-digit',year:'numeric'});if(!byDate[d])byDate[d]=[];byDate[d].push(s)});
       Object.keys(byDate).reverse().forEach(function(d){
         var ds=byDate[d];
-        h+='<div style="padding:4px 8px;background:#fffbeb;border-radius:4px;margin-bottom:3px;display:flex;justify-content:space-between;font-size:10px;font-weight:700"><span style="color:#d4a932">📅 '+d+'</span><span style="color:var(--blue-800)">'+ds.length+'</span></div>';
+        h+='<div style="padding:6px 10px;background:#fffbeb;border-radius:6px;margin-bottom:4px;display:flex;justify-content:space-between;font-size:12px;font-weight:700"><span style="color:#d4a932">📅 '+d+'</span><span style="color:var(--blue-800)">'+ds.length+' ta</span></div>';
         ds.forEach(function(s){
           var a=s.ans||{};var rid='hd_'+s.id;
           var icon=(s.mode||'ayoqsh')==='notarius'?'📜':'🏪';
           var badges='';
-          if(a['3'])badges+='<span style="font-size:7px;padding:1px 4px;border-radius:2px;background:'+(a['3']==='ha'?'#dcfce7':'#fef2f2')+';color:'+(a['3']==='ha'?'#16a34a':'#dc2626')+'">B:'+a['3']+'</span>';
-          if(s.mediaCount)badges+='<span style="font-size:7px;padding:1px 4px;border-radius:2px;background:#fef3c7;color:#92400e">📸'+s.mediaCount+'</span>';
-          h+='<div style="border:1px solid var(--gray-200);border-radius:4px;margin-bottom:2px;overflow:hidden">';
-          h+='<div onclick="toggleHR(\''+rid+'\');event.stopPropagation()" style="padding:5px 6px;cursor:pointer;display:flex;align-items:center;gap:4px;background:white;font-size:10px">';
-          h+='<span>'+icon+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--blue-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.ayN+'</div>';
-          h+='<div style="font-size:8px;color:var(--gray-400)">'+s.uN+' | '+new Date(s.at).toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'})+'</div></div>';
-          h+='<div style="display:flex;gap:2px">'+badges+'<span style="color:var(--gray-300)">▼</span></div></div>';
-          h+='<div id="'+rid+'" style="display:none;padding:6px;background:#f0f4f8;border-top:1px solid var(--gray-200);font-size:9px">';
-          if(s.loc)h+='<div style="color:var(--blue-500);margin-bottom:3px">📍 '+(s.loc.hud||'')+' '+(s.loc.addr||'')+' <a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank">🗺️</a></div>';
-          var subQs=(s.mode||'ayoqsh')==='notarius'?Q_N:Q_A;if(!subQs||!subQs.length)subQs=Q;
-          subQs.filter(function(q){return s.ans[q.id]!=null&&s.ans[q.id]!==''}).forEach(function(q){
-            var v=s.ans[q.id],vh=s.ans[q.id+'_h']||'',vnote=s.ans[q.id+'_note']||'',dv=v;
-            if(q.ty==='yesno')dv=v==='ha'?'<span style="color:#16a34a">Ha</span>':'<span style="color:#dc2626">Yo\'q</span>';
-            else if(q.ty==='terminal'){dv=v==='Mavjud emas'?'<span style="color:#dc2626">Mavjud emas</span>':(v||'')+(vh?' — '+vh:'')}
-            else if(q.ty==='multicheck'){var sl=[];try{sl=JSON.parse(v||'[]')}catch(e){if(v)sl=[v]}if(q.counted){sl=sl.map(function(o){var ck=q.id+'_cnt_'+o.replace(/[^a-zA-Z]/g,'');var c=s.ans[ck];return c?o+' ('+c+')':o})}dv=sl.join(', ');if(vnote)dv+=' — <i style="color:#d97706">'+vnote+'</i>'}
-            h+='<div style="display:flex;gap:3px;padding:1px 0;border-bottom:1px solid var(--gray-100)"><span style="font-weight:700;color:var(--blue-600);min-width:22px">'+q.id+'</span><span style="flex:1;color:var(--gray-500)">'+q.t+'</span><span style="font-weight:600;color:var(--gray-800);text-align:right;max-width:140px">'+dv+'</span></div>';
-          });
-          if(s.noActivity&&s.ans['reason'])h+='<div style="padding:2px 4px;background:#fef2f2;border-radius:2px;margin-top:2px;color:#dc2626">🚫 '+s.ans['reason']+'</div>';
-          if(s.mediaCount)h+='<div style="margin-top:2px"><button onclick="loadAndShowMedia(\''+s.id+'\',this)" style="height:20px;padding:0 6px;border:1px solid #3b82f6;background:#eff6ff;border-radius:2px;font-size:8px;font-weight:700;color:#1d4ed8;cursor:pointer;font-family:inherit">📷 Rasmlar</button></div>';
-          h+='</div></div>';
+          if(a['3'])badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:'+(a['3']==='ha'?'#dcfce7':'#fef2f2')+';color:'+(a['3']==='ha'?'#16a34a':'#dc2626')+'">B:'+a['3']+'</span>';
+          if(s.mediaCount)badges+='<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#fef3c7;color:#92400e">📸'+s.mediaCount+'</span>';
+          h+='<div style="border:1px solid var(--gray-200);border-radius:8px;margin-bottom:4px;overflow:hidden">';
+          h+='<div onclick="openSubModal(\''+s.id+'\')" style="padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;background:white">';
+          h+='<span style="font-size:18px">'+icon+'</span><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--blue-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.ayN+'</div>';
+          h+='<div style="font-size:11px;color:var(--gray-400)">'+s.uN+' | 🕐 '+new Date(s.at).toLocaleTimeString('uz',{hour:'2-digit',minute:'2-digit'})+'</div></div>';
+          h+='<div style="display:flex;gap:3px;flex-shrink:0">'+badges+'<span style="font-size:12px;color:var(--gray-300)">▶</span></div></div>';
+          h+='</div>';
         });
       });
     }
@@ -2631,6 +2656,53 @@ function renderHududReport(){
   document.getElementById('aHB').innerHTML=h;
 }
 function toggleHR(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none'}
+// Full-screen modal for AYOQSH/Notarius detail
+function openSubModal(subId){
+  var s=subs.find(function(x){return x.id===subId});
+  if(!s)return;
+  var a=s.ans||{};
+  var icon=(s.mode||'ayoqsh')==='notarius'?'📜':'🏪';
+  var subQs=(s.mode||'ayoqsh')==='notarius'?Q_N:Q_A;if(!subQs||!subQs.length)subQs=Q;
+  var h='';
+  // Header
+  h+='<div style="padding:20px 16px;background:linear-gradient(135deg,#f0f4ff,#dbeafe);border-bottom:3px solid var(--blue-500)">';
+  h+='<div style="font-size:22px;font-weight:800;color:var(--blue-800);margin-bottom:8px;line-height:1.3">'+icon+' '+s.ayN+'</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:14px;color:var(--gray-600)">';
+  h+='<span>👤 <b>'+s.uN+'</b></span><span>📍 '+s.reg+'</span></div>';
+  h+='<div style="font-size:13px;color:var(--gray-500);margin-top:4px">📅 '+new Date(s.at).toLocaleString('uz')+'</div>';
+  if(s.loc&&s.loc.lat)h+='<div style="margin-top:10px;padding:10px 14px;background:white;border:2px solid #93c5fd;border-radius:10px;font-size:14px;display:flex;align-items:center;gap:8px"><span style="font-size:18px">📍</span><span style="flex:1;color:#1d4ed8;font-weight:600">'+(s.loc.hud||'')+' — '+(s.loc.addr||'')+' '+(s.loc.place||'')+'</span><a href="https://maps.google.com/?q='+s.loc.lat+','+s.loc.lng+'" target="_blank" style="font-size:24px;text-decoration:none">🗺️</a></div>';
+  h+='</div>';
+  // Answers
+  h+='<div style="padding:8px 0">';
+  subQs.filter(function(q){return s.ans[q.id]!=null&&s.ans[q.id]!==''}).forEach(function(q,qi){
+    var v=s.ans[q.id],vh=s.ans[q.id+'_h']||'',vb=s.ans[q.id+'_broken']||'',vnote=s.ans[q.id+'_note']||'',dv=v;
+    if(q.ty==='yesno')dv=v==='ha'?'<span style="color:#16a34a;font-weight:800">✅ Ha</span>':'<span style="color:#dc2626;font-weight:800">❌ Yo\'q</span>';
+    else if(q.ty==='terminal'){if(v==='Mavjud emas')dv='<span style="color:#dc2626;font-weight:800">🚫 Mavjud emas</span>';else{var tp=[];if(v)tp.push('<span style="font-size:20px;font-weight:800">'+v+'</span> ta');if(vb)tp.push('<span style="color:#dc2626;font-weight:700">'+vb+' ishlamaydi</span>');if(vh)tp.push(vh==='Ishlayapti'?'<span style="color:#16a34a;font-weight:700">✅ '+vh+'</span>':'<span style="color:#dc2626;font-weight:700">❌ '+vh+'</span>');dv=tp.join(' — ')}}
+    else if(q.ty==='multicheck'){var sl=[];try{sl=JSON.parse(v||'[]')}catch(e){if(v)sl=[v]}if(q.counted){sl=sl.map(function(o){var ck=q.id+'_cnt_'+o.replace(/[^a-zA-Z]/g,'');var c=s.ans[ck];return c?o+' <b>('+c+')</b>':o})}dv=sl.join(', ');if(vnote)dv+=' — <i style="color:#d97706">'+vnote+'</i>'}
+    h+='<div style="padding:14px 16px;border-bottom:2px solid var(--gray-100);background:'+(qi%2?'#f8fafc':'white')+'">';
+    h+='<div style="display:flex;gap:10px;align-items:flex-start">';
+    h+='<div style="min-width:44px;height:44px;background:linear-gradient(135deg,var(--blue-600),var(--blue-800));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:800;flex-shrink:0">'+q.id+'</div>';
+    h+='<div style="flex:1"><div style="font-size:14px;color:var(--gray-500);margin-bottom:6px;line-height:1.4">'+q.t+'</div>';
+    h+='<div style="font-size:18px;font-weight:700;color:var(--gray-800);line-height:1.3">'+dv+'</div></div></div></div>';
+  });
+  // No activity
+  if(s.noActivity&&s.ans['reason'])h+='<div style="padding:16px;background:#fef2f2;border:2px solid #fca5a5;border-radius:10px;margin:12px;font-size:16px;color:#dc2626;font-weight:700">🚫 '+s.ans['reason']+'</div>';
+  // Media section
+  if(s.mediaCount){
+    h+='<div style="padding:16px" id="subModalMedia_'+s.id+'">';
+    h+='<button onclick="loadAndShowMediaInline(\''+s.id+'\',\'subModalMedia_'+s.id+'\')" style="width:100%;height:56px;border:3px solid #3b82f6;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;font-size:17px;font-weight:800;color:#1d4ed8;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">📷 '+s.mediaCount+' ta rasmni ko\'rish</button></div>';
+  }
+  h+='</div>';
+  // Create modal
+  var modal=document.createElement('div');
+  modal.id='subDetailModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:7000;background:rgba(12,25,41,.95);backdrop-filter:blur(8px);display:flex;flex-direction:column';
+  modal.innerHTML='<div style="padding:14px 16px;background:linear-gradient(135deg,var(--blue-800),var(--blue-900));display:flex;justify-content:space-between;align-items:center;flex-shrink:0"><span style="font-size:16px;font-weight:800;color:white">'+icon+' Ma\'lumotnoma</span><button onclick="closeSubModal()" style="width:40px;height:40px;border:none;background:rgba(255,255,255,.2);border-radius:10px;color:white;font-size:20px;cursor:pointer;font-family:inherit">✕</button></div><div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:white">'+h+'</div>';
+  var old=document.getElementById('subDetailModal');if(old)old.remove();
+  document.body.appendChild(modal);
+  document.body.style.overflow='hidden';
+}
+function closeSubModal(){var m=document.getElementById('subDetailModal');if(m)m.remove();document.body.style.overflow=''}
 // Build full detail view for a submission
 function buildSubDetail(s,mode){
   var a=s.ans||{};
