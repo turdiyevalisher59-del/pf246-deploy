@@ -209,7 +209,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <button onclick="switchMode('ayoqsh')" id="modeAyoqsh" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:#d4a932;color:white">⛽ AYOQSH</button>
 <button onclick="switchMode('notarius')" id="modeNotarius" style="padding:8px 16px;border:none;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;background:transparent;color:var(--gray-400)">📜 Notarius</button>
 </div>
-<div class="header-right"><div class="gps-badge on" id="gpsBadge" onclick="initGPS();toast('📍 GPS qayta qidirilmoqda...')"><span class="gps-dot on"></span> GPS faol</div><div class="user-badge" id="uBadge">👤 —</div><button class="btn btn-sm btn-outline" onclick="openPw()">🔑</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
+<div class="header-right"><div id="syncBadge" style="display:none;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;align-items:center;gap:4px;background:#f59e0b;color:white;cursor:pointer" onclick="syncQueue()">⏳ 0</div><div class="gps-badge on" id="gpsBadge" onclick="initGPS();toast('📍 GPS qayta qidirilmoqda...')"><span class="gps-dot on"></span> GPS faol</div><div class="user-badge" id="uBadge">👤 —</div><button class="btn btn-sm btn-outline" onclick="openPw()">🔑</button><button class="btn btn-sm btn-danger" onclick="doLogout()">Chiqish</button></div></div></div>
 <div class="main-container">
 <div class="stats-grid"><div class="stat-card"><div class="stat-value" id="sA">0</div><div class="stat-label">Javob berildi</div></div><div class="stat-card"><div class="stat-value" id="sT">26</div><div class="stat-label">Jami savollar</div></div><div class="stat-card"><div class="stat-value" id="sP">0%</div><div class="stat-label">Tayyorlik</div></div><div class="stat-card" onclick="toggleUserDaily()" style="cursor:pointer"><div class="stat-value" id="sS">0</div><div class="stat-label">Yuborilgan ▼</div></div></div>
 <!-- Daily activity panel (hidden by default) -->
@@ -402,7 +402,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 </div>
 <div class="modal-body" style="text-align:center">
 <div style="font-size:64px;margin-bottom:12px">🎉</div>
-<div style="font-size:17px;font-weight:800;color:var(--green-600);margin-bottom:6px">Ma'lumotnoma yuborildi!</div>
+<div id="successSubtitle" style="font-size:17px;font-weight:800;color:var(--green-600);margin-bottom:6px">Ma'lumotnoma yuborildi!</div>
 <div id="successName" style="font-size:14px;font-weight:600;color:var(--blue-700);padding:10px 16px;background:var(--gray-50);border-radius:10px;margin-bottom:16px;border:1px solid var(--gray-200)"></div>
 <div style="font-size:12px;color:var(--gray-500);margin-bottom:20px;line-height:1.6">Ma'lumotnomani PDF formatda yuklab olishingiz mumkin. PDF faylda barcha savollar va javoblar ko'rsatiladi.</div>
 <div style="display:flex;gap:10px;flex-direction:column">
@@ -441,23 +441,138 @@ function getMediaSrc(m){
   if(m.data)return m.data;
   return '';
 }
-// ═══ SUPABASE HELPERS ═══
-async function sbInsertSub(sub){
-  try{
-    await SB.from('submissions').insert({
-      id:sub.id,un:sub.un,u_name:sub.uN,reg:sub.reg,ay_name:sub.ayN,
-      mode:sub.mode||'ayoqsh',answers:sub.ans||{},media_count:sub.mediaCount||0,
-      no_activity:sub.noActivity||false,
-      loc_lat:sub.loc?.lat,loc_lng:sub.loc?.lng,loc_acc:sub.loc?.acc,
-      loc_hud:sub.loc?.hud,loc_addr:sub.loc?.addr,loc_place:sub.loc?.place,loc_pt:sub.loc?.pt
-    });
-    // Save media to separate table (keeps submissions lightweight)
-    if(sub.mediaData&&sub.mediaData.length){
-      await SB.from('submission_media').insert({
-        submission_id:sub.id,media_data:sub.mediaData
-      });
+// ═══ OFFLINE SYNC QUEUE ═══
+var _syncQueue=[];var _syncing=false;
+function loadQueue(){try{_syncQueue=JSON.parse(localStorage.getItem('pf246_queue')||'[]')}catch(e){_syncQueue=[]}return _syncQueue}
+function saveQueue(){try{localStorage.setItem('pf246_queue',JSON.stringify(_syncQueue))}catch(e){console.log('Queue save error — localStorage full?',e)}}
+function queueAdd(type,data){
+  loadQueue();
+  _syncQueue.push({type:type,data:data,ts:new Date().toISOString(),retries:0});
+  saveQueue();
+  updateSyncBadge();
+  syncQueue(); // Try immediately
+}
+function updateSyncBadge(){
+  loadQueue();
+  var cnt=_syncQueue.length;
+  var el=document.getElementById('syncBadge');
+  if(!el)return;
+  if(cnt>0){
+    el.style.display='inline-flex';
+    el.innerHTML=_syncing?'<span style="animation:pulse 1s infinite">⏳</span> Sync...':'⏳ '+cnt;
+    el.title=cnt+' ta navbatda kutmoqda';
+    el.style.background=_syncing?'#fbbf24':'#f59e0b';
+  } else {
+    el.style.display='none';
+  }
+}
+async function syncQueue(){
+  if(_syncing)return;
+  loadQueue();
+  if(!_syncQueue.length){updateSyncBadge();return}
+  if(!navigator.onLine){updateSyncBadge();return}
+  _syncing=true;updateSyncBadge();
+  var processed=0;
+  while(_syncQueue.length>0){
+    if(!navigator.onLine)break;
+    var item=_syncQueue[0];
+    var ok=false;
+    try{
+      if(item.type==='sub')ok=await syncSub(item.data);
+      else if(item.type==='loc')ok=await syncLoc(item.data);
+      else{ok=true} // unknown type, skip
+    }catch(e){console.log('Sync error:',e);ok=false}
+    if(ok){
+      _syncQueue.shift();
+      saveQueue();
+      processed++;
+    } else {
+      item.retries=(item.retries||0)+1;
+      if(item.retries>=5){
+        console.log('Sync failed 5x, skipping:',item);
+        _syncQueue.shift();saveQueue();
+      }
+      break; // Stop on first failure, retry later
     }
-  }catch(e){console.log('SB insert sub error',e)}
+  }
+  _syncing=false;updateSyncBadge();
+  if(processed>0){
+    console.log('Sync complete:',processed,'items sent');
+    if(_syncQueue.length===0){
+      toast('✅ Barcha ma\'lumotlar sinxronlandi!','success');
+    }
+  }
+}
+async function syncSub(sub){
+  // If media has base64 (offline captured), upload to Storage first
+  if(sub.mediaData&&sub.mediaData.length){
+    var updatedMedia=[];
+    for(var i=0;i<sub.mediaData.length;i++){
+      var m=sub.mediaData[i];
+      if(m.data&&m.data.startsWith('data:')){
+        // Upload base64 to Storage
+        try{
+          var url=await uploadToStorage(sub.id,m.sec||'img',i,m.data);
+          if(url){updatedMedia.push({sec:m.sec,type:m.type||'photo',url:url});continue}
+        }catch(e){console.log('Storage upload on sync error:',e)}
+      }
+      updatedMedia.push(m); // Keep as-is if already URL or upload failed
+    }
+    sub.mediaData=updatedMedia;
+  }
+  // Insert to Supabase
+  var res=await SB.from('submissions').insert({
+    id:sub.id,un:sub.un,u_name:sub.uN,reg:sub.reg,ay_name:sub.ayN,
+    mode:sub.mode||'ayoqsh',answers:sub.ans||{},media_count:sub.mediaCount||0,
+    no_activity:sub.noActivity||false,
+    loc_lat:sub.loc?.lat,loc_lng:sub.loc?.lng,loc_acc:sub.loc?.acc,
+    loc_hud:sub.loc?.hud,loc_addr:sub.loc?.addr,loc_place:sub.loc?.place,loc_pt:sub.loc?.pt
+  });
+  if(res.error){
+    // Duplicate id — already synced
+    if(res.error.code==='23505')return true;
+    throw res.error;
+  }
+  // Save media
+  if(sub.mediaData&&sub.mediaData.length){
+    await SB.from('submission_media').insert({
+      submission_id:sub.id,media_data:sub.mediaData
+    });
+  }
+  return true;
+}
+async function syncLoc(loc){
+  var res=await SB.from('locations').insert({
+    id:loc.id,un:loc.un,u_name:loc.uN,reg:loc.reg,
+    lat:loc.lat,lng:loc.lng,acc:loc.acc,
+    hud:loc.hud,addr:loc.addr,place:loc.place,pt:loc.pt,
+    action:loc.act
+  });
+  if(res.error){
+    if(res.error.code==='23505')return true; // duplicate
+    throw res.error;
+  }
+  return true;
+}
+// Auto-sync triggers
+window.addEventListener('online',function(){
+  console.log('Internet qaytdi — sync boshlanmoqda...');
+  toast('🌐 Internet qaytdi — sinxronlanmoqda...','info');
+  setTimeout(syncQueue,1000);
+});
+window.addEventListener('offline',function(){
+  toast('📴 Internet uzildi — ma\'lumotlar lokalni saqlanadi','warning');
+  updateSyncBadge();
+});
+// Periodic sync retry (every 30s if queue has items)
+setInterval(function(){loadQueue();if(_syncQueue.length&&navigator.onLine&&!_syncing)syncQueue()},30000);
+
+// ═══ SUPABASE HELPERS (now queue-based) ═══
+async function sbInsertSub(sub){
+  queueAdd('sub',sub);
+}
+async function sbInsertLoc(loc){
+  queueAdd('loc',loc);
 }
 // ── Compress image before upload ──
 function compressImg(dataUrl,maxW,quality){
@@ -493,13 +608,18 @@ async function collectMedia(subId){
             var compressed=await compressImg(imgData,400,0.25);
             imgData=compressed;
           }catch(ce){console.log('Re-compress skip:',ce)}
-          // Upload to Supabase Storage
-          var url=await uploadToStorage(subId,sections[i],j,imgData);
-          if(url){
-            allMedia.push({sec:sections[i],type:'photo',url:url});
-            uploadCount++;
+          // Upload to Supabase Storage (skip if offline)
+          if(navigator.onLine){
+            var url=await uploadToStorage(subId,sections[i],j,imgData);
+            if(url){
+              allMedia.push({sec:sections[i],type:'photo',url:url});
+              uploadCount++;
+            } else {
+              // Fallback: store base64 if upload fails
+              allMedia.push({sec:sections[i],type:'photo',data:imgData});
+            }
           } else {
-            // Fallback: store base64 if upload fails
+            // Offline — save base64, will upload during sync
             allMedia.push({sec:sections[i],type:'photo',data:imgData});
           }
         }catch(e){
@@ -515,16 +635,6 @@ async function collectMedia(subId){
   }
   console.log('Media collected:',allMedia.length,'items,',uploadCount,'uploaded to Storage');
   return allMedia;
-}
-async function sbInsertLoc(loc){
-  try{
-    await SB.from('locations').insert({
-      id:loc.id,un:loc.un,u_name:loc.uN,reg:loc.reg,
-      lat:loc.lat,lng:loc.lng,acc:loc.acc,
-      hud:loc.hud,addr:loc.addr,place:loc.place,pt:loc.pt,
-      action:loc.act
-    });
-  }catch(e){console.log('SB insert loc error',e)}
 }
 async function sbLoadSubs(){
   try{
@@ -895,6 +1005,7 @@ async function loadUserSubs(){
   }
 }
 await loadUserSubs();
+updateSyncBadge();setTimeout(syncQueue,2000); // Sync pending items on app load
 buildDis();buildT();renderQ();updS();renderH();startPings()}else{loadAd();startAdminRefresh()}}
 // ═══ MODE SWITCHING (AYOQSH / NOTARIUS) ═══
 var ansA={},ansN={},mediaA={},mediaN={};
@@ -1406,7 +1517,7 @@ function submitNoActivity(){
     document.getElementById('noActReason').value='';
     toggleNoActivity(); // go back to normal mode
     updS();renderH();
-    toast('🚫 "'+name+'" — faoliyat ko\'rsatmayapti deb yuborildi!');
+    toast(navigator.onLine?'🚫 "'+name+'" — faoliyat ko\'rsatmayapti deb yuborildi!':'📴 "'+name+'" — lokalni saqlandi, internet qaytganda yuboriladi');
   });
   }); // ensureGPS
 }
@@ -1649,6 +1760,18 @@ function reverseGeo(lat,lng,callback){
 }
 function showSuccessModal(name){
   document.getElementById('successName').textContent=name;
+  var titleEl=document.querySelector('#successModal .modal-title');
+  var headerEl=document.querySelector('#successModal .modal-header');
+  var subEl=document.getElementById('successSubtitle');
+  if(!navigator.onLine){
+    if(titleEl)titleEl.textContent='📴 Lokalni saqlandi!';
+    if(headerEl)headerEl.style.background='linear-gradient(135deg,#f59e0b,#d97706)';
+    if(subEl){subEl.textContent='Internet qaytganda avtomatik yuboriladi';subEl.style.color='#d97706'}
+  } else {
+    if(titleEl)titleEl.textContent='✅ Muvaffaqiyatli yuborildi!';
+    if(headerEl)headerEl.style.background='linear-gradient(135deg,var(--green-500),var(--green-600))';
+    if(subEl){subEl.textContent='Ma\'lumotnoma yuborildi!';subEl.style.color='var(--green-600)'}
+  }
   document.getElementById('successModal').classList.add('active');
 }
 function closeSuccess(){document.getElementById('successModal').classList.remove('active')}
